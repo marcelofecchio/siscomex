@@ -1,0 +1,1433 @@
+{
+    "info": {
+        "name": "Siscomex — Portal Único (IMPEXP)",
+        "_postman_id": "6f1d6a8e-3c39-4a63-9a43-5b8b8f3c1a01",
+        "description": "Autenticação, Cadastro de Atributos e Catálogo de Produtos da API pública do Portal Único Siscomex.\n\nSelecione o ambiente (Validação ou Produção). A coleção autentica automaticamente, reaproveita o token, respeita 60 s entre autenticações e captura o X-CSRF-Token renovado de toda resposta.\n\nVeja postman/README.md.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    "// Autenticação automática da coleção:",
+                    "// - reaproveita o token enquanto o X-CSRF-Token for válido (nunca autentica por requisição);",
+                    "// - respeita o intervalo mínimo de 60 s entre autenticações (PLAT-ER2033);",
+                    "// - bloqueia escrita quando permitirEscrita != \"true\" (ambiente de Produção).",
+                    "(function () {",
+                    "    const env = pm.environment;",
+                    "    const url = pm.request.url.toString();",
+                    "    const ehAutenticacao = url.includes('/portal/api/autenticar');",
+                    "    const ehPublico = url.includes('perfil=PUBLICO');",
+                    "    const ehConsultaViaPost = url.includes('/consulta-codigo') || url.includes('/consulta-nome');",
+                    "    const metodo = pm.request.method;",
+                    "",
+                    "    if (!['GET', 'HEAD', 'OPTIONS'].includes(metodo) && !ehAutenticacao && !ehConsultaViaPost && env.get('permitirEscrita') !== 'true') {",
+                    "        const mensagem = 'Escrita bloqueada neste ambiente (permitirEscrita != \"true\"). Em Produção use apenas consultas.';",
+                    "        // Um erro no pre-request NÃO impede o envio no Newman: pulamos a requisição e,",
+                    "        // por garantia, trocamos a URL por um host inexistente.",
+                    "        if (pm.execution && typeof pm.execution.skipRequest === 'function') {",
+                    "            pm.execution.skipRequest();",
+                    "        }",
+                    "        pm.request.url.update('http://escrita-bloqueada.invalid/');",
+                    "        throw new Error(mensagem);",
+                    "    }",
+                    "",
+                    "    const ultima = Number(env.get('lastAuthAt') || 0);",
+                    "    const espera = ultima ? 60000 - (Date.now() - ultima) : 0;",
+                    "",
+                    "    if (ehAutenticacao) {",
+                    "        if (espera > 0) {",
+                    "            throw new Error('Aguarde ' + Math.ceil(espera / 1000) + ' s: o portal recusa autenticações em intervalo inferior a 60 s (PLAT-ER2033).');",
+                    "        }",
+                    "        return;",
+                    "    }",
+                    "    if (ehPublico) {",
+                    "        return;",
+                    "    }",
+                    "",
+                    "    const aplicar = function () {",
+                    "        pm.request.headers.upsert({ key: 'Authorization', value: env.get('jwt') });",
+                    "        pm.request.headers.upsert({ key: 'X-CSRF-Token', value: env.get('csrfToken') });",
+                    "    };",
+                    "",
+                    "    const expira = Number(env.get('csrfExpiration') || 0);",
+                    "    if (env.get('jwt') && env.get('csrfToken') && expira - 60000 > Date.now()) {",
+                    "        aplicar();",
+                    "        return;",
+                    "    }",
+                    "",
+                    "    const modo = env.get('authMode') || 'chave';",
+                    "    const autenticar = function () {",
+                    "        const header = [{ key: 'Role-Type', value: env.get('roleType') || 'IMPEXP' }];",
+                    "        if (modo === 'chave') {",
+                    "            header.push({ key: 'Client-Id', value: env.get('clientId') });",
+                    "            header.push({ key: 'Client-Secret', value: env.get('clientSecret') });",
+                    "        }",
+                    "        pm.sendRequest({",
+                    "            url: env.get('baseUrl') + (modo === 'chave' ? '/portal/api/autenticar/chave-acesso' : '/portal/api/autenticar'),",
+                    "            method: 'POST',",
+                    "            header: header,",
+                    "        }, function (err, res) {",
+                    "            if (err) {",
+                    "                console.error('Falha de rede na autenticação', err);",
+                    "                return;",
+                    "            }",
+                    "            if (res.code !== 200) {",
+                    "                if (res.text().includes('PLAT-ER2033')) {",
+                    "                    env.set('lastAuthAt', String(Date.now()));",
+                    "                }",
+                    "                console.error('Falha na autenticação: HTTP ' + res.code + ' ' + res.text());",
+                    "                return;",
+                    "            }",
+                    "            let corpo = {};",
+                    "            try { corpo = res.json(); } catch (e) { /* corpo opcional */ }",
+                    "            env.set('jwt', res.headers.get('Set-Token'));",
+                    "            env.set('csrfToken', res.headers.get('X-CSRF-Token') || corpo.token);",
+                    "            env.set('csrfExpiration', res.headers.get('X-CSRF-Expiration') || String(Date.now() + 3600000));",
+                    "            env.set('lastAuthAt', String(Date.now()));",
+                    "            aplicar();",
+                    "        });",
+                    "    };",
+                    "",
+                    "    if (espera > 0) {",
+                    "        console.log('Aguardando ' + espera + ' ms para respeitar a regra dos 60 s entre autenticações.');",
+                    "        setTimeout(autenticar, espera + 500);",
+                    "    } else {",
+                    "        autenticar();",
+                    "    }",
+                    "})();"
+                ]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    "// Captura Set-Token, X-CSRF-Token e X-CSRF-Expiration de TODA resposta (o CSRF é renovado pelo portal).",
+                    "(function () {",
+                    "    const env = pm.environment;",
+                    "    const jwt = pm.response.headers.get('Set-Token');",
+                    "    const csrf = pm.response.headers.get('X-CSRF-Token');",
+                    "    const expira = pm.response.headers.get('X-CSRF-Expiration');",
+                    "",
+                    "    if (jwt) {",
+                    "        env.set('jwt', jwt);",
+                    "        env.set('lastAuthAt', String(Date.now()));",
+                    "    }",
+                    "    if (csrf) {",
+                    "        env.set('csrfToken', csrf);",
+                    "        env.set('csrfExpiration', expira || String(Date.now() + 3600000));",
+                    "    } else if (expira) {",
+                    "        env.set('csrfExpiration', expira);",
+                    "    }",
+                    "",
+                    "    if (pm.response.code >= 400) {",
+                    "        let erro = null;",
+                    "        try { erro = pm.response.json(); } catch (e) { /* HTML de proxy/manutenção */ }",
+                    "        if (erro) {",
+                    "            pm.test('Erro no formato padrão do portal (message, code, tag)', function () {",
+                    "                pm.expect(erro).to.have.property('message');",
+                    "                pm.expect(erro).to.have.property('code');",
+                    "                pm.expect(erro).to.have.property('tag');",
+                    "            });",
+                    "            if (erro.code === 'PUCX-ER1001') {",
+                    "                console.warn('Limite de acessos atingido (não repita): ' + erro.message);",
+                    "            }",
+                    "            if (erro.code === 'PLAT-ER2033') {",
+                    "                env.set('lastAuthAt', String(Date.now()));",
+                    "            }",
+                    "            console.log('Erro do portal — informe a tag em chamados à Central Serpro: ' + erro.tag);",
+                    "        }",
+                    "    }",
+                    "})();"
+                ]
+            }
+        }
+    ],
+    "item": [
+        {
+            "name": "Autenticação",
+            "description": "POST {baseUrl}/portal/api/autenticar[/chave-acesso]. A coleção autentica sozinha quando necessário; use estas requisições só para testar. Respeite 60 s entre autenticações.",
+            "item": [
+                {
+                    "name": "Autenticar — chave de acesso",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Retornou Set-Token e X-CSRF-Token', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "    pm.expect(pm.response.headers.get('Set-Token')).to.be.a('string').and.not.empty;",
+                                    "    pm.expect(pm.response.headers.get('X-CSRF-Token') || pm.response.json().token).to.be.a('string').and.not.empty;",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Role-Type",
+                                "value": "{{roleType}}"
+                            },
+                            {
+                                "key": "Client-Id",
+                                "value": "{{clientId}}"
+                            },
+                            {
+                                "key": "Client-Secret",
+                                "value": "{{clientSecret}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/portal/api/autenticar/chave-acesso",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "portal",
+                                "api",
+                                "autenticar",
+                                "chave-acesso"
+                            ]
+                        },
+                        "description": "Par de chaves gerado em Perfil do usuário → Chaves de acesso (no mesmo ambiente). Não exige certificado."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Autenticar — certificado A1 (mTLS)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Retornou Set-Token e X-CSRF-Token', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "    pm.expect(pm.response.headers.get('Set-Token')).to.be.a('string').and.not.empty;",
+                                    "    pm.expect(pm.response.headers.get('X-CSRF-Token') || pm.response.json().token).to.be.a('string').and.not.empty;",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Role-Type",
+                                "value": "{{roleType}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/portal/api/autenticar",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "portal",
+                                "api",
+                                "autenticar"
+                            ]
+                        },
+                        "description": "Configure o certificado em Settings → Certificates (host do ambiente, arquivo PFX + senha). IMPEXP exige e-CPF. Certificado A3 não funciona no Postman."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Cadastro de Atributos",
+            "item": [
+                {
+                    "name": "Atributos por NCM",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 204)', () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));",
+                                    "pm.test('Estrutura {listaNcm, detalhesAtributos}', function () {",
+                                    "    if (pm.response.code === 204) { return; }",
+                                    "    const j = pm.response.json();",
+                                    "    pm.expect(j).to.have.property('listaNcm');",
+                                    "    pm.expect(j).to.have.property('detalhesAtributos');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/cadatributos/api/ext/atributo-ncm/{{ncm}}?modalidade={{modalidade}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cadatributos",
+                                "api",
+                                "ext",
+                                "atributo-ncm",
+                                "{{ncm}}"
+                            ],
+                            "query": [
+                                {
+                                    "key": "modalidade",
+                                    "value": "{{modalidade}}"
+                                }
+                            ]
+                        },
+                        "description": "GET /cadatributos/api/ext/atributo-ncm/{codigo-ncm}. Filtros opcionais: data (yyyy-MM-dd), modalidade, objetivos (PRODUTO, TRATAMENTO_ADMINISTRATIVO, DUIMP), orgaosDemandantes."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Consultar atributos por código",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 204)', () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/cadatributos/api/ext/atributo/consulta-codigo",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cadatributos",
+                                "api",
+                                "ext",
+                                "atributo",
+                                "consulta-codigo"
+                            ]
+                        },
+                        "description": "Até 100 códigos por chamada. Consulta (não altera dados) apesar do POST.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"codigos\": [\"{{codigoAtributo}}\"],\n  \"data\": \"{{dataReferencia}}\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Consultar atributos por nome",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 204)', () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/cadatributos/api/ext/atributo/consulta-nome",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cadatributos",
+                                "api",
+                                "ext",
+                                "atributo",
+                                "consulta-nome"
+                            ]
+                        },
+                        "description": "",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nomes\": [\"Material constitutivo\"],\n  \"data\": \"{{dataReferencia}}\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Download da relação por NCM (autenticado, ZIP)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200)', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/zip, application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/cadatributos/api/ext/atributo-ncm/download/json?codigosNCM={{ncm}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cadatributos",
+                                "api",
+                                "ext",
+                                "atributo-ncm",
+                                "download",
+                                "json"
+                            ],
+                            "query": [
+                                {
+                                    "key": "codigosNCM",
+                                    "value": "{{ncm}}"
+                                }
+                            ]
+                        },
+                        "description": "Retorna ZIP com JSON {versao, listaNcm, detalhesAtributos}."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Histórico de versões da relação por NCM",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 204)', () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/cadatributos/api/ext/atributo-ncm/historico-versoes",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cadatributos",
+                                "api",
+                                "ext",
+                                "atributo-ncm",
+                                "historico-versoes"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Download público da relação por NCM (sem autenticação)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200)', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/zip, application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/cadatributos/api/atributo-ncm/download/json?perfil=PUBLICO",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cadatributos",
+                                "api",
+                                "atributo-ncm",
+                                "download",
+                                "json"
+                            ],
+                            "query": [
+                                {
+                                    "key": "perfil",
+                                    "value": "PUBLICO"
+                                }
+                            ]
+                        },
+                        "description": "Público, atualizado diariamente à meia-noite. ~15 MB descompactado."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Catálogo de Produtos",
+            "description": "Requisições marcadas com [ESCRITA] alteram dados: use apenas no ambiente de Validação. No ambiente de Produção (permitirEscrita=false) elas são bloqueadas pelo pre-request da coleção.",
+            "item": [
+                {
+                    "name": "Consultar produtos",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 204, 206)', () => pm.expect(pm.response.code).to.be.oneOf([200, 204, 206]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/produto?cpfCnpjRaiz={{cnpjRaiz}}&ncm={{ncm}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "produto"
+                            ],
+                            "query": [
+                                {
+                                    "key": "cpfCnpjRaiz",
+                                    "value": "{{cnpjRaiz}}"
+                                },
+                                {
+                                    "key": "ncm",
+                                    "value": "{{ncm}}"
+                                }
+                            ]
+                        },
+                        "description": "206 = resultado parcial. Outros filtros: codigo, codigoInterno, descricao, denominacao, situacao (0 ativado, 1 desativado, 2 rascunho), modalidade, períodos, paisOrigem, cpfCnpjFabricante, operadorEstrangeiroCodigo, dataReferencia."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Detalhar versão do produto",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 204)', () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/produto/{{cnpjRaiz}}/{{codigoProduto}}/{{versao}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "produto",
+                                "{{cnpjRaiz}}",
+                                "{{codigoProduto}}",
+                                "{{versao}}"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Histórico de alterações",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 204)', () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/produto/historico/{{cnpjRaiz}}/{{codigoProduto}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "produto",
+                                "historico",
+                                "{{cnpjRaiz}}",
+                                "{{codigoProduto}}"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Exportar catálogo (ZIP)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 204)', () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/zip, application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/produto/exportar/{{cnpjRaiz}}/false",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "produto",
+                                "exportar",
+                                "{{cnpjRaiz}}",
+                                "false"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[ESCRITA] Incluir produto",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200)', () => pm.expect(pm.response.code).to.be.oneOf([200]));",
+                                    "pm.test('Produto retornado com código e versão', function () {",
+                                    "    const p = pm.response.json();",
+                                    "    pm.expect(p).to.have.property('codigo');",
+                                    "    pm.expect(p).to.have.property('versao');",
+                                    "    pm.environment.set('codigoProduto', String(p.codigo));",
+                                    "    pm.environment.set('versao', String(p.versao));",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/produto/{{cnpjRaiz}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "produto",
+                                "{{cnpjRaiz}}"
+                            ]
+                        },
+                        "description": "Use apenas códigos de atributos do ambiente atual (Validação ≠ Produção) e com objetivo Produto.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"denominacao\": \"Produto de exemplo\",\n    \"descricao\": \"Detalhamento complementar do produto\",\n    \"modalidade\": \"{{modalidade}}\",\n    \"ncm\": \"{{ncm}}\",\n    \"atributos\": [\n        {\n            \"atributo\": \"ATT_XXXX\",\n            \"valor\": \"01\"\n        }\n    ],\n    \"atributosMultivalorados\": [],\n    \"atributosCompostos\": [],\n    \"atributosCompostosMultivalorados\": [],\n    \"codigosInterno\": [\n        \"{{codigoInterno}}\"\n    ]\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[ESCRITA] Incluir produto retroativo",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200)', () => pm.expect(pm.response.code).to.be.oneOf([200]));",
+                                    "pm.test('Produto retornado com código e versão', function () {",
+                                    "    const p = pm.response.json();",
+                                    "    pm.expect(p).to.have.property('codigo');",
+                                    "    pm.expect(p).to.have.property('versao');",
+                                    "    pm.environment.set('codigoProduto', String(p.codigo));",
+                                    "    pm.environment.set('versao', String(p.versao));",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/produto/{{cnpjRaiz}}/{{dataReferencia}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "produto",
+                                "{{cnpjRaiz}}",
+                                "{{dataReferencia}}"
+                            ]
+                        },
+                        "description": "",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"denominacao\": \"Produto de exemplo\",\n    \"descricao\": \"Detalhamento complementar do produto\",\n    \"modalidade\": \"{{modalidade}}\",\n    \"ncm\": \"{{ncm}}\",\n    \"atributos\": [\n        {\n            \"atributo\": \"ATT_XXXX\",\n            \"valor\": \"01\"\n        }\n    ],\n    \"atributosMultivalorados\": [],\n    \"atributosCompostos\": [],\n    \"atributosCompostosMultivalorados\": [],\n    \"codigosInterno\": [\n        \"{{codigoInterno}}\"\n    ]\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[ESCRITA] Incluir nova versão",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200)', () => pm.expect(pm.response.code).to.be.oneOf([200]));",
+                                    "pm.test('Produto retornado com código e versão', function () {",
+                                    "    const p = pm.response.json();",
+                                    "    pm.expect(p).to.have.property('codigo');",
+                                    "    pm.expect(p).to.have.property('versao');",
+                                    "    pm.environment.set('codigoProduto', String(p.codigo));",
+                                    "    pm.environment.set('versao', String(p.versao));",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/produto/{{cnpjRaiz}}/{{codigoProduto}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "produto",
+                                "{{cnpjRaiz}}",
+                                "{{codigoProduto}}"
+                            ]
+                        },
+                        "description": "",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"denominacao\": \"Produto de exemplo\",\n    \"descricao\": \"Detalhamento complementar do produto\",\n    \"modalidade\": \"{{modalidade}}\",\n    \"ncm\": \"{{ncm}}\",\n    \"atributos\": [\n        {\n            \"atributo\": \"ATT_XXXX\",\n            \"valor\": \"01\"\n        }\n    ],\n    \"atributosMultivalorados\": [],\n    \"atributosCompostos\": [],\n    \"atributosCompostosMultivalorados\": [],\n    \"codigosInterno\": [\n        \"{{codigoInterno}}\"\n    ]\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[ESCRITA] Retificar versão",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200)', () => pm.expect(pm.response.code).to.be.oneOf([200]));",
+                                    "pm.test('Produto retornado com código e versão', function () {",
+                                    "    const p = pm.response.json();",
+                                    "    pm.expect(p).to.have.property('codigo');",
+                                    "    pm.expect(p).to.have.property('versao');",
+                                    "    pm.environment.set('codigoProduto', String(p.codigo));",
+                                    "    pm.environment.set('versao', String(p.versao));",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/produto/{{cnpjRaiz}}/{{codigoProduto}}/{{versao}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "produto",
+                                "{{cnpjRaiz}}",
+                                "{{codigoProduto}}",
+                                "{{versao}}"
+                            ]
+                        },
+                        "description": "",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"denominacao\": \"Produto de exemplo\",\n    \"descricao\": \"Detalhamento complementar do produto\",\n    \"modalidade\": \"{{modalidade}}\",\n    \"ncm\": \"{{ncm}}\",\n    \"atributos\": [\n        {\n            \"atributo\": \"ATT_XXXX\",\n            \"valor\": \"01\"\n        }\n    ],\n    \"atributosMultivalorados\": [],\n    \"atributosCompostos\": [],\n    \"atributosCompostosMultivalorados\": [],\n    \"codigosInterno\": [\n        \"{{codigoInterno}}\"\n    ]\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[ESCRITA] Desativar produto",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 204)', () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/produto/desativar/{{cnpjRaiz}}/{{codigoProduto}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "produto",
+                                "desativar",
+                                "{{cnpjRaiz}}",
+                                "{{codigoProduto}}"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[ESCRITA] Incluir código interno",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 204)', () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/produto/codigo-interno/{{cnpjRaiz}}/{{codigoProduto}}/{{versao}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "produto",
+                                "codigo-interno",
+                                "{{cnpjRaiz}}",
+                                "{{codigoProduto}}",
+                                "{{versao}}"
+                            ]
+                        },
+                        "description": "",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"codigoInterno\": \"{{codigoInterno}}\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[ESCRITA] Remover código interno",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 204)', () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/produto/codigo-interno/{{cnpjRaiz}}/{{codigoProduto}}/{{versao}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "produto",
+                                "codigo-interno",
+                                "{{cnpjRaiz}}",
+                                "{{codigoProduto}}",
+                                "{{versao}}"
+                            ]
+                        },
+                        "description": "",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"codigoInterno\": \"{{codigoInterno}}\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Fluxo completo (Validação)",
+            "description": "Execute em sequência no Runner, apenas no ambiente de Validação: atributos da NCM → incluir → detalhar → nova versão → desativar.",
+            "item": [
+                {
+                    "name": "1. Atributos da NCM (monta o produto)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 204)', () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));",
+                                    "pm.test('Estrutura {listaNcm, detalhesAtributos}', function () {",
+                                    "    if (pm.response.code === 204) { return; }",
+                                    "    const j = pm.response.json();",
+                                    "    pm.expect(j).to.have.property('listaNcm');",
+                                    "    pm.expect(j).to.have.property('detalhesAtributos');",
+                                    "});",
+                                    "// Monta o corpo do produto com os atributos obrigatórios (objetivo Produto) e valores de exemplo.",
+                                    "const j = pm.response.json();",
+                                    "const detalhes = {};",
+                                    "(j.detalhesAtributos || []).forEach(function (d) { detalhes[d.codigo] = d; });",
+                                    "const item = (j.listaNcm || [])[0] || { listaAtributos: [] };",
+                                    "const prefixo = pm.environment.get('modalidade') === 'EXPORTACAO' ? 'Export' : 'Import';",
+                                    "const atributos = [];",
+                                    "item.listaAtributos.filter(function (a) { return a.obrigatorio && String(a.modalidade).indexOf(prefixo) === 0; }).forEach(function (a) {",
+                                    "    const d = detalhes[a.codigo] || {};",
+                                    "    if (!(d.objetivos || []).some(function (o) { return o.descricao === 'Produto'; })) { return; }",
+                                    "    let valor = 'Teste';",
+                                    "    switch (d.formaPreenchimento) {",
+                                    "        case 'LISTA_ESTATICA': valor = ((d.dominio || [])[0] || {}).codigo || '01'; break;",
+                                    "        case 'BOOLEANO': valor = 'false'; break;",
+                                    "        case 'NUMERO_INTEIRO': case 'NUMERO_REAL': valor = '1'; break;",
+                                    "        case 'DATA': valor = new Date().toISOString().slice(0, 10); break;",
+                                    "    }",
+                                    "    atributos.push({ atributo: a.codigo, valor: valor });",
+                                    "});",
+                                    "pm.environment.set('produtoBody', JSON.stringify({",
+                                    "    denominacao: 'Produto de teste Postman ' + Date.now(),",
+                                    "    descricao: 'Fluxo completo da coleção Postman',",
+                                    "    modalidade: pm.environment.get('modalidade') || 'IMPORTACAO',",
+                                    "    ncm: pm.environment.get('ncm'),",
+                                    "    atributos: atributos,",
+                                    "    atributosMultivalorados: [],",
+                                    "    atributosCompostos: [],",
+                                    "    atributosCompostosMultivalorados: [],",
+                                    "    codigosInterno: []",
+                                    "}));",
+                                    "console.log('Atributos obrigatórios preenchidos: ' + atributos.map(function (a) { return a.atributo; }).join(', '));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/cadatributos/api/ext/atributo-ncm/{{ncm}}?modalidade={{modalidade}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cadatributos",
+                                "api",
+                                "ext",
+                                "atributo-ncm",
+                                "{{ncm}}"
+                            ],
+                            "query": [
+                                {
+                                    "key": "modalidade",
+                                    "value": "{{modalidade}}"
+                                }
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "2. [ESCRITA] Incluir produto",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200)', () => pm.expect(pm.response.code).to.be.oneOf([200]));",
+                                    "pm.test('Produto retornado com código e versão', function () {",
+                                    "    const p = pm.response.json();",
+                                    "    pm.expect(p).to.have.property('codigo');",
+                                    "    pm.expect(p).to.have.property('versao');",
+                                    "    pm.environment.set('codigoProduto', String(p.codigo));",
+                                    "    pm.environment.set('versao', String(p.versao));",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/produto/{{cnpjRaiz}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "produto",
+                                "{{cnpjRaiz}}"
+                            ]
+                        },
+                        "description": "",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{{produtoBody}}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "3. Detalhar produto incluído",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200)', () => pm.expect(pm.response.code).to.be.oneOf([200]));",
+                                    "pm.test('Mesmo código', () => pm.expect(String(pm.response.json().codigo)).to.eql(pm.environment.get('codigoProduto')));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/produto/{{cnpjRaiz}}/{{codigoProduto}}/{{versao}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "produto",
+                                "{{cnpjRaiz}}",
+                                "{{codigoProduto}}",
+                                "{{versao}}"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "4. [ESCRITA] Nova versão",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200)', () => pm.expect(pm.response.code).to.be.oneOf([200]));",
+                                    "pm.test('Produto retornado com código e versão', function () {",
+                                    "    const p = pm.response.json();",
+                                    "    pm.expect(p).to.have.property('codigo');",
+                                    "    pm.expect(p).to.have.property('versao');",
+                                    "    pm.environment.set('codigoProduto', String(p.codigo));",
+                                    "    pm.environment.set('versao', String(p.versao));",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/produto/{{cnpjRaiz}}/{{codigoProduto}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "produto",
+                                "{{cnpjRaiz}}",
+                                "{{codigoProduto}}"
+                            ]
+                        },
+                        "description": "",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{{produtoBody}}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "5. Histórico",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200)', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/produto/historico/{{cnpjRaiz}}/{{codigoProduto}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "produto",
+                                "historico",
+                                "{{cnpjRaiz}}",
+                                "{{codigoProduto}}"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "6. [ESCRITA] Desativar",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 204)', () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/produto/desativar/{{cnpjRaiz}}/{{codigoProduto}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "produto",
+                                "desativar",
+                                "{{cnpjRaiz}}",
+                                "{{codigoProduto}}"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                }
+            ]
+        }
+    ]
+}

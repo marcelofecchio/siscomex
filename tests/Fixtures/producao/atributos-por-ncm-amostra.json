@@ -1,0 +1,1042 @@
+{
+    "versao": "359",
+    "listaNcm": [
+        {
+            "codigoNcm": "0201.10.00",
+            "listaAtributos": [
+                {
+                    "codigo": "ATT_9332",
+                    "modalidade": "Importação",
+                    "obrigatorio": false,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2023-11-06"
+                },
+                {
+                    "codigo": "ATT_9496",
+                    "modalidade": "Importação",
+                    "obrigatorio": false,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2023-11-06"
+                },
+                {
+                    "codigo": "ATT_14200",
+                    "modalidade": "Importação",
+                    "obrigatorio": true,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2025-06-30"
+                },
+                {
+                    "codigo": "ATT_14520",
+                    "modalidade": "Importação",
+                    "obrigatorio": false,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2025-06-29"
+                },
+                {
+                    "codigo": "ATT_14840",
+                    "modalidade": "Importação",
+                    "obrigatorio": false,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2025-06-30"
+                },
+                {
+                    "codigo": "ATT_14500",
+                    "modalidade": "Importação",
+                    "obrigatorio": false,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2025-06-30"
+                },
+                {
+                    "codigo": "ATT_14501",
+                    "modalidade": "Importação",
+                    "obrigatorio": false,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2025-06-30"
+                },
+                {
+                    "codigo": "ATT_14219",
+                    "modalidade": "Importação",
+                    "obrigatorio": false,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2026-04-13"
+                },
+                {
+                    "codigo": "ATT_14303",
+                    "modalidade": "Importação",
+                    "obrigatorio": false,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2026-04-13"
+                }
+            ]
+        },
+        {
+            "codigoNcm": "7318.15.00",
+            "listaAtributos": [
+                {
+                    "codigo": "ATT_9332",
+                    "modalidade": "Importação",
+                    "obrigatorio": false,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2025-06-29"
+                },
+                {
+                    "codigo": "ATT_10888",
+                    "modalidade": "Importação",
+                    "obrigatorio": false,
+                    "multivalorado": true,
+                    "dataInicioVigencia": "2025-06-29"
+                },
+                {
+                    "codigo": "ATT_14786",
+                    "modalidade": "Importação",
+                    "obrigatorio": false,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2025-06-29"
+                },
+                {
+                    "codigo": "ATT_14785",
+                    "modalidade": "Importação",
+                    "obrigatorio": false,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2025-06-29"
+                },
+                {
+                    "codigo": "ATT_14545",
+                    "modalidade": "Importação",
+                    "obrigatorio": true,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2025-06-29"
+                },
+                {
+                    "codigo": "ATT_14782",
+                    "modalidade": "Importação",
+                    "obrigatorio": false,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2025-06-29"
+                },
+                {
+                    "codigo": "ATT_14781",
+                    "modalidade": "Importação",
+                    "obrigatorio": false,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2025-06-29"
+                },
+                {
+                    "codigo": "ATT_14780",
+                    "modalidade": "Importação",
+                    "obrigatorio": false,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2025-06-29"
+                },
+                {
+                    "codigo": "ATT_14520",
+                    "modalidade": "Importação",
+                    "obrigatorio": false,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2025-06-29"
+                },
+                {
+                    "codigo": "ATT_14783",
+                    "modalidade": "Importação",
+                    "obrigatorio": true,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2026-05-25"
+                }
+            ]
+        },
+        {
+            "codigoNcm": "8473.30.49",
+            "listaAtributos": [
+                {
+                    "codigo": "ATT_10888",
+                    "modalidade": "Importação",
+                    "obrigatorio": false,
+                    "multivalorado": true,
+                    "dataInicioVigencia": "2024-09-20"
+                },
+                {
+                    "codigo": "ATT_9332",
+                    "modalidade": "Importação",
+                    "obrigatorio": false,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2025-06-29"
+                },
+                {
+                    "codigo": "ATT_14786",
+                    "modalidade": "Importação",
+                    "obrigatorio": false,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2025-06-29"
+                },
+                {
+                    "codigo": "ATT_14785",
+                    "modalidade": "Importação",
+                    "obrigatorio": false,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2025-06-29"
+                },
+                {
+                    "codigo": "ATT_14545",
+                    "modalidade": "Importação",
+                    "obrigatorio": true,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2025-06-29"
+                },
+                {
+                    "codigo": "ATT_14782",
+                    "modalidade": "Importação",
+                    "obrigatorio": false,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2025-06-29"
+                },
+                {
+                    "codigo": "ATT_14781",
+                    "modalidade": "Importação",
+                    "obrigatorio": false,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2025-06-29"
+                },
+                {
+                    "codigo": "ATT_14780",
+                    "modalidade": "Importação",
+                    "obrigatorio": false,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2025-06-29"
+                },
+                {
+                    "codigo": "ATT_14520",
+                    "modalidade": "Importação",
+                    "obrigatorio": false,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2025-06-29"
+                },
+                {
+                    "codigo": "ATT_14783",
+                    "modalidade": "Importação",
+                    "obrigatorio": true,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2026-05-25"
+                }
+            ]
+        }
+    ],
+    "detalhesAtributos": [
+        {
+            "codigo": "ATT_9332",
+            "nome": "Número do lote II",
+            "nomeApresentacao": "Número do Lote",
+            "orientacaoPreenchimento": "Informe o número do lote do produto - produtos sujeitos à fiscalização sanitária devem ter pelo menos um número de rastreabilidade para a mercadoria, podendo ser partnumber, lote ou serial",
+            "formaPreenchimento": "TEXTO",
+            "tamanhoMaximo": 50,
+            "dataInicioVigencia": "2023-11-06",
+            "dataFimVigencia": "",
+            "dominio": [],
+            "objetivos": [
+                {
+                    "codigo": 5,
+                    "descricao": "Duimp"
+                }
+            ],
+            "orgaos": [
+                "ANVISA",
+                "MAPA"
+            ],
+            "atributoCondicionante": false,
+            "condicionados": [],
+            "listaSubatributos": [],
+            "filtros": []
+        },
+        {
+            "codigo": "ATT_14219",
+            "nome": "NumeroRegistroImportadorMAPA_",
+            "nomeApresentacao": "Número de Registro do Importador no MAPA",
+            "orientacaoPreenchimento": "Número de registro ou cadastro deve ser idêntico ao registrado no MAPA",
+            "formaPreenchimento": "TEXTO",
+            "tamanhoMaximo": 40,
+            "dataInicioVigencia": "2025-05-20",
+            "dataFimVigencia": "",
+            "dominio": [],
+            "objetivos": [
+                {
+                    "codigo": 5,
+                    "descricao": "Duimp"
+                },
+                {
+                    "codigo": 6,
+                    "descricao": "LPCO"
+                }
+            ],
+            "orgaos": [
+                "MAPA"
+            ],
+            "atributoCondicionante": false,
+            "condicionados": [],
+            "listaSubatributos": [],
+            "filtros": []
+        },
+        {
+            "codigo": "ATT_14200",
+            "nome": "AreaTematicaMAPA",
+            "definicao": "Para produto não sujeito ao controle do MAPA deve ser informada a opção \"99 - Não aplicável. Produto não sujeito ao controle do MAPA\".",
+            "nomeApresentacao": "Área Temática do MAPA",
+            "orientacaoPreenchimento": "Para produto de interesse agropecuário que não se enquadre nas áreas temáticas listadas, selecione a opção \"98 – Outra área temática (não especificada nesta lista)\".",
+            "formaPreenchimento": "LISTA_ESTATICA",
+            "dataInicioVigencia": "2025-05-20",
+            "dataFimVigencia": "",
+            "dominio": [
+                {
+                    "codigo": "01",
+                    "descricao": "Agrotóxico e afins"
+                },
+                {
+                    "codigo": "02",
+                    "descricao": "Azeite de oliva e óleo de bagaço de oliva"
+                },
+                {
+                    "codigo": "03",
+                    "descricao": "Bebidas, vinagres, vinhos e derivados da uva e do vinho"
+                },
+                {
+                    "codigo": "04",
+                    "descricao": "Fertilizantes, corretivos, inoculantes e correlatos"
+                },
+                {
+                    "codigo": "05",
+                    "descricao": "Material de propagação vegetal (sementes e mudas)"
+                },
+                {
+                    "codigo": "06",
+                    "descricao": "Produto de origem vegetal"
+                }
+            ],
+            "objetivos": [
+                {
+                    "codigo": 3,
+                    "descricao": "Tratamento administrativo"
+                },
+                {
+                    "codigo": 7,
+                    "descricao": "Produto"
+                }
+            ],
+            "orgaos": [
+                "MAPA"
+            ],
+            "atributoCondicionante": true,
+            "condicionados": [
+                {
+                    "obrigatorio": true,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2025-05-21",
+                    "dataFimVigencia": "",
+                    "descricaoCondicao": " 'ATT_14200' Igual '01'",
+                    "condicao": {
+                        "operador": "==",
+                        "valor": "01"
+                    },
+                    "atributo": {
+                        "codigo": "ATT_14217",
+                        "nome": "FinalidadeImpoAgrotoxico",
+                        "nomeApresentacao": "Finalidade da importação",
+                        "formaPreenchimento": "LISTA_ESTATICA",
+                        "obrigatorio": true,
+                        "dataInicioVigencia": "2025-05-20",
+                        "dataFimVigencia": "",
+                        "dominio": [
+                            {
+                                "codigo": "01",
+                                "descricao": "Comercialização"
+                            },
+                            {
+                                "codigo": "02",
+                                "descricao": "Fracionamento"
+                            },
+                            {
+                                "codigo": "03",
+                                "descricao": "Experimentação"
+                            },
+                            {
+                                "codigo": "04",
+                                "descricao": "Pesquisa Científica"
+                            },
+                            {
+                                "codigo": "05",
+                                "descricao": "Reprocesso"
+                            },
+                            {
+                                "codigo": "06",
+                                "descricao": "Retrabalho"
+                            }
+                        ],
+                        "objetivos": [
+                            {
+                                "codigo": 7,
+                                "descricao": "Produto"
+                            }
+                        ],
+                        "orgaos": [
+                            "MAPA"
+                        ],
+                        "atributoCondicionante": true,
+                        "condicionados": [],
+                        "listaSubatributos": [],
+                        "multivalorado": false,
+                        "filtros": []
+                    }
+                },
+                {
+                    "obrigatorio": true,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2025-05-21",
+                    "dataFimVigencia": "",
+                    "descricaoCondicao": " 'ATT_14200' Igual '01'",
+                    "condicao": {
+                        "operador": "==",
+                        "valor": "01"
+                    },
+                    "atributo": {
+                        "codigo": "ATT_14224",
+                        "nome": "CategoriaProdutoAgrotoxico",
+                        "nomeApresentacao": "Categoria do produto",
+                        "formaPreenchimento": "LISTA_ESTATICA",
+                        "obrigatorio": true,
+                        "dataInicioVigencia": "2025-05-20",
+                        "dataFimVigencia": "",
+                        "dominio": [
+                            {
+                                "codigo": "01",
+                                "descricao": "Produto Técnico"
+                            },
+                            {
+                                "codigo": "02",
+                                "descricao": "Produto Formulado"
+                            },
+                            {
+                                "codigo": "03",
+                                "descricao": "Matéria Prima"
+                            },
+                            {
+                                "codigo": "04",
+                                "descricao": "Pré-mistura"
+                            },
+                            {
+                                "codigo": "05",
+                                "descricao": "Ingrediente Inerte"
+                            },
+                            {
+                                "codigo": "06",
+                                "descricao": "Aditivos"
+                            }
+                        ],
+                        "objetivos": [
+                            {
+                                "codigo": 7,
+                                "descricao": "Produto"
+                            }
+                        ],
+                        "orgaos": [
+                            "MAPA"
+                        ],
+                        "atributoCondicionante": true,
+                        "condicionados": [],
+                        "listaSubatributos": [],
+                        "multivalorado": false,
+                        "filtros": []
+                    }
+                }
+            ],
+            "listaSubatributos": [],
+            "filtros": []
+        },
+        {
+            "codigo": "ATT_14840",
+            "nome": "Destino final da carga - DUIMP",
+            "nomeApresentacao": "Destino final da carga",
+            "orientacaoPreenchimento": "Destino da mercadoria após liberação do recinto alfandegado, ou em caso de entrega antecipada.",
+            "formaPreenchimento": "TEXTO",
+            "tamanhoMaximo": 100,
+            "dataInicioVigencia": "2025-06-26",
+            "dataFimVigencia": "",
+            "dominio": [],
+            "objetivos": [
+                {
+                    "codigo": 5,
+                    "descricao": "Duimp"
+                },
+                {
+                    "codigo": 6,
+                    "descricao": "LPCO"
+                }
+            ],
+            "orgaos": [
+                "MAPA"
+            ],
+            "atributoCondicionante": false,
+            "condicionados": [],
+            "listaSubatributos": [],
+            "filtros": []
+        },
+        {
+            "codigo": "ATT_10888",
+            "nome": "Número de série DUIMP",
+            "nomeApresentacao": "Número de série",
+            "orientacaoPreenchimento": "Caso não se aplique, informar esta condição. Produtos sujeitos à fiscalização sanitária devem ter pelo menos um número de rastreabilidade para a mercadoria, podendo ser partnumber, lote ou serial",
+            "formaPreenchimento": "TEXTO",
+            "tamanhoMaximo": 100,
+            "dataInicioVigencia": "2023-11-06",
+            "dataFimVigencia": "",
+            "dominio": [],
+            "objetivos": [
+                {
+                    "codigo": 5,
+                    "descricao": "Duimp"
+                }
+            ],
+            "orgaos": [
+                "ANVISA",
+                "RECEITA"
+            ],
+            "atributoCondicionante": false,
+            "condicionados": [],
+            "listaSubatributos": [],
+            "filtros": []
+        },
+        {
+            "codigo": "ATT_9496",
+            "nome": "Estado de apresentação cap. 02",
+            "nomeApresentacao": "Estado de apresentação",
+            "orientacaoPreenchimento": "Informe o estado de apresentação do produto. Por exemplo: fresco, resfriado, congelado, seco, em salmoura, etc.",
+            "formaPreenchimento": "TEXTO",
+            "tamanhoMaximo": 50,
+            "dataInicioVigencia": "2023-11-06",
+            "dataFimVigencia": "",
+            "dominio": [],
+            "objetivos": [
+                {
+                    "codigo": 5,
+                    "descricao": "Duimp"
+                }
+            ],
+            "orgaos": [
+                "RECEITA"
+            ],
+            "atributoCondicionante": false,
+            "condicionados": [],
+            "listaSubatributos": [],
+            "filtros": []
+        },
+        {
+            "codigo": "ATT_14303",
+            "nome": "NumeroRegistroFabricanteMAPA_",
+            "nomeApresentacao": "Número de Registro do Fabricante no MAPA",
+            "orientacaoPreenchimento": "Número de registro ou cadastro deve ser idêntico ao registrado no MAPA",
+            "formaPreenchimento": "TEXTO",
+            "tamanhoMaximo": 40,
+            "dataInicioVigencia": "2025-05-20",
+            "dataFimVigencia": "",
+            "dominio": [],
+            "objetivos": [
+                {
+                    "codigo": 5,
+                    "descricao": "Duimp"
+                },
+                {
+                    "codigo": 6,
+                    "descricao": "LPCO"
+                }
+            ],
+            "orgaos": [
+                "MAPA"
+            ],
+            "atributoCondicionante": false,
+            "condicionados": [],
+            "listaSubatributos": [],
+            "filtros": []
+        },
+        {
+            "codigo": "ATT_14545",
+            "nome": "Categoria de produto - Catálogo Anvisa",
+            "nomeApresentacao": "Categoria de produto - Catálogo Anvisa",
+            "orientacaoPreenchimento": "Classificar o produto conforme definição da Agência Nacional de Vigilância Sanitária. Caso o produto não esteja sujeito a controle pela Anvisa, deverá ser assinalado o valor \"99\".",
+            "formaPreenchimento": "LISTA_ESTATICA",
+            "dataInicioVigencia": "2025-06-13",
+            "dataFimVigencia": "",
+            "dominio": [
+                {
+                    "codigo": "99",
+                    "descricao": "Não se aplica (produto não sujeito à fiscalização sanitária)"
+                },
+                {
+                    "codigo": "80",
+                    "descricao": "Alimento (e insumo) para indústria/uso humano"
+                },
+                {
+                    "codigo": "81",
+                    "descricao": "Cosmético, produtos de higiene e perfume (e insumos) para indústria/uso humano"
+                },
+                {
+                    "codigo": "82",
+                    "descricao": "Dispositivo médico (e componentes) para indústria/uso humano"
+                },
+                {
+                    "codigo": "83",
+                    "descricao": "Medicamento (e insumos) para indústria/uso humano"
+                },
+                {
+                    "codigo": "84",
+                    "descricao": "Medicamentos ou substâncias com finalidade controlada pela Portaria SVS/MS 344/1998"
+                }
+            ],
+            "objetivos": [
+                {
+                    "codigo": 3,
+                    "descricao": "Tratamento administrativo"
+                },
+                {
+                    "codigo": 7,
+                    "descricao": "Produto"
+                }
+            ],
+            "orgaos": [
+                "ANVISA"
+            ],
+            "atributoCondicionante": true,
+            "condicionados": [
+                {
+                    "obrigatorio": true,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2026-04-28",
+                    "dataFimVigencia": "",
+                    "descricaoCondicao": " 'ATT_14545' Diferente '99' E 'ATT_14545' Diferente '97'",
+                    "condicao": {
+                        "operador": "!=",
+                        "valor": "99",
+                        "composicao": "&&",
+                        "condicao": {
+                            "operador": "!=",
+                            "valor": "97"
+                        }
+                    },
+                    "atributo": {
+                        "codigo": "ATT_14546",
+                        "nome": "Prazo de validade Catálogo Anvisa",
+                        "nomeApresentacao": "Prazo de validade",
+                        "orientacaoPreenchimento": "Indicar o prazo de validade em anos, meses, dias, horas ou \"indeterminado\". Para produtos regularizados no SNVS, este prazo deve ser idêntico ao indicado na regularização.",
+                        "formaPreenchimento": "TEXTO",
+                        "tamanhoMaximo": 30,
+                        "obrigatorio": true,
+                        "dataInicioVigencia": "2025-06-13",
+                        "dataFimVigencia": "",
+                        "dominio": [],
+                        "objetivos": [
+                            {
+                                "codigo": 7,
+                                "descricao": "Produto"
+                            }
+                        ],
+                        "orgaos": [
+                            "ANVISA"
+                        ],
+                        "atributoCondicionante": false,
+                        "condicionados": [],
+                        "listaSubatributos": [],
+                        "multivalorado": false,
+                        "filtros": []
+                    }
+                },
+                {
+                    "obrigatorio": true,
+                    "multivalorado": false,
+                    "dataInicioVigencia": "2026-04-28",
+                    "dataFimVigencia": "",
+                    "descricaoCondicao": " 'ATT_14545' Diferente '99' E 'ATT_14545' Diferente '97'",
+                    "condicao": {
+                        "operador": "!=",
+                        "valor": "99",
+                        "composicao": "&&",
+                        "condicao": {
+                            "operador": "!=",
+                            "valor": "97"
+                        }
+                    },
+                    "atributo": {
+                        "codigo": "ATT_14556",
+                        "nome": "Condição armazenamento catálogo Anvisa",
+                        "nomeApresentacao": "Condição de armazenamento",
+                        "orientacaoPreenchimento": "Armazenagem é condição de prateleira do produto.\nCaso o produto possua componentes com temperaturas de armazenagem diferentes, selecionar todas as condições existentes.",
+                        "formaPreenchimento": "LISTA_ESTATICA",
+                        "obrigatorio": true,
+                        "dataInicioVigencia": "2025-06-13",
+                        "dataFimVigencia": "",
+                        "dominio": [
+                            {
+                                "codigo": "1",
+                                "descricao": "Armazenar abaixo de -150°C"
+                            },
+                            {
+                                "codigo": "2",
+                                "descricao": "Armazenar abaixo de -70°C"
+                            },
+                            {
+                                "codigo": "3",
+                                "descricao": "Armazenar abaixo de -20°C"
+                            },
+                            {
+                                "codigo": "4",
+                                "descricao": "Armazenar a temperatura entre 0 e -20°C (freezer)"
+                            },
+                            {
+                                "codigo": "5",
+                                "descricao": "Armazenar entre 0 e 8°C"
+                            },
+                            {
+                                "codigo": "6",
+                                "descricao": "Armazenar entre 2 e 8°C"
+                            }
+                        ],
+                        "objetivos": [
+                            {
+                                "codigo": 7,
+                                "descricao": "Produto"
+                            }
+                        ],
+                        "orgaos": [
+                            "ANVISA"
+                        ],
+                        "atributoCondicionante": false,
+                        "condicionados": [],
+                        "listaSubatributos": [],
+                        "multivalorado": false,
+                        "filtros": []
+                    }
+                }
+            ],
+            "listaSubatributos": [],
+            "filtros": []
+        },
+        {
+            "codigo": "ATT_14786",
+            "nome": "Data de fabricação do bem/produto Anvisa",
+            "nomeApresentacao": "Data de fabricação do bem/produto Anvisa",
+            "orientacaoPreenchimento": "Preencher em caso de produto passível de controle administrativo pela Anvisa",
+            "formaPreenchimento": "DATA",
+            "dataInicioVigencia": "2025-06-18",
+            "dataFimVigencia": "",
+            "dominio": [],
+            "objetivos": [
+                {
+                    "codigo": 5,
+                    "descricao": "Duimp"
+                }
+            ],
+            "orgaos": [
+                "ANVISA"
+            ],
+            "atributoCondicionante": false,
+            "condicionados": [],
+            "listaSubatributos": [],
+            "filtros": []
+        },
+        {
+            "codigo": "ATT_14783",
+            "nome": "Finalidade da importação DUIMP Anvisa",
+            "nomeApresentacao": "Finalidade da importação - Anvisa",
+            "formaPreenchimento": "LISTA_ESTATICA",
+            "dataInicioVigencia": "2025-06-18",
+            "dataFimVigencia": "",
+            "dominio": [
+                {
+                    "codigo": "14",
+                    "descricao": "Não sujeita à intervenção sanitária"
+                },
+                {
+                    "codigo": "1",
+                    "descricao": "Abastecimento de enfermarias, farmácias ou conjunto médico de bordo de meio de transporte internacional"
+                },
+                {
+                    "codigo": "2",
+                    "descricao": "Células e tecidos para fins terapêuticos"
+                },
+                {
+                    "codigo": "3",
+                    "descricao": "Comercial"
+                },
+                {
+                    "codigo": "4",
+                    "descricao": "Cumprimento de ação judicial para tratamento de pacientes específicos"
+                },
+                {
+                    "codigo": "6",
+                    "descricao": "Diagnóstico laboratorial"
+                }
+            ],
+            "objetivos": [
+                {
+                    "codigo": 5,
+                    "descricao": "Duimp"
+                }
+            ],
+            "orgaos": [
+                "ANVISA"
+            ],
+            "atributoCondicionante": false,
+            "condicionados": [],
+            "listaSubatributos": [],
+            "filtros": []
+        },
+        {
+            "codigo": "ATT_14782",
+            "nome": "CNPJ provedor ensaio proficiência DUIMP",
+            "nomeApresentacao": "CNPJ provedor do ensaio de proficiência",
+            "orientacaoPreenchimento": "Necessário o preenchimento quando a \"Finalidade da importação - Anvisa\" for assinalada com valor \"8 - Ensaio de proficiência\".",
+            "formaPreenchimento": "TEXTO",
+            "tamanhoMaximo": 18,
+            "mascara": "**.***.***/****-99",
+            "dataInicioVigencia": "2025-06-18",
+            "dataFimVigencia": "",
+            "dominio": [],
+            "objetivos": [
+                {
+                    "codigo": 5,
+                    "descricao": "Duimp"
+                }
+            ],
+            "orgaos": [
+                "ANVISA"
+            ],
+            "atributoCondicionante": false,
+            "condicionados": [],
+            "listaSubatributos": [],
+            "filtros": []
+        },
+        {
+            "codigo": "ATT_14785",
+            "nome": "Dispositivo médico recondicionado",
+            "nomeApresentacao": "Dispositivo médico recondicionado",
+            "formaPreenchimento": "BOOLEANO",
+            "dataInicioVigencia": "2025-06-18",
+            "dataFimVigencia": "",
+            "dominio": [],
+            "objetivos": [
+                {
+                    "codigo": 5,
+                    "descricao": "Duimp"
+                }
+            ],
+            "orgaos": [
+                "ANVISA"
+            ],
+            "atributoCondicionante": false,
+            "condicionados": [],
+            "listaSubatributos": [],
+            "filtros": []
+        },
+        {
+            "codigo": "ATT_14781",
+            "nome": "CNPJ destinatário ensaio prof DUIMP",
+            "nomeApresentacao": "CNPJ destinatário ensaio de proficiência",
+            "orientacaoPreenchimento": "CNPJ do destinatário que executará o ensaio de proficiência. Necessário o preenchimento quando a \"Finalidade da importação - Anvisa\" for assinalada com valor \"8 - Ensaio de proficiência\".",
+            "formaPreenchimento": "TEXTO",
+            "tamanhoMaximo": 18,
+            "mascara": "**.***.***/****-99",
+            "dataInicioVigencia": "2025-06-18",
+            "dataFimVigencia": "",
+            "dominio": [],
+            "objetivos": [
+                {
+                    "codigo": 5,
+                    "descricao": "Duimp"
+                }
+            ],
+            "orgaos": [
+                "ANVISA"
+            ],
+            "atributoCondicionante": false,
+            "condicionados": [],
+            "listaSubatributos": [],
+            "filtros": []
+        },
+        {
+            "codigo": "ATT_14780",
+            "nome": "Critério de priorização DUIMP Anvisa",
+            "nomeApresentacao": "Critério de priorização - Anvisa",
+            "orientacaoPreenchimento": "Selecionar quando o produto passível de controle administrativo da Anvisa se enquadrar em alguma das opções - necessária a comprovação da prioridade pleiteada.",
+            "formaPreenchimento": "LISTA_ESTATICA",
+            "dataInicioVigencia": "2025-06-18",
+            "dataFimVigencia": "",
+            "dominio": [
+                {
+                    "codigo": "1",
+                    "descricao": "Importação direta pelo Ministério da Saúde ou entidades vinculadas ao SUS, de produtos acabados, para atendimento a programas públicos de saúde, desde que comprovada a vinculação"
+                },
+                {
+                    "codigo": "2",
+                    "descricao": "2 -  Importação de produtos com exigência de armazenamento em temperatura inferior a 20°C ou de medicamentos biológicos com monitoramento de temperatura desde a origem ou de amostras biológicas"
+                },
+                {
+                    "codigo": "3",
+                    "descricao": "Importação de produtos com prazo de validade inferior a 60 dias, de alimentos e demais produtos perecíveis"
+                },
+                {
+                    "codigo": "4",
+                    "descricao": "Importação de produtos pelo modal rodoviário cuja URF de despacho seja um recinto na fronteira"
+                },
+                {
+                    "codigo": "5",
+                    "descricao": "Importação de produto  para  pesquisa  clínica,  uso  compassivo  e  acesso  expandido, fornecimento de medicamentos pós-estudo"
+                },
+                {
+                    "codigo": "6",
+                    "descricao": "Importação  destinada  a  paciente  específico,  realizada  por  pessoa  física  ou  pessoa jurídica, cujo relatório médico ateste o seu estado de saúde"
+                }
+            ],
+            "objetivos": [
+                {
+                    "codigo": 5,
+                    "descricao": "Duimp"
+                }
+            ],
+            "orgaos": [
+                "ANVISA"
+            ],
+            "atributoCondicionante": false,
+            "condicionados": [],
+            "listaSubatributos": [],
+            "filtros": []
+        },
+        {
+            "codigo": "ATT_14501",
+            "nome": "UF DUIMP",
+            "nomeApresentacao": "UF do Destino final da carga",
+            "orientacaoPreenchimento": "Unidade da federação do destino da mercadoria após liberação do recinto alfandegado, ou em caso de entrega antecipada.",
+            "formaPreenchimento": "LISTA_ESTATICA",
+            "dataInicioVigencia": "2025-06-11",
+            "dataFimVigencia": "",
+            "dominio": [
+                {
+                    "codigo": "AC",
+                    "descricao": "Acre"
+                },
+                {
+                    "codigo": "AL",
+                    "descricao": "Alagoas"
+                },
+                {
+                    "codigo": "AM",
+                    "descricao": "Amazonas"
+                },
+                {
+                    "codigo": "AP",
+                    "descricao": "Amapá"
+                },
+                {
+                    "codigo": "BA",
+                    "descricao": "Bahia"
+                },
+                {
+                    "codigo": "CE",
+                    "descricao": "Ceará"
+                }
+            ],
+            "objetivos": [
+                {
+                    "codigo": 5,
+                    "descricao": "Duimp"
+                },
+                {
+                    "codigo": 6,
+                    "descricao": "LPCO"
+                }
+            ],
+            "orgaos": [
+                "MAPA"
+            ],
+            "atributoCondicionante": false,
+            "condicionados": [],
+            "listaSubatributos": [],
+            "filtros": []
+        },
+        {
+            "codigo": "ATT_14500",
+            "nome": "Município do destino final - DUIMP",
+            "nomeApresentacao": "Município do destino final",
+            "orientacaoPreenchimento": "Município do destino da mercadoria após liberação do recinto alfandegado, ou em caso de entrega antecipada.",
+            "formaPreenchimento": "LISTA_ESTATICA",
+            "dataInicioVigencia": "2025-06-11",
+            "dataFimVigencia": "",
+            "dominio": [
+                {
+                    "codigo": "1200013",
+                    "descricao": "Acre / Acrelândia"
+                },
+                {
+                    "codigo": "1200054",
+                    "descricao": "Acre / Assis Brasil"
+                },
+                {
+                    "codigo": "1200104",
+                    "descricao": "Acre / Brasiléia"
+                },
+                {
+                    "codigo": "1200138",
+                    "descricao": "Acre / Bujari"
+                },
+                {
+                    "codigo": "1200179",
+                    "descricao": "Acre / Capixaba"
+                },
+                {
+                    "codigo": "1200203",
+                    "descricao": "Acre / Cruzeiro do Sul"
+                }
+            ],
+            "objetivos": [
+                {
+                    "codigo": 5,
+                    "descricao": "Duimp"
+                },
+                {
+                    "codigo": 6,
+                    "descricao": "LPCO"
+                }
+            ],
+            "orgaos": [
+                "IBAMA",
+                "MAPA"
+            ],
+            "atributoCondicionante": false,
+            "condicionados": [],
+            "listaSubatributos": [],
+            "filtros": []
+        },
+        {
+            "codigo": "ATT_14520",
+            "nome": "CNPJ/CPF Destino final - DUIMP",
+            "nomeApresentacao": "CNPJ / CPF Destino final",
+            "orientacaoPreenchimento": "Responsável por receber a mercadoria no destino após liberação do recinto alfandegado, ou em caso de entrega antecipada, ou em caso de destinação para destruição.",
+            "formaPreenchimento": "TEXTO",
+            "tamanhoMaximo": 14,
+            "dataInicioVigencia": "2025-06-11",
+            "dataFimVigencia": "",
+            "dominio": [],
+            "objetivos": [
+                {
+                    "codigo": 5,
+                    "descricao": "Duimp"
+                },
+                {
+                    "codigo": 6,
+                    "descricao": "LPCO"
+                }
+            ],
+            "orgaos": [
+                "ANVISA",
+                "MAPA"
+            ],
+            "atributoCondicionante": false,
+            "condicionados": [],
+            "listaSubatributos": [],
+            "filtros": []
+        }
+    ]
+}

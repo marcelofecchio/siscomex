@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  qa:
+    name: PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '8.4'
+            experimental: false
+          - php: '8.5'
+            experimental: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: curl, json, openssl, zip, mbstring
+          coverage: pcov
+          tools: composer:v2
+
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache/files
+          key: composer-${{ matrix.php }}-${{ hashFiles('composer.json') }}
+
+      - name: Validar composer.json
+        run: composer validate --strict
+
+      - name: Instalar dependências
+        run: composer update --no-interaction --no-progress --prefer-dist
+
+      - name: QA (estilo, PHPStan, testes)
+        run: composer qa
+
+      - name: Cobertura
+        if: matrix.php == '8.4'
+        run: composer test:coverage

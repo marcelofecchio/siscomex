@@ -1,0 +1,3179 @@
+{
+ "swagger": "2.0",
+ "info": {
+  "description": "<h3>CATP - Cat&#225;logo de Produtos</h3><h4>Introdu&ccedil;&atilde;o</h4>\n<p>Bem-vindo \u00e0 API do sistema Cat&#225;logo de Produtos.</p>\n<p>O sistema <strong>Cat&#225;logo de Produtos</strong> permite a manuten&#231;&#227;o de cat&#225;logos de produtos e operadores estrangeiros, individualizados por empresa, visando ao reuso das informa&#231;&#245;es nas opera&#231;&#245;es de com&#233;rcio exterior.<p>\n<p>As informa&#231;&#245;es sobre os produtos e operadores estrangeiros podem ser importadas de arquivos JSON, tanto pela interface Web, via upload de arquivo, quanto pelo acionamento dos servi&#231;os descritos a seguir. A estrutura do arquivo JSON &#233; a mesma para as duas modalidades de uso.</p>\n<p>No arquivo com os produtos a serem importados, al&#233;m dos dados b&#225;sicos, devem ser preenchidos os atributos associados ao c&#243;digo NCM de cada produto. Os atributos preenchidos para cada produto devem respeitar os c&#243;digos do respectivo ambiente - treinamento (valida&#231;&#227;o) ou produ&#231;&#227;o. Devem  ser considerados somente os atributos que contenham o objetivo Produto.</P>\n<p>Nos endere&#231;os a seguir est&#227;o dispon&#237;veis as rela&#231;&#245;es de atributos por NCM para cada ambiente:</p>\n<ul>\n<li><a href=\"https://val.portalunico.siscomex.gov.br/cadatributos/api/atributo-ncm/download/json\">Ambiente de Treinamento/Valida&#231;&#227;o</a></li>\n<li><a href=\"https://portalunico.siscomex.gov.br/cadatributos/api/atributo-ncm/download/json\">Ambiente de Produ&#231;&#227;o</a></li>\n</ul>\n<p>As opera&ccedil;&otilde;es que podem ser gerenciadas pela API do sistema s&atilde;o:</p>\n<ul>\n<li>Consultar Produtos</li>\n<li>Incluir/Retificar Produtos</li>\n<li>Exportar Cat&#225;logo de Produtos</li>\n<li>Detalhar Vers&#227;o do Produto</li>\n<li>Incluir/Retificar Operador Estrangeiro</li>\n<li>Exportar Cat&#225;logo de Operadores Estrangeiros</li>\n<li>Vincular/Desvincular Fabricante-Produtor a Produto</li>\n<li>Exportar V&#237;nculos de Fabricante-Produtor a Produto</li>\n<li>Incluir Atos Concess&#243;rios</li>\n</ul>\n<h4>URLs de Acesso</h4>\n<p>Para utilizar os servi&ccedil;os dispon&iacute;veis, deve-se considerar a maneira de autentica&ccedil;&atilde;o de cada servi&ccedil;o, conforme padr&atilde;o Portal &Uacute;nico do Com&eacute;rcio Exterior para os servi&ccedil;os, com exce&ccedil;&atilde;o da Consultar LPCO por Chave de Acesso para o perfil de TERCEIROS. Segue abaixo os padr&otilde;es:</p> \n<h4>Padr&atilde;o Portal &Uacute;nico do Com&eacute;rcio Exterior</h4> \n<p><em>https://{ambiente}/<strong>catp</strong>/api/{servi&ccedil;o}</em></p> \n<p>Onde, em <strong>{ambiente}</strong> deve-se informar o ambiente desejado dentre os ambientes dispon&iacute;veis na tabela abaixo e em <strong>{servi&ccedil;o}</strong> utilizar a URI do servi&ccedil;o desejado.</p> \n<style type=\"text/css\"> \n   .tg  {border-collapse:collapse;border-color:#bbb;border-spacing:0;width: 604px;} \n   .tg td{background-color:#E0FFEB;border-color:#bbb;border-style:solid;border-width:1px;color:#594F4F;  font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;word-break:normal;} \n   .tg th{background-color:#9DE0AD;border-color:#bbb;border-style:solid;border-width:1px;color:#493F3F;  font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;} \n   .tg \n   .tg-cabecalho{text-align:left;vertical-align:top}.tg \n   .tg-corpo{border-color:inherit;text-align:left;vertical-align:top} \n</style> \n<table class=\"tg\" style=\"width: 100%;\"> \n<thead> \n<tr> \n<th class=\"tg-cabecalho\"><span style=\"font-weight:bold\">Nome do Ambiente</span></th> \n<th class=\"tg-cabecalho\"><span style=\"font-weight:bold\">URL de acesso</span></th> \n<th class=\"tg-cabecalho\"><span style=\"font-weight:bold\">P\u00fablico alvo</span></th> \n</tr> \n</thead> \n<tbody> \n<tr> \n<td class=\"tg-corpo\">Ambiente de Homologa\u00e7\u00e3o</td> \n<td class=\"tg-corpo\">hom.pucomex.serpro.gov.br</td> \n<td class=\"tg-corpo\">Intervenientes p\u00fablicos (conforme perfil de acesso)</td> \n</tr> \n<tr> \n<td class=\"tg-corpo\">Ambiente de Valida\u00e7\u00e3o das Empresas</td> \n<td class=\"tg-corpo\">val.portalunico.siscomex.gov.br</td> \n<td class=\"tg-corpo\">Intervenientes privados</td> \n</tr> \n<tr> \n<td class=\"tg-corpo\">Ambiente de Produ\u00e7\u00e3o</td> \n<td class=\"tg-corpo\">portalunico.siscomex.gov.br</td> \n<td class=\"tg-corpo\">Todos os intervenientes (p\u00fablicos e privados)</td> \n</tr> \n</tbody> \n</table> \n<p>&nbsp;</p> \n<p><strong>Exemplo:</strong> Para o servi&ccedil;o \"Incluir/Alterar Produtos\" a URI &eacute; \n<p><em>https://val.portalunico.siscomex.gov.br/catp/api/ext/produto</em></p> \n",
+  "version": "1.0.0",
+  "title": "Cat\u00e1logo de Produtos"
+ },
+ "basePath": "/catp/api",
+ "paths": {
+  "/ext/fabricante/exportar/{cpfCnpjRaiz}": {
+   "get": {
+    "tags": [
+     "V\u00ednculos de Fabricante-Produtor a Produto"
+    ],
+    "summary": "Exportar V\u00ednculos de Fabricante-Produtor a Produto",
+    "description": "",
+    "operationId": "downloadOperadorEstrangeiro",
+    "consumes": [
+     "application/json"
+    ],
+    "produces": [
+     "application/zip"
+    ],
+    "parameters": [
+     {
+      "name": "cpfCnpjRaiz",
+      "in": "path",
+      "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos <br>Tamanho: 8 <br>Formato: 'NNNNNNNN' <br>Tamanho: 11 <br>Formato: 'NNNNNNNNNNN'",
+      "required": true,
+      "type": "string",
+      "x-example": "00000000"
+     },
+     {
+      "name": "codigosProduto",
+      "in": "query",
+      "description": "Lista de C\u00f3digos de Produto",
+      "required": false,
+      "type": "array",
+      "items": {
+       "type": "integer",
+       "format": "int64"
+      },
+      "collectionFormat": "multi"
+     },
+     {
+      "name": "paisesOrigem",
+      "in": "query",
+      "description": "Lista de C\u00f3digos de Pa\u00edses",
+      "required": false,
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "collectionFormat": "multi"
+     },
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso",
+      "schema": {
+       "$ref": "#/definitions/FabricanteIntegracaoDTO"
+      }
+     },
+     "400": {
+      "description": "Requisi\u00e7\u00e3o mal formatada"
+     },
+     "422": {
+      "description": "Erro(s) de valida\u00e7\u00e3o da camada de neg\u00f3cio"
+     },
+     "401": {
+      "description": "Usu\u00e1rio n\u00e3o autenticado ou autentica\u00e7\u00e3o inv\u00e1lida"
+     },
+     "500": {
+      "description": "Erro interno no servidor"
+     },
+     "204": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso. Nenhum conte\u00fado retornado"
+     },
+     "403": {
+      "description": "Usu\u00e1rio n\u00e3o tem permiss\u00e3o de acesso ao recurso"
+     },
+     "404": {
+      "description": "Recurso n\u00e3o encontrado"
+     }
+    }
+   }
+  },
+  "/ext/fabricante/historico/{cpfCnpjRaiz}/{codigo}": {
+   "get": {
+    "tags": [
+     "V\u00ednculos de Fabricante-Produtor a Produto"
+    ],
+    "summary": "Hist\u00f3rico de altera\u00e7\u00f5es",
+    "description": "",
+    "operationId": "historicoFabricante",
+    "consumes": [
+     "application/json"
+    ],
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "name": "cpfCnpjRaiz",
+      "in": "path",
+      "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos <br>Tamanho: 8 <br>Formato: 'NNNNNNNN' <br>Tamanho: 11 <br>Formato: 'NNNNNNNNNNN'",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "codigo",
+      "in": "path",
+      "description": "C\u00f3digo do produto",
+      "required": true,
+      "type": "integer",
+      "format": "int64"
+     },
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso",
+      "schema": {
+       "$ref": "#/definitions/FabricanteHistoricoResponseDTO"
+      }
+     },
+     "400": {
+      "description": "Requisi\u00e7\u00e3o mal formatada"
+     },
+     "422": {
+      "description": "Erro(s) de valida\u00e7\u00e3o da camada de neg\u00f3cio"
+     },
+     "401": {
+      "description": "Usu\u00e1rio n\u00e3o autenticado ou autentica\u00e7\u00e3o inv\u00e1lida"
+     },
+     "500": {
+      "description": "Erro interno no servidor"
+     },
+     "204": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso. Nenhum conte\u00fado retornado"
+     },
+     "403": {
+      "description": "Usu\u00e1rio n\u00e3o tem permiss\u00e3o de acesso ao recurso"
+     },
+     "404": {
+      "description": "Recurso n\u00e3o encontrado"
+     }
+    }
+   }
+  },
+  "/ext/fabricante/{cpfCnpjRaiz}": {
+   "post": {
+    "tags": [
+     "V\u00ednculos de Fabricante-Produtor a Produto"
+    ],
+    "summary": "Vincular Fabricante-Produtor a Produto",
+    "description": "",
+    "operationId": "incluirFabricante",
+    "consumes": [
+     "application/json"
+    ],
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "name": "cpfCnpjRaiz",
+      "in": "path",
+      "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos  <br>Tamanho: 8 <br>Formato: 'NNNNNNNN' <br>Tamanho: 11 <br>Formato: 'NNNNNNNNNNN'",
+      "required": true,
+      "type": "string",
+      "x-example": "00000000"
+     },
+     {
+      "in": "body",
+      "name": "body",
+      "description": "Fabricante/Produtor",
+      "required": true,
+      "schema": {
+       "$ref": "#/definitions/FabricanteIntegracaoRequestDTO"
+      }
+     },
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso",
+      "schema": {
+       "$ref": "#/definitions/FabricanteIntegracaoResponseDTO"
+      }
+     },
+     "400": {
+      "description": "Requisi\u00e7\u00e3o mal formatada"
+     },
+     "422": {
+      "description": "Erro(s) de valida\u00e7\u00e3o da camada de neg\u00f3cio"
+     },
+     "401": {
+      "description": "Usu\u00e1rio n\u00e3o autenticado ou autentica\u00e7\u00e3o inv\u00e1lida"
+     },
+     "500": {
+      "description": "Erro interno no servidor"
+     },
+     "204": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso. Nenhum conte\u00fado retornado"
+     },
+     "403": {
+      "description": "Usu\u00e1rio n\u00e3o tem permiss\u00e3o de acesso ao recurso"
+     },
+     "404": {
+      "description": "Recurso n\u00e3o encontrado"
+     }
+    }
+   },
+   "put": {
+    "tags": [
+     "V\u00ednculos de Fabricante-Produtor a Produto"
+    ],
+    "summary": "Desvincular Fabricante-Produtor a Produto",
+    "description": "",
+    "operationId": "remover",
+    "consumes": [
+     "application/json"
+    ],
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "name": "cpfCnpjRaiz",
+      "in": "path",
+      "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos <br>Tamanho: 8 <br>Formato: 'NNNNNNNN' <br>Tamanho: 11 <br>Formato: 'NNNNNNNNNNN'",
+      "required": true,
+      "type": "string",
+      "x-example": "00000000"
+     },
+     {
+      "in": "body",
+      "name": "body",
+      "description": "Fabricante/Produtor",
+      "required": true,
+      "schema": {
+       "$ref": "#/definitions/FabricanteIntegracaoRequestDTO"
+      }
+     },
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso",
+      "schema": {
+       "$ref": "#/definitions/FabricanteIntegracaoResponseDTO"
+      }
+     },
+     "400": {
+      "description": "Requisi\u00e7\u00e3o mal formatada"
+     },
+     "422": {
+      "description": "Erro(s) de valida\u00e7\u00e3o da camada de neg\u00f3cio"
+     },
+     "401": {
+      "description": "Usu\u00e1rio n\u00e3o autenticado ou autentica\u00e7\u00e3o inv\u00e1lida"
+     },
+     "500": {
+      "description": "Erro interno no servidor"
+     },
+     "204": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso. Nenhum conte\u00fado retornado"
+     },
+     "403": {
+      "description": "Usu\u00e1rio n\u00e3o tem permiss\u00e3o de acesso ao recurso"
+     },
+     "404": {
+      "description": "Recurso n\u00e3o encontrado"
+     }
+    }
+   }
+  },
+  "/ext/operador-estrangeiro": {
+   "get": {
+    "tags": [
+     "Operador Estrangeiro"
+    ],
+    "summary": "Consultar Operador Estrangeiro",
+    "description": "",
+    "operationId": "consultar",
+    "consumes": [
+     "application/json"
+    ],
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "name": "cpfCnpjRaiz",
+      "in": "query",
+      "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos  <br>Tamanho: 8 <br>Formato: 'NNNNNNNN' <br>Tamanho: 11 <br>Formato: 'NNNNNNNNNNN'",
+      "required": true,
+      "type": "string",
+      "x-example": "00000000"
+     },
+     {
+      "name": "tin",
+      "in": "query",
+      "description": "TIN - Trade Identification Number (N\u00famero de Identifica\u00e7\u00e3o do Operador) <br>Tamanho: 35",
+      "required": false,
+      "type": "string",
+      "x-example": "123"
+     },
+     {
+      "name": "codigo",
+      "in": "query",
+      "description": "C\u00f3digo <br>Tamanho: 35",
+      "required": false,
+      "type": "string",
+      "x-example": "123"
+     },
+     {
+      "name": "codigoInterno",
+      "in": "query",
+      "description": "C\u00f3digos internos do Operador Estrangeiro do Exportador/Importador  <br>Tamanho: 35",
+      "required": false,
+      "type": "string",
+      "x-example": "456"
+     },
+     {
+      "name": "nome",
+      "in": "query",
+      "description": "Nome do Operador Estrangeiro  <br>Tamanho: 70",
+      "required": false,
+      "type": "string",
+      "x-example": "Nome"
+     },
+     {
+      "name": "paisOrigem",
+      "in": "query",
+      "description": "C\u00f3digo do pa\u00eds. Usar tabela ISO 3166 <br>Tamanho: 2 <br>Formato: 'AA' <br>",
+      "required": false,
+      "type": "string",
+      "x-example": "AR"
+     },
+     {
+      "name": "exibirDesativados",
+      "in": "query",
+      "description": "Exibir desativados",
+      "required": false,
+      "type": "boolean",
+      "default": false,
+      "x-example": true
+     },
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso",
+      "schema": {
+       "type": "array",
+       "items": {
+        "$ref": "#/definitions/OperadorEstrangeiroIntegracaoDTO"
+       }
+      }
+     },
+     "400": {
+      "description": "Requisi\u00e7\u00e3o mal formatada"
+     },
+     "422": {
+      "description": "Erro(s) de valida\u00e7\u00e3o da camada de neg\u00f3cio"
+     },
+     "401": {
+      "description": "Usu\u00e1rio n\u00e3o autenticado ou autentica\u00e7\u00e3o inv\u00e1lida"
+     },
+     "500": {
+      "description": "Erro interno no servidor"
+     },
+     "204": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso. Nenhum conte\u00fado retornado"
+     },
+     "403": {
+      "description": "Usu\u00e1rio n\u00e3o tem permiss\u00e3o de acesso ao recurso"
+     },
+     "206": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso. Retorno do conte\u00fado parcial"
+     },
+     "404": {
+      "description": "Recurso n\u00e3o encontrado"
+     }
+    }
+   }
+  },
+  "/ext/operador-estrangeiro/desativar/{cpfCnpjRaiz}/{codigoPais}/{codigo}/{versao}": {
+   "put": {
+    "tags": [
+     "Operador Estrangeiro"
+    ],
+    "summary": "Desativar uma vers\u00e3o de Operador Estrangeiro",
+    "description": "",
+    "operationId": "DesativarOperador",
+    "consumes": [
+     "application/json"
+    ],
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "name": "cpfCnpjRaiz",
+      "in": "path",
+      "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos  <br>Tamanho: 8 <br>Formato: 'NNNNNNNN' <br>Tamanho: 11 <br>Formato: 'NNNNNNNNNNN'",
+      "required": true,
+      "type": "string",
+      "x-example": "00000000"
+     },
+     {
+      "name": "codigoPais",
+      "in": "path",
+      "description": "C\u00f3digo do pa\u00eds. Usar tabela ISO 3166 <br>Tamanho: 2 <br>Formato: 'AA' <br>",
+      "required": true,
+      "type": "string",
+      "x-example": "AR"
+     },
+     {
+      "name": "codigo",
+      "in": "path",
+      "description": "C\u00f3digo do operador estrangeiro <br>Tamanho m\u00e1ximo: 35",
+      "required": true,
+      "type": "string",
+      "x-example": "OPE_1"
+     },
+     {
+      "name": "versao",
+      "in": "path",
+      "description": "Informar a vers\u00e3o do operador estrangeiro (exemplo: '1') ou uma vers\u00e3o retificada do operador estrangeiro (exemplo: '1.1').<br>Tamanho M\u00e1ximo: 8 <br>",
+      "required": true,
+      "type": "string",
+      "x-example": "1"
+     },
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso",
+      "schema": {
+       "$ref": "#/definitions/OperadorEstrangeiroIntegracaoDTO"
+      }
+     },
+     "400": {
+      "description": "Requisi\u00e7\u00e3o mal formatada"
+     },
+     "422": {
+      "description": "Erro(s) de valida\u00e7\u00e3o da camada de neg\u00f3cio"
+     },
+     "401": {
+      "description": "Usu\u00e1rio n\u00e3o autenticado ou autentica\u00e7\u00e3o inv\u00e1lida"
+     },
+     "500": {
+      "description": "Erro interno no servidor"
+     },
+     "204": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso. Nenhum conte\u00fado retornado"
+     },
+     "403": {
+      "description": "Usu\u00e1rio n\u00e3o tem permiss\u00e3o de acesso ao recurso"
+     },
+     "404": {
+      "description": "Recurso n\u00e3o encontrado"
+     }
+    }
+   }
+  },
+  "/ext/operador-estrangeiro/exportar/{cpfCnpjRaiz}/{exibirDesativados}": {
+   "get": {
+    "tags": [
+     "Operador Estrangeiro"
+    ],
+    "summary": "Exportar Cat\u00e1logo de Operadores Estrangeiros",
+    "description": "",
+    "operationId": "downloadOperadorEstrangeiro",
+    "consumes": [
+     "application/json"
+    ],
+    "produces": [
+     "application/zip"
+    ],
+    "parameters": [
+     {
+      "name": "cpfCnpjRaiz",
+      "in": "path",
+      "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos <br>Tamanho: 8 <br>Formato: 'NNNNNNNN' <br>Tamanho: 11 <br>Formato: 'NNNNNNNNNNN'",
+      "required": true,
+      "type": "string",
+      "x-example": "00000000"
+     },
+     {
+      "name": "exibirDesativados",
+      "in": "path",
+      "description": "Exibir desativados",
+      "required": true,
+      "type": "boolean",
+      "default": false,
+      "x-example": true
+     },
+     {
+      "name": "codigosOperador",
+      "in": "query",
+      "description": "Lista de C\u00f3digos de Operador Estrangeiro",
+      "required": false,
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "collectionFormat": "multi"
+     },
+     {
+      "name": "inicioVigenciaDe",
+      "in": "query",
+      "description": "Data de In\u00edcio de vig\u00eancia de:. <br>Formato: 'yyyy-MM-dd'",
+      "required": false,
+      "type": "string"
+     },
+     {
+      "name": "inicioVigenciaAte",
+      "in": "query",
+      "description": "Data de In\u00edcio de vig\u00eancia at\u00e9:. <br>Formato: 'yyyy-MM-dd'",
+      "required": false,
+      "type": "string"
+     },
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso",
+      "schema": {
+       "type": "array",
+       "items": {
+        "$ref": "#/definitions/OperadorEstrangeiroIntegracaoDTO"
+       }
+      }
+     },
+     "400": {
+      "description": "Requisi\u00e7\u00e3o mal formatada"
+     },
+     "422": {
+      "description": "Erro(s) de valida\u00e7\u00e3o da camada de neg\u00f3cio"
+     },
+     "401": {
+      "description": "Usu\u00e1rio n\u00e3o autenticado ou autentica\u00e7\u00e3o inv\u00e1lida"
+     },
+     "500": {
+      "description": "Erro interno no servidor"
+     },
+     "204": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso. Nenhum conte\u00fado retornado"
+     },
+     "403": {
+      "description": "Usu\u00e1rio n\u00e3o tem permiss\u00e3o de acesso ao recurso"
+     },
+     "404": {
+      "description": "Recurso n\u00e3o encontrado"
+     }
+    }
+   }
+  },
+  "/ext/operador-estrangeiro/historico/{cpfCnpjRaiz}/{codigoPais}/{codigo}": {
+   "get": {
+    "tags": [
+     "Operador Estrangeiro"
+    ],
+    "summary": "Hist\u00f3rico de altera\u00e7\u00f5es",
+    "description": "",
+    "operationId": "historicoOperador",
+    "consumes": [
+     "application/json"
+    ],
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "name": "cpfCnpjRaiz",
+      "in": "path",
+      "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos <br>Tamanho: 8 <br>Formato: 'NNNNNNNN' <br>Tamanho: 11 <br>Formato: 'NNNNNNNNNNN'",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "codigoPais",
+      "in": "path",
+      "description": "C\u00f3digo do pa\u00eds. Usar tabela ISO 3166 <br>Tamanho: 2 <br>Formato: 'AA' <br>",
+      "required": true,
+      "type": "string",
+      "x-example": "AR"
+     },
+     {
+      "name": "codigo",
+      "in": "path",
+      "description": "C\u00f3digo do operador estrangeiro <br>Tamanho m\u00e1ximo: 35",
+      "required": true,
+      "type": "string",
+      "x-example": "OPE_1"
+     },
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso",
+      "schema": {
+       "type": "array",
+       "items": {
+        "$ref": "#/definitions/OperadorEstrangeiroHistoricoResponseDTO"
+       }
+      }
+     },
+     "400": {
+      "description": "Requisi\u00e7\u00e3o mal formatada"
+     },
+     "422": {
+      "description": "Erro(s) de valida\u00e7\u00e3o da camada de neg\u00f3cio"
+     },
+     "401": {
+      "description": "Usu\u00e1rio n\u00e3o autenticado ou autentica\u00e7\u00e3o inv\u00e1lida"
+     },
+     "500": {
+      "description": "Erro interno no servidor"
+     },
+     "204": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso. Nenhum conte\u00fado retornado"
+     },
+     "403": {
+      "description": "Usu\u00e1rio n\u00e3o tem permiss\u00e3o de acesso ao recurso"
+     },
+     "404": {
+      "description": "Recurso n\u00e3o encontrado"
+     }
+    }
+   }
+  },
+  "/ext/operador-estrangeiro/{cpfCnpjRaiz}/{codigoPais}": {
+   "post": {
+    "tags": [
+     "Operador Estrangeiro"
+    ],
+    "summary": "Incluir Operador Estrangeiro",
+    "description": "",
+    "operationId": "salvarVersaoInicialOperador",
+    "consumes": [
+     "application/json"
+    ],
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "name": "cpfCnpjRaiz",
+      "in": "path",
+      "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos  <br>Tamanho: 8 <br>Formato: 'NNNNNNNN' <br>Tamanho: 11 <br>Formato: 'NNNNNNNNNNN'",
+      "required": true,
+      "type": "string",
+      "x-example": "00000000"
+     },
+     {
+      "name": "codigoPais",
+      "in": "path",
+      "description": "C\u00f3digo do pa\u00eds. Usar tabela ISO 3166 <br>Tamanho: 2 <br>Formato: 'AA' <br>",
+      "required": true,
+      "type": "string",
+      "x-example": "AR"
+     },
+     {
+      "in": "body",
+      "name": "body",
+      "description": "Operador Estrangeiro",
+      "required": true,
+      "schema": {
+       "$ref": "#/definitions/OperadorEstrangeiroRequestIntegracaoDTO"
+      }
+     },
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso",
+      "schema": {
+       "$ref": "#/definitions/OperadorEstrangeiroIntegracaoDTO"
+      }
+     },
+     "400": {
+      "description": "Requisi\u00e7\u00e3o mal formatada"
+     },
+     "422": {
+      "description": "Erro(s) de valida\u00e7\u00e3o da camada de neg\u00f3cio"
+     },
+     "401": {
+      "description": "Usu\u00e1rio n\u00e3o autenticado ou autentica\u00e7\u00e3o inv\u00e1lida"
+     },
+     "500": {
+      "description": "Erro interno no servidor"
+     },
+     "204": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso. Nenhum conte\u00fado retornado"
+     },
+     "403": {
+      "description": "Usu\u00e1rio n\u00e3o tem permiss\u00e3o de acesso ao recurso"
+     },
+     "404": {
+      "description": "Recurso n\u00e3o encontrado"
+     }
+    }
+   }
+  },
+  "/ext/operador-estrangeiro/{cpfCnpjRaiz}/{codigoPais}/{codigo}": {
+   "put": {
+    "tags": [
+     "Operador Estrangeiro"
+    ],
+    "summary": "Incluir nova vers\u00e3o de Operador Estrangeiro",
+    "description": "",
+    "operationId": "salvarNovaVersaoOperador",
+    "consumes": [
+     "application/json"
+    ],
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "name": "cpfCnpjRaiz",
+      "in": "path",
+      "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos  <br>Tamanho: 8 <br>Formato: 'NNNNNNNN' <br>Tamanho: 11 <br>Formato: 'NNNNNNNNNNN'",
+      "required": true,
+      "type": "string",
+      "x-example": "00000000"
+     },
+     {
+      "name": "codigoPais",
+      "in": "path",
+      "description": "C\u00f3digo do pa\u00eds. Usar tabela ISO 3166 <br>Tamanho: 2 <br>Formato: 'AA' <br>",
+      "required": true,
+      "type": "string",
+      "x-example": "AR"
+     },
+     {
+      "name": "codigo",
+      "in": "path",
+      "description": "C\u00f3digo do operador estrangeiro <br>Tamanho m\u00e1ximo: 35",
+      "required": true,
+      "type": "string",
+      "x-example": "OPE_1"
+     },
+     {
+      "in": "body",
+      "name": "body",
+      "description": "Operador Estrangeiro",
+      "required": true,
+      "schema": {
+       "$ref": "#/definitions/OperadorEstrangeiroRequestIntegracaoDTO"
+      }
+     },
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso",
+      "schema": {
+       "$ref": "#/definitions/OperadorEstrangeiroIntegracaoDTO"
+      }
+     },
+     "400": {
+      "description": "Requisi\u00e7\u00e3o mal formatada"
+     },
+     "422": {
+      "description": "Erro(s) de valida\u00e7\u00e3o da camada de neg\u00f3cio"
+     },
+     "401": {
+      "description": "Usu\u00e1rio n\u00e3o autenticado ou autentica\u00e7\u00e3o inv\u00e1lida"
+     },
+     "500": {
+      "description": "Erro interno no servidor"
+     },
+     "204": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso. Nenhum conte\u00fado retornado"
+     },
+     "403": {
+      "description": "Usu\u00e1rio n\u00e3o tem permiss\u00e3o de acesso ao recurso"
+     },
+     "404": {
+      "description": "Recurso n\u00e3o encontrado"
+     }
+    }
+   }
+  },
+  "/ext/operador-estrangeiro/{cpfCnpjRaiz}/{codigoPais}/{codigo}/{dataReferencia}": {
+   "post": {
+    "tags": [
+     "Operador Estrangeiro"
+    ],
+    "summary": "Incluir nova vers\u00e3o retroativa de Operador Estrangeiro existente",
+    "description": "",
+    "operationId": "salvarNovaVersaoOperadorRetroativa",
+    "consumes": [
+     "application/json"
+    ],
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "name": "cpfCnpjRaiz",
+      "in": "path",
+      "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos  <br>Tamanho: 8 <br>Formato: 'NNNNNNNN' <br>Tamanho: 11 <br>Formato: 'NNNNNNNNNNN'",
+      "required": true,
+      "type": "string",
+      "x-example": "00000000"
+     },
+     {
+      "name": "codigoPais",
+      "in": "path",
+      "description": "C\u00f3digo do pa\u00eds. Usar tabela ISO 3166 <br>Tamanho: 2 <br>Formato: 'AA' <br>",
+      "required": true,
+      "type": "string",
+      "x-example": "AR"
+     },
+     {
+      "name": "codigo",
+      "in": "path",
+      "description": "C\u00f3digo do operador estrangeiro <br>Tamanho m\u00e1ximo: 35",
+      "required": true,
+      "type": "string",
+      "x-example": "OPE_1"
+     },
+     {
+      "name": "dataReferencia",
+      "in": "path",
+      "description": "Data de refer\u00eancia. <br>Tamanho: 8 <br>Formato: 'yyyy-MM-dd'",
+      "required": true,
+      "type": "string",
+      "x-example": "2020-07-20"
+     },
+     {
+      "in": "body",
+      "name": "body",
+      "description": "Operador Estrangeiro",
+      "required": true,
+      "schema": {
+       "$ref": "#/definitions/OperadorEstrangeiroRequestIntegracaoDTO"
+      }
+     },
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso",
+      "schema": {
+       "$ref": "#/definitions/OperadorEstrangeiroIntegracaoDTO"
+      }
+     },
+     "400": {
+      "description": "Requisi\u00e7\u00e3o mal formatada"
+     },
+     "422": {
+      "description": "Erro(s) de valida\u00e7\u00e3o da camada de neg\u00f3cio"
+     },
+     "401": {
+      "description": "Usu\u00e1rio n\u00e3o autenticado ou autentica\u00e7\u00e3o inv\u00e1lida"
+     },
+     "500": {
+      "description": "Erro interno no servidor"
+     },
+     "204": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso. Nenhum conte\u00fado retornado"
+     },
+     "403": {
+      "description": "Usu\u00e1rio n\u00e3o tem permiss\u00e3o de acesso ao recurso"
+     },
+     "404": {
+      "description": "Recurso n\u00e3o encontrado"
+     }
+    }
+   }
+  },
+  "/ext/operador-estrangeiro/{cpfCnpjRaiz}/{codigoPais}/{codigo}/{versao}": {
+   "get": {
+    "tags": [
+     "Operador Estrangeiro"
+    ],
+    "summary": "Detalhar Vers\u00e3o do Operador Estrangeiro",
+    "description": "",
+    "operationId": "detalhar",
+    "consumes": [
+     "application/json"
+    ],
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "name": "cpfCnpjRaiz",
+      "in": "path",
+      "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos  <br>Tamanho: 8 <br>Formato: 'NNNNNNNN' <br>Tamanho: 11 <br>Formato: 'NNNNNNNNNNN'",
+      "required": true,
+      "type": "string",
+      "x-example": "00000000"
+     },
+     {
+      "name": "codigoPais",
+      "in": "path",
+      "description": "C\u00f3digo do pa\u00eds. Usar tabela ISO 3166 <br>Tamanho: 2 <br>Formato: 'AA' <br>",
+      "required": true,
+      "type": "string",
+      "x-example": "AR"
+     },
+     {
+      "name": "codigo",
+      "in": "path",
+      "description": "N\u00famero de Identifica\u00e7\u00e3o do Operador Estrangeiro <br>Tamanho: 35 <br>",
+      "required": true,
+      "type": "string",
+      "x-example": "123"
+     },
+     {
+      "name": "versao",
+      "in": "path",
+      "description": "Informar a vers\u00e3o do Operador Estrangeiro (exemplo: '1') ou uma vers\u00e3o retificada do Operador Estrangeiro (exemplo: '1.1').<br>Tamanho M\u00e1ximo: 8 <br>",
+      "required": true,
+      "type": "string",
+      "x-example": "1"
+     },
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso",
+      "schema": {
+       "$ref": "#/definitions/OperadorEstrangeiroIntegracaoDTO"
+      }
+     },
+     "400": {
+      "description": "Requisi\u00e7\u00e3o mal formatada"
+     },
+     "422": {
+      "description": "Erro(s) de valida\u00e7\u00e3o da camada de neg\u00f3cio"
+     },
+     "401": {
+      "description": "Usu\u00e1rio n\u00e3o autenticado ou autentica\u00e7\u00e3o inv\u00e1lida"
+     },
+     "500": {
+      "description": "Erro interno no servidor"
+     },
+     "204": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso. Nenhum conte\u00fado retornado"
+     },
+     "403": {
+      "description": "Usu\u00e1rio n\u00e3o tem permiss\u00e3o de acesso ao recurso"
+     },
+     "404": {
+      "description": "Recurso n\u00e3o encontrado"
+     }
+    }
+   },
+   "put": {
+    "tags": [
+     "Operador Estrangeiro"
+    ],
+    "summary": "Incluir Retifica\u00e7\u00e3o de uma vers\u00e3o de Operador Estrangeiro",
+    "description": "",
+    "operationId": "salvarRetificacaoOperador",
+    "consumes": [
+     "application/json"
+    ],
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "name": "cpfCnpjRaiz",
+      "in": "path",
+      "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos  <br>Tamanho: 8 <br>Formato: 'NNNNNNNN' <br>Tamanho: 11 <br>Formato: 'NNNNNNNNNNN'",
+      "required": true,
+      "type": "string",
+      "x-example": "00000000"
+     },
+     {
+      "name": "codigoPais",
+      "in": "path",
+      "description": "C\u00f3digo do pa\u00eds. Usar tabela ISO 3166 <br>Tamanho: 2 <br>Formato: 'AA' <br>",
+      "required": true,
+      "type": "string",
+      "x-example": "AR"
+     },
+     {
+      "name": "codigo",
+      "in": "path",
+      "description": "C\u00f3digo do operador estrangeiro <br>Tamanho m\u00e1ximo: 35",
+      "required": true,
+      "type": "string",
+      "x-example": "OPE_1"
+     },
+     {
+      "name": "versao",
+      "in": "path",
+      "description": "Informar a vers\u00e3o do operador estrangeiro (exemplo: '1') ou uma vers\u00e3o retificada do operador estrangeiro (exemplo: '1.1').<br>Tamanho M\u00e1ximo: 8 <br>",
+      "required": true,
+      "type": "string",
+      "x-example": "1"
+     },
+     {
+      "in": "body",
+      "name": "body",
+      "description": "Operador Estrangeiro",
+      "required": true,
+      "schema": {
+       "$ref": "#/definitions/OperadorEstrangeiroRequestIntegracaoDTO"
+      }
+     },
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso",
+      "schema": {
+       "$ref": "#/definitions/OperadorEstrangeiroIntegracaoDTO"
+      }
+     },
+     "400": {
+      "description": "Requisi\u00e7\u00e3o mal formatada"
+     },
+     "422": {
+      "description": "Erro(s) de valida\u00e7\u00e3o da camada de neg\u00f3cio"
+     },
+     "401": {
+      "description": "Usu\u00e1rio n\u00e3o autenticado ou autentica\u00e7\u00e3o inv\u00e1lida"
+     },
+     "500": {
+      "description": "Erro interno no servidor"
+     },
+     "204": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso. Nenhum conte\u00fado retornado"
+     },
+     "403": {
+      "description": "Usu\u00e1rio n\u00e3o tem permiss\u00e3o de acesso ao recurso"
+     },
+     "404": {
+      "description": "Recurso n\u00e3o encontrado"
+     }
+    }
+   }
+  },
+  "/ext/operador-estrangeiro/{cpfCnpjRaiz}/{codigoPais}/{dataReferencia}": {
+   "post": {
+    "tags": [
+     "Operador Estrangeiro"
+    ],
+    "summary": "Incluir Operador Estrangeiro retroativo na data de refer\u00eancia",
+    "description": "",
+    "operationId": "salvarVersaoRetroativaOperador",
+    "consumes": [
+     "application/json"
+    ],
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "name": "cpfCnpjRaiz",
+      "in": "path",
+      "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos  <br>Tamanho: 8 <br>Formato: 'NNNNNNNN' <br>Tamanho: 11 <br>Formato: 'NNNNNNNNNNN'",
+      "required": true,
+      "type": "string",
+      "x-example": "00000000"
+     },
+     {
+      "name": "codigoPais",
+      "in": "path",
+      "description": "C\u00f3digo do pa\u00eds. Usar tabela ISO 3166 <br>Tamanho: 2 <br>Formato: 'AA' <br>",
+      "required": true,
+      "type": "string",
+      "x-example": "AR"
+     },
+     {
+      "name": "dataReferencia",
+      "in": "path",
+      "description": "Data de refer\u00eancia. <br>Tamanho: 8 <br>Formato: 'yyyy-MM-dd'",
+      "required": true,
+      "type": "string",
+      "x-example": "2020-07-20"
+     },
+     {
+      "in": "body",
+      "name": "body",
+      "description": "Operador Estrangeiro",
+      "required": true,
+      "schema": {
+       "$ref": "#/definitions/OperadorEstrangeiroRequestIntegracaoDTO"
+      }
+     },
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso",
+      "schema": {
+       "$ref": "#/definitions/OperadorEstrangeiroIntegracaoDTO"
+      }
+     },
+     "400": {
+      "description": "Requisi\u00e7\u00e3o mal formatada"
+     },
+     "422": {
+      "description": "Erro(s) de valida\u00e7\u00e3o da camada de neg\u00f3cio"
+     },
+     "401": {
+      "description": "Usu\u00e1rio n\u00e3o autenticado ou autentica\u00e7\u00e3o inv\u00e1lida"
+     },
+     "500": {
+      "description": "Erro interno no servidor"
+     },
+     "204": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso. Nenhum conte\u00fado retornado"
+     },
+     "403": {
+      "description": "Usu\u00e1rio n\u00e3o tem permiss\u00e3o de acesso ao recurso"
+     },
+     "404": {
+      "description": "Recurso n\u00e3o encontrado"
+     }
+    }
+   }
+  },
+  "/ext/produto": {
+   "get": {
+    "tags": [
+     "Produto"
+    ],
+    "summary": "Consultar Produtos",
+    "description": "",
+    "operationId": "consultar",
+    "consumes": [
+     "application/json"
+    ],
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "name": "codigo",
+      "in": "query",
+      "description": "C\u00f3digo do produto  <br>Tamanho: 10 <br>Formato: 'NNNNNNNNNN'",
+      "required": false,
+      "type": "string",
+      "x-example": "1234"
+     },
+     {
+      "name": "codigoInterno",
+      "in": "query",
+      "description": "C\u00f3digos internos do produto do Exportador/Importador  <br>Tamanho: 60",
+      "required": false,
+      "type": "string",
+      "x-example": "456"
+     },
+     {
+      "name": "descricao",
+      "in": "query",
+      "description": "Detalhamento complementar do produto <br>Tamanho: 3700",
+      "required": false,
+      "type": "string",
+      "x-example": "Descri\u00e7\u00e3o"
+     },
+     {
+      "name": "denominacao",
+      "in": "query",
+      "description": "Denominacao do produto  <br>Tamanho: 3700",
+      "required": false,
+      "type": "string",
+      "x-example": "Denomina\u00e7\u00e3o"
+     },
+     {
+      "name": "ncm",
+      "in": "query",
+      "description": "NCM do produto  <br>Tamanho: 8 <br>Formato: 'NNNNNNNN'",
+      "required": false,
+      "type": "string",
+      "x-example": "02011000"
+     },
+     {
+      "name": "periodoRegistroInicio",
+      "in": "query",
+      "description": "Per\u00edodo do registro - Data inicial <br>Tamanho: 10 <br>Formato: 'yyyy-MM-dd'",
+      "required": false,
+      "type": "string",
+      "x-example": "2020-07-20"
+     },
+     {
+      "name": "periodoRegistroFim",
+      "in": "query",
+      "description": "Per\u00edodo do registro - Data final <br>Tamanho: 10 <br>Formato: 'yyyy-MM-dd'",
+      "required": false,
+      "type": "string",
+      "x-example": "2020-07-20"
+     },
+     {
+      "name": "situacao",
+      "in": "query",
+      "description": "Situa\u00e7\u00e3o do produto (0 - Ativado, 1 - Desativado, 2 - Rascunho)  <br>Tamanho: 1 <br>Formato: 'N'",
+      "required": false,
+      "type": "integer",
+      "format": "int32",
+      "x-example": 1
+     },
+     {
+      "name": "ultimaAlteracaoInicio",
+      "in": "query",
+      "description": "Per\u00edodo da \u00faltima altera\u00e7\u00e3o - Data inicial <br>Tamanho: 10 <br>Formato: 'yyyy-MM-dd'",
+      "required": false,
+      "type": "string",
+      "x-example": "2020-07-20"
+     },
+     {
+      "name": "ultimaAlteracaoFim",
+      "in": "query",
+      "description": "Per\u00edodo da \u00faltima altera\u00e7\u00e3o - Data final <br>Tamanho: 10 <br>Formato: 'yyyy-MM-dd'",
+      "required": false,
+      "type": "string",
+      "x-example": "2020-07-20"
+     },
+     {
+      "name": "paisOrigem",
+      "in": "query",
+      "description": "C\u00f3digo do pa\u00eds de origem no formato ISO 3166  <br>Tamanho: 2 <br>Formato: 'AA'",
+      "required": false,
+      "type": "string",
+      "x-example": "XX"
+     },
+     {
+      "name": "cpfCnpjFabricante",
+      "in": "query",
+      "description": "CPF/CNPJ do fabricante nacional  <br>Tamanho: 11 <br>Formato: 'NNNNNNNNNNN' <br>Tamanho: 14 <br>Formato: 'NNNNNNNNNNNNNN'",
+      "required": false,
+      "type": "string",
+      "x-example": "00000000000"
+     },
+     {
+      "name": "cpfCnpjRaiz",
+      "in": "query",
+      "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos  <br>Tamanho: 8 <br>Formato: 'NNNNNNNN' <br>Tamanho: 11 <br>Formato: 'NNNNNNNNNNN'",
+      "required": true,
+      "type": "string",
+      "x-example": "00000000"
+     },
+     {
+      "name": "modalidade",
+      "in": "query",
+      "description": "Modalidade de opera\u00e7\u00e3o   <br>Dom\u00ednio: IMPORTACAO <br>EXPORTACAO <br>AMBOS",
+      "required": false,
+      "type": "string",
+      "enum": [
+       "AMBOS",
+       "EXPORTACAO",
+       "IMPORTACAO"
+      ]
+     },
+     {
+      "name": "dataReferencia",
+      "in": "query",
+      "description": "Produtos no estado atual da data de refer\u00eancia <br>Tamanho: 10 <br>Formato: 'yyyy-MM-dd'",
+      "required": false,
+      "type": "string",
+      "x-example": "2020-07-20"
+     },
+     {
+      "name": "operadorEstrangeiroCodigo",
+      "in": "query",
+      "description": "TIN - Trade Identification Number (N\u00famero de Identifica\u00e7\u00e3o do Operador) <br>Tamanho: 35",
+      "required": false,
+      "type": "string",
+      "x-example": "0909090"
+     },
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso",
+      "schema": {
+       "type": "array",
+       "items": {
+        "$ref": "#/definitions/ProdutoIntegracaoDTO"
+       }
+      }
+     },
+     "400": {
+      "description": "Requisi\u00e7\u00e3o mal formatada"
+     },
+     "422": {
+      "description": "Erro(s) de valida\u00e7\u00e3o da camada de neg\u00f3cio"
+     },
+     "401": {
+      "description": "Usu\u00e1rio n\u00e3o autenticado ou autentica\u00e7\u00e3o inv\u00e1lida"
+     },
+     "500": {
+      "description": "Erro interno no servidor"
+     },
+     "204": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso. Nenhum conte\u00fado retornado"
+     },
+     "403": {
+      "description": "Usu\u00e1rio n\u00e3o tem permiss\u00e3o de acesso ao recurso"
+     },
+     "206": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso. Retorno do conte\u00fado parcial"
+     },
+     "404": {
+      "description": "Recurso n\u00e3o encontrado"
+     }
+    }
+   }
+  },
+  "/ext/produto/codigo-interno/{cpfCnpjRaiz}/{codigo}/{versao}": {
+   "post": {
+    "tags": [
+     "Produto"
+    ],
+    "summary": "Incluir c\u00f3digo interno do Produto",
+    "description": "",
+    "operationId": "incluirCodigoInterno",
+    "consumes": [
+     "application/json"
+    ],
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "name": "cpfCnpjRaiz",
+      "in": "path",
+      "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos  <br>Tamanho: 8 <br>Formato: 'NNNNNNNN' <br>Tamanho: 11 <br>Formato: 'NNNNNNNNNNN'",
+      "required": true,
+      "type": "string",
+      "x-example": "00000000"
+     },
+     {
+      "name": "codigo",
+      "in": "path",
+      "description": "C\u00f3digo do produto <br>Tamanho: 10 <br>Formato: 'NNNNNNNNNN'",
+      "required": true,
+      "type": "integer",
+      "format": "int64",
+      "x-example": 123
+     },
+     {
+      "name": "versao",
+      "in": "path",
+      "description": "Informar a vers\u00e3o do produto (exemplo: '1').<br>Tamanho M\u00e1ximo: 8 <br>",
+      "required": true,
+      "type": "string",
+      "x-example": "1"
+     },
+     {
+      "in": "body",
+      "name": "body",
+      "description": "CodigoInterno",
+      "required": true,
+      "schema": {
+       "$ref": "#/definitions/CodigoInternoIntegracaoDTO"
+      }
+     },
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso"
+     },
+     "400": {
+      "description": "Requisi\u00e7\u00e3o mal formatada"
+     },
+     "422": {
+      "description": "Erro(s) de valida\u00e7\u00e3o da camada de neg\u00f3cio"
+     },
+     "401": {
+      "description": "Usu\u00e1rio n\u00e3o autenticado ou autentica\u00e7\u00e3o inv\u00e1lida"
+     },
+     "500": {
+      "description": "Erro interno no servidor"
+     },
+     "204": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso. Nenhum conte\u00fado retornado"
+     },
+     "403": {
+      "description": "Usu\u00e1rio n\u00e3o tem permiss\u00e3o de acesso ao recurso"
+     },
+     "404": {
+      "description": "Recurso n\u00e3o encontrado"
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "Produto"
+    ],
+    "summary": "Remover c\u00f3digo interno do Produto",
+    "description": "",
+    "operationId": "removeCodigoInterno",
+    "consumes": [
+     "application/json"
+    ],
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "name": "cpfCnpjRaiz",
+      "in": "path",
+      "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos  <br>Tamanho: 8 <br>Formato: 'NNNNNNNN' <br>Tamanho: 11 <br>Formato: 'NNNNNNNNNNN'",
+      "required": true,
+      "type": "string",
+      "x-example": "00000000"
+     },
+     {
+      "name": "codigo",
+      "in": "path",
+      "description": "C\u00f3digo do produto <br>Tamanho: 10 <br>Formato: 'NNNNNNNNNN'",
+      "required": true,
+      "type": "integer",
+      "format": "int64",
+      "x-example": 123
+     },
+     {
+      "name": "versao",
+      "in": "path",
+      "description": "Informar a vers\u00e3o do produto (exemplo: '1').<br>Tamanho M\u00e1ximo: 8 <br>",
+      "required": true,
+      "type": "string",
+      "x-example": "1"
+     },
+     {
+      "in": "body",
+      "name": "body",
+      "description": "CodigoInterno",
+      "required": true,
+      "schema": {
+       "$ref": "#/definitions/CodigoInternoIntegracaoDTO"
+      }
+     },
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso"
+     },
+     "400": {
+      "description": "Requisi\u00e7\u00e3o mal formatada"
+     },
+     "422": {
+      "description": "Erro(s) de valida\u00e7\u00e3o da camada de neg\u00f3cio"
+     },
+     "401": {
+      "description": "Usu\u00e1rio n\u00e3o autenticado ou autentica\u00e7\u00e3o inv\u00e1lida"
+     },
+     "500": {
+      "description": "Erro interno no servidor"
+     },
+     "204": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso. Nenhum conte\u00fado retornado"
+     },
+     "403": {
+      "description": "Usu\u00e1rio n\u00e3o tem permiss\u00e3o de acesso ao recurso"
+     },
+     "404": {
+      "description": "Recurso n\u00e3o encontrado"
+     }
+    }
+   }
+  },
+  "/ext/produto/desativar/{cpfCnpjRaiz}/{codigo}": {
+   "put": {
+    "tags": [
+     "Produto"
+    ],
+    "summary": "Desativar uma vers\u00e3o de Produto",
+    "description": "",
+    "operationId": "desativar",
+    "consumes": [
+     "application/json"
+    ],
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "name": "cpfCnpjRaiz",
+      "in": "path",
+      "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos  <br>Tamanho: 8 <br>Formato: 'NNNNNNNN' <br>Tamanho: 11 <br>Formato: 'NNNNNNNNNNN'",
+      "required": true,
+      "type": "string",
+      "x-example": "00000000"
+     },
+     {
+      "name": "codigo",
+      "in": "path",
+      "description": "C\u00f3digo do produto <br>Tamanho: 10 <br>Formato: 'NNNNNNNNNN'",
+      "required": true,
+      "type": "integer",
+      "format": "int64",
+      "x-example": 123
+     },
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso",
+      "schema": {
+       "$ref": "#/definitions/ProdutoIntegracaoResponseDTO"
+      }
+     },
+     "400": {
+      "description": "Requisi\u00e7\u00e3o mal formatada"
+     },
+     "422": {
+      "description": "Erro(s) de valida\u00e7\u00e3o da camada de neg\u00f3cio"
+     },
+     "401": {
+      "description": "Usu\u00e1rio n\u00e3o autenticado ou autentica\u00e7\u00e3o inv\u00e1lida"
+     },
+     "500": {
+      "description": "Erro interno no servidor"
+     },
+     "204": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso. Nenhum conte\u00fado retornado"
+     },
+     "403": {
+      "description": "Usu\u00e1rio n\u00e3o tem permiss\u00e3o de acesso ao recurso"
+     },
+     "404": {
+      "description": "Recurso n\u00e3o encontrado"
+     }
+    }
+   }
+  },
+  "/ext/produto/exportar/{cpfCnpjRaiz}/{exibirDesativados}": {
+   "get": {
+    "tags": [
+     "Produto"
+    ],
+    "summary": "Exportar Cat\u00e1logo de Produtos",
+    "description": "",
+    "operationId": "downloadProdutos",
+    "consumes": [
+     "application/json"
+    ],
+    "produces": [
+     "application/zip"
+    ],
+    "parameters": [
+     {
+      "name": "cpfCnpjRaiz",
+      "in": "path",
+      "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos <br>Tamanho: 8 <br>Formato: 'NNNNNNNN' <br>Tamanho: 11 <br>Formato: 'NNNNNNNNNNN'",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "exibirDesativados",
+      "in": "path",
+      "description": "Exibir desativados",
+      "required": true,
+      "type": "boolean",
+      "default": false
+     },
+     {
+      "name": "codigosProduto",
+      "in": "query",
+      "description": "Lista de C\u00f3digos de Produto",
+      "required": false,
+      "type": "array",
+      "items": {
+       "type": "integer",
+       "format": "int64"
+      },
+      "collectionFormat": "multi"
+     },
+     {
+      "name": "inicioVigenciaDe",
+      "in": "query",
+      "description": "Data de In\u00edcio de vig\u00eancia de:. <br>Formato: 'yyyy-MM-dd'",
+      "required": false,
+      "type": "string"
+     },
+     {
+      "name": "inicioVigenciaAte",
+      "in": "query",
+      "description": "Data de In\u00edcio de vig\u00eancia at\u00e9:. <br>Formato: 'yyyy-MM-dd'",
+      "required": false,
+      "type": "string"
+     },
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso",
+      "schema": {
+       "type": "array",
+       "items": {
+        "$ref": "#/definitions/ProdutoIntegracaoDTO"
+       }
+      }
+     },
+     "400": {
+      "description": "Requisi\u00e7\u00e3o mal formatada"
+     },
+     "422": {
+      "description": "Erro(s) de valida\u00e7\u00e3o da camada de neg\u00f3cio"
+     },
+     "401": {
+      "description": "Usu\u00e1rio n\u00e3o autenticado ou autentica\u00e7\u00e3o inv\u00e1lida"
+     },
+     "500": {
+      "description": "Erro interno no servidor"
+     },
+     "204": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso. Nenhum conte\u00fado retornado"
+     },
+     "403": {
+      "description": "Usu\u00e1rio n\u00e3o tem permiss\u00e3o de acesso ao recurso"
+     },
+     "404": {
+      "description": "Recurso n\u00e3o encontrado"
+     }
+    }
+   }
+  },
+  "/ext/produto/historico/{cpfCnpjRaiz}/{codigo}": {
+   "get": {
+    "tags": [
+     "Produto"
+    ],
+    "summary": "Hist\u00f3rico de altera\u00e7\u00f5es",
+    "description": "",
+    "operationId": "historicoProdutos",
+    "consumes": [
+     "application/json"
+    ],
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "name": "cpfCnpjRaiz",
+      "in": "path",
+      "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos <br>Tamanho: 8 <br>Formato: 'NNNNNNNN' <br>Tamanho: 11 <br>Formato: 'NNNNNNNNNNN'",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "codigo",
+      "in": "path",
+      "description": "C\u00f3digo do produto",
+      "required": true,
+      "type": "integer",
+      "format": "int64"
+     },
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso",
+      "schema": {
+       "$ref": "#/definitions/ProdutoHistoricoResponseDTO"
+      }
+     },
+     "400": {
+      "description": "Requisi\u00e7\u00e3o mal formatada"
+     },
+     "422": {
+      "description": "Erro(s) de valida\u00e7\u00e3o da camada de neg\u00f3cio"
+     },
+     "401": {
+      "description": "Usu\u00e1rio n\u00e3o autenticado ou autentica\u00e7\u00e3o inv\u00e1lida"
+     },
+     "500": {
+      "description": "Erro interno no servidor"
+     },
+     "204": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso. Nenhum conte\u00fado retornado"
+     },
+     "403": {
+      "description": "Usu\u00e1rio n\u00e3o tem permiss\u00e3o de acesso ao recurso"
+     },
+     "404": {
+      "description": "Recurso n\u00e3o encontrado"
+     }
+    }
+   }
+  },
+  "/ext/produto/{cpfCnpjRaiz}": {
+   "post": {
+    "tags": [
+     "Produto"
+    ],
+    "summary": "Incluir Produto",
+    "description": "",
+    "operationId": "salvarVersaoInicialProduto",
+    "consumes": [
+     "application/json"
+    ],
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "name": "cpfCnpjRaiz",
+      "in": "path",
+      "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos  <br>Tamanho: 8 <br>Formato: 'NNNNNNNN' <br>Tamanho: 11 <br>Formato: 'NNNNNNNNNNN'",
+      "required": true,
+      "type": "string",
+      "x-example": "00000000"
+     },
+     {
+      "in": "body",
+      "name": "body",
+      "description": "Produto",
+      "required": true,
+      "schema": {
+       "$ref": "#/definitions/ProdutoIntegracaoRequestDTO"
+      }
+     },
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso",
+      "schema": {
+       "$ref": "#/definitions/ProdutoIntegracaoResponseDTO"
+      }
+     },
+     "400": {
+      "description": "Requisi\u00e7\u00e3o mal formatada"
+     },
+     "422": {
+      "description": "Erro(s) de valida\u00e7\u00e3o da camada de neg\u00f3cio"
+     },
+     "401": {
+      "description": "Usu\u00e1rio n\u00e3o autenticado ou autentica\u00e7\u00e3o inv\u00e1lida"
+     },
+     "500": {
+      "description": "Erro interno no servidor"
+     },
+     "204": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso. Nenhum conte\u00fado retornado"
+     },
+     "403": {
+      "description": "Usu\u00e1rio n\u00e3o tem permiss\u00e3o de acesso ao recurso"
+     },
+     "404": {
+      "description": "Recurso n\u00e3o encontrado"
+     }
+    }
+   }
+  },
+  "/ext/produto/{cpfCnpjRaiz}/{codigo}": {
+   "put": {
+    "tags": [
+     "Produto"
+    ],
+    "summary": "Incluir nova vers\u00e3o de Produto",
+    "description": "",
+    "operationId": "salvarNovaVersao",
+    "consumes": [
+     "application/json"
+    ],
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "name": "cpfCnpjRaiz",
+      "in": "path",
+      "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos  <br>Tamanho: 8 <br>Formato: 'NNNNNNNN' <br>Tamanho: 11 <br>Formato: 'NNNNNNNNNNN'",
+      "required": true,
+      "type": "string",
+      "x-example": "00000000"
+     },
+     {
+      "name": "codigo",
+      "in": "path",
+      "description": "C\u00f3digo do produto <br>Tamanho: 10 <br>Formato: 'NNNNNNNNNN'",
+      "required": true,
+      "type": "integer",
+      "format": "int64",
+      "x-example": 123
+     },
+     {
+      "in": "body",
+      "name": "body",
+      "description": "Produto",
+      "required": true,
+      "schema": {
+       "$ref": "#/definitions/ProdutoIntegracaoRequestDTO"
+      }
+     },
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso",
+      "schema": {
+       "$ref": "#/definitions/ProdutoIntegracaoResponseDTO"
+      }
+     },
+     "400": {
+      "description": "Requisi\u00e7\u00e3o mal formatada"
+     },
+     "422": {
+      "description": "Erro(s) de valida\u00e7\u00e3o da camada de neg\u00f3cio"
+     },
+     "401": {
+      "description": "Usu\u00e1rio n\u00e3o autenticado ou autentica\u00e7\u00e3o inv\u00e1lida"
+     },
+     "500": {
+      "description": "Erro interno no servidor"
+     },
+     "204": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso. Nenhum conte\u00fado retornado"
+     },
+     "403": {
+      "description": "Usu\u00e1rio n\u00e3o tem permiss\u00e3o de acesso ao recurso"
+     },
+     "404": {
+      "description": "Recurso n\u00e3o encontrado"
+     }
+    }
+   }
+  },
+  "/ext/produto/{cpfCnpjRaiz}/{codigo}/{versao}": {
+   "get": {
+    "tags": [
+     "Produto"
+    ],
+    "summary": "Detalhar Vers\u00e3o do Produto",
+    "description": "",
+    "operationId": "recuperar",
+    "consumes": [
+     "application/json"
+    ],
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "name": "cpfCnpjRaiz",
+      "in": "path",
+      "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos  <br>Tamanho: 8 <br>Formato: 'NNNNNNNN' <br>Tamanho: 11 <br>Formato: 'NNNNNNNNNNN'",
+      "required": true,
+      "type": "string",
+      "x-example": "00000000"
+     },
+     {
+      "name": "codigo",
+      "in": "path",
+      "description": "C\u00f3digo do produto <br>Tamanho: 10 <br>Formato: 'NNNNNNNNNN'",
+      "required": true,
+      "type": "string",
+      "x-example": "123"
+     },
+     {
+      "name": "versao",
+      "in": "path",
+      "description": "Informar a vers\u00e3o do produto (exemplo: '1') ou uma vers\u00e3o retificada do produto (exemplo: '1.1').<br>Tamanho M\u00e1ximo: 8 <br>",
+      "required": true,
+      "type": "string",
+      "x-example": "1"
+     },
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso",
+      "schema": {
+       "$ref": "#/definitions/ProdutoIntegracaoResponseDTO"
+      }
+     },
+     "400": {
+      "description": "Requisi\u00e7\u00e3o mal formatada"
+     },
+     "422": {
+      "description": "Erro(s) de valida\u00e7\u00e3o da camada de neg\u00f3cio"
+     },
+     "401": {
+      "description": "Usu\u00e1rio n\u00e3o autenticado ou autentica\u00e7\u00e3o inv\u00e1lida"
+     },
+     "500": {
+      "description": "Erro interno no servidor"
+     },
+     "204": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso. Nenhum conte\u00fado retornado"
+     },
+     "403": {
+      "description": "Usu\u00e1rio n\u00e3o tem permiss\u00e3o de acesso ao recurso"
+     },
+     "404": {
+      "description": "Recurso n\u00e3o encontrado"
+     }
+    }
+   },
+   "put": {
+    "tags": [
+     "Produto"
+    ],
+    "summary": "Incluir Retifica\u00e7\u00e3o de uma vers\u00e3o de Produto",
+    "description": "",
+    "operationId": "salvarRetificacao",
+    "consumes": [
+     "application/json"
+    ],
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "name": "cpfCnpjRaiz",
+      "in": "path",
+      "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos  <br>Tamanho: 8 <br>Formato: 'NNNNNNNN' <br>Tamanho: 11 <br>Formato: 'NNNNNNNNNNN'",
+      "required": true,
+      "type": "string",
+      "x-example": "00000000"
+     },
+     {
+      "name": "codigo",
+      "in": "path",
+      "description": "C\u00f3digo do produto <br>Tamanho: 10 <br>Formato: 'NNNNNNNNNN'",
+      "required": true,
+      "type": "integer",
+      "format": "int64",
+      "x-example": 123
+     },
+     {
+      "name": "versao",
+      "in": "path",
+      "description": "Informar a vers\u00e3o do produto (exemplo: '1') ou uma vers\u00e3o retificada do produto (exemplo: '1.1').<br>Tamanho M\u00e1ximo: 8 <br>",
+      "required": true,
+      "type": "string",
+      "x-example": "1"
+     },
+     {
+      "in": "body",
+      "name": "body",
+      "description": "Produto",
+      "required": true,
+      "schema": {
+       "$ref": "#/definitions/ProdutoIntegracaoRequestDTO"
+      }
+     },
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso",
+      "schema": {
+       "$ref": "#/definitions/ProdutoIntegracaoResponseDTO"
+      }
+     },
+     "400": {
+      "description": "Requisi\u00e7\u00e3o mal formatada"
+     },
+     "422": {
+      "description": "Erro(s) de valida\u00e7\u00e3o da camada de neg\u00f3cio"
+     },
+     "401": {
+      "description": "Usu\u00e1rio n\u00e3o autenticado ou autentica\u00e7\u00e3o inv\u00e1lida"
+     },
+     "500": {
+      "description": "Erro interno no servidor"
+     },
+     "204": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso. Nenhum conte\u00fado retornado"
+     },
+     "403": {
+      "description": "Usu\u00e1rio n\u00e3o tem permiss\u00e3o de acesso ao recurso"
+     },
+     "404": {
+      "description": "Recurso n\u00e3o encontrado"
+     }
+    }
+   }
+  },
+  "/ext/produto/{cpfCnpjRaiz}/{dataReferencia}": {
+   "post": {
+    "tags": [
+     "Produto"
+    ],
+    "summary": "Incluir Produto retroativo na data de refer\u00eancia",
+    "description": "",
+    "operationId": "salvarVersaoInicialProduto",
+    "consumes": [
+     "application/json"
+    ],
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "name": "cpfCnpjRaiz",
+      "in": "path",
+      "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos  <br>Tamanho: 8 <br>Formato: 'NNNNNNNN' <br>Tamanho: 11 <br>Formato: 'NNNNNNNNNNN'",
+      "required": true,
+      "type": "string",
+      "x-example": "00000000"
+     },
+     {
+      "name": "dataReferencia",
+      "in": "path",
+      "description": "Data de refer\u00eancia. <br>Tamanho: 8 <br>Formato: 'yyyy-MM-dd'",
+      "required": true,
+      "type": "string",
+      "x-example": "2020-07-20"
+     },
+     {
+      "in": "body",
+      "name": "body",
+      "description": "Produto",
+      "required": true,
+      "schema": {
+       "$ref": "#/definitions/ProdutoIntegracaoRequestDTO"
+      }
+     },
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o",
+      "required": true,
+      "type": "string"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso",
+      "schema": {
+       "$ref": "#/definitions/ProdutoIntegracaoResponseDTO"
+      }
+     },
+     "400": {
+      "description": "Requisi\u00e7\u00e3o mal formatada"
+     },
+     "422": {
+      "description": "Erro(s) de valida\u00e7\u00e3o da camada de neg\u00f3cio"
+     },
+     "401": {
+      "description": "Usu\u00e1rio n\u00e3o autenticado ou autentica\u00e7\u00e3o inv\u00e1lida"
+     },
+     "500": {
+      "description": "Erro interno no servidor"
+     },
+     "204": {
+      "description": "Opera\u00e7\u00e3o realizada com sucesso. Nenhum conte\u00fado retornado"
+     },
+     "403": {
+      "description": "Usu\u00e1rio n\u00e3o tem permiss\u00e3o de acesso ao recurso"
+     },
+     "404": {
+      "description": "Recurso n\u00e3o encontrado"
+     }
+    }
+   }
+  }
+ },
+ "definitions": {
+  "IdentificacaoAdicionalIntegracaoDTO": {
+   "type": "object",
+   "required": [
+    "codigo",
+    "numero"
+   ],
+   "properties": {
+    "numero": {
+     "type": "string",
+     "example": "1232121212122",
+     "description": " N\u00famero de identifica\u00e7\u00e3o do operador estrangeiro em uma ag\u00eancia internacional<br>Tamanho: 35"
+    },
+    "codigo": {
+     "type": "string",
+     "example": "123",
+     "description": " C\u00f3digo da ag\u00eancia emissora da identifica\u00e7\u00e3o. Os valores admitidos est\u00e3o listados no campo \"Code\", na p\u00e1gina a seguir: https://service.unece.org/trade/untdid/d20b/tred/tred3055.htm<br>Tamanho: 3"
+    }
+   }
+  },
+  "OperadorEstrangeiroRequestIntegracaoDTO": {
+   "type": "object",
+   "required": [
+    "logradouro",
+    "nome",
+    "nomeCidade"
+   ],
+   "properties": {
+    "tin": {
+     "type": "string",
+     "example": "123",
+     "description": "TIN - Trade Identification Number (N\u00famero de Identifica\u00e7\u00e3o do Operador)<br>Tamanho: 35"
+    },
+    "nome": {
+     "type": "string",
+     "example": "Fornecedor 123",
+     "description": "Nome/Raz\u00e3o Social do Operador Estrangeiro<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 150"
+    },
+    "logradouro": {
+     "type": "string",
+     "example": "Rua teste, 155, Bairro teste",
+     "description": "Logradouro do Operador Estrangeiro<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 70"
+    },
+    "nomeCidade": {
+     "type": "string",
+     "example": "Buenos Aires",
+     "description": "Nome da Cidade<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 35"
+    },
+    "codigoSubdivisaoPais": {
+     "type": "string",
+     "example": "AR-B",
+     "description": "C\u00f3digo da subdivisao do pa\u00eds. Usar tabela ISO 3166<br>Tamanho m\u00e1ximo: 6<br>Formato: 'AA-AAA'"
+    },
+    "cep": {
+     "type": "string",
+     "example": "12345",
+     "description": "C\u00f3digo postal<br>Tamanho: 9"
+    },
+    "codigoInterno": {
+     "type": "string",
+     "example": "12345",
+     "description": "C\u00f3digo interno para uso em outros sitemas<br>Tamanho: 35"
+    },
+    "email": {
+     "type": "string",
+     "example": "email@email.com",
+     "description": "E-mail do Operador Estrangeiro<br>Tamanho: 70"
+    },
+    "identificacoesAdicionais": {
+     "type": "array",
+     "description": "Lista de identifica\u00e7\u00f5es adicionais do operador estrangeiro em ag\u00eancias internacionais.",
+     "items": {
+      "$ref": "#/definitions/IdentificacaoAdicionalIntegracaoDTO"
+     }
+    }
+   },
+   "description": "Dados do operador estrangeiro."
+  },
+  "FabricanteHistoricoResponseDTO": {
+   "type": "object",
+   "properties": {
+    "data": {
+     "type": "string",
+     "format": "date-time",
+     "example": "2020-07-20T00:00:00",
+     "description": "Data do evento.<br>Tamanho: 10<br>Formato: 'yyyy-MM-dd'"
+    },
+    "usuario": {
+     "type": "string",
+     "example": "111.111.111-11",
+     "description": "CPF do usu\u00e1rio que efetuou a altera\u00e7\u00e3o (exemplo: '111.111.111-11') <br>Tamanho m\u00e1ximo: 14"
+    },
+    "operacao": {
+     "type": "string",
+     "example": "Inclus\u00e3o",
+     "description": "C\u00f3digo e descri\u00e7\u00e3o da opera\u00e7\u00e3o <br>Dom\u00ednio: <br>(Inclus\u00e3o <br>Exclus\u00e3o)"
+    },
+    "conhecido": {
+     "type": "string",
+     "example": "true",
+     "description": "Fabricante conhecido? <br>Dom\u00ednio: <br>(true <br>false)"
+    },
+    "codigoPais": {
+     "type": "string",
+     "example": "DE",
+     "description": "C\u00f3digo do pa\u00eds de origem no formato ISO 3166<br>Tamanho: 2<br>Formato: 'AA'"
+    },
+    "cpfCnpjTin": {
+     "type": "string",
+     "description": "CPF ou CNPJ ou TIN do fabricante"
+    },
+    "codigo": {
+     "type": "string",
+     "example": "OPE_1",
+     "description": "C\u00f3digo do Operador Estrangeiro<br>Tamanho: 35"
+    },
+    "nome": {
+     "type": "string",
+     "example": "Fornecedor 123",
+     "description": "Nome/Raz\u00e3o Social do Operador Estrangeiro<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 150"
+    }
+   }
+  },
+  "ProdutoCampoCompostoMultivaloradoIntegracaoDTO": {
+   "type": "object",
+   "required": [
+    "atributo"
+   ],
+   "properties": {
+    "valores": {
+     "type": "array",
+     "description": "Lista de atributos compostos limitado a quantide 5",
+     "items": {
+      "type": "array",
+      "items": {
+       "$ref": "#/definitions/ProdutoCampoSimplesIntegracaoDTO"
+      }
+     }
+    },
+    "atributo": {
+     "type": "string",
+     "example": "ATT_1",
+     "position": 1,
+     "description": "C\u00f3digo do atributo<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 25"
+    }
+   }
+  },
+  "OperadorEstrangeiroHistoricoResponseDTO": {
+   "type": "object",
+   "properties": {
+    "data": {
+     "type": "string",
+     "format": "date-time",
+     "example": "2020-07-20T00:00:00",
+     "description": "Data do evento.<br>Tamanho: 10<br>Formato: 'yyyy-MM-dd'"
+    },
+    "versao": {
+     "type": "string",
+     "example": "1",
+     "description": "Vers\u00e3o do produto (exemplo: '1') ou vers\u00e3o retificada do produto (exemplo: '1.1'). <br>Tamanho m\u00e1ximo: 8"
+    },
+    "situacao": {
+     "type": "string",
+     "example": "ATIVADO",
+     "description": "C\u00f3digo e descri\u00e7\u00e3o da situa\u00e7\u00e3o do produto <br>Dom\u00ednio: <br>(ATIVADO <br>DESATIVADO)"
+    },
+    "usuario": {
+     "type": "string",
+     "example": "111.111.111-11",
+     "description": "CPF do usu\u00e1rio que efetuou a altera\u00e7\u00e3o (exemplo: '111.111.111-11') <br>Tamanho m\u00e1ximo: 14"
+    },
+    "observacao": {
+     "type": "string",
+     "example": "Ativa\u00e7\u00e3o da vers\u00e3o inicial",
+     "description": "Descri\u00e7\u00e3o da opera\u00e7\u00e3o realizada pelo usu\u00e1rio. <br>Tamanho m\u00e1ximo: 200"
+    }
+   }
+  },
+  "ProdutoHistoricoResponseDTO": {
+   "type": "object",
+   "properties": {
+    "data": {
+     "type": "string",
+     "format": "date-time",
+     "example": "2020-07-20T00:00:00",
+     "description": "Data do evento.<br>Tamanho: 10<br>Formato: 'yyyy-MM-dd'"
+    },
+    "versao": {
+     "type": "string",
+     "example": "1",
+     "description": "Vers\u00e3o do produto (exemplo: '1') ou vers\u00e3o retificada do produto (exemplo: '1.1'). <br>Tamanho m\u00e1ximo: 8"
+    },
+    "situacao": {
+     "type": "string",
+     "example": "ATIVADO",
+     "description": "C\u00f3digo e descri\u00e7\u00e3o da situa\u00e7\u00e3o do produto <br>Dom\u00ednio: <br>(ATIVADO <br>DESATIVADO <br>RASCUNHO)"
+    },
+    "usuario": {
+     "type": "string",
+     "example": "111.111.111-11",
+     "description": "CPF do usu\u00e1rio que efetuou a altera\u00e7\u00e3o (exemplo: '111.111.111-11') <br>Tamanho m\u00e1ximo: 14"
+    },
+    "observacao": {
+     "type": "string",
+     "example": "Ativa\u00e7\u00e3o da vers\u00e3o inicial",
+     "description": "Descri\u00e7\u00e3o da opera\u00e7\u00e3o realizada pelo usu\u00e1rio. <br>Tamanho m\u00e1ximo: 200"
+    }
+   }
+  },
+  "ProdutoCampoMultivaloradoIntegracaoDTO": {
+   "type": "object",
+   "required": [
+    "atributo"
+   ],
+   "properties": {
+    "valores": {
+     "type": "array",
+     "description": "Lista de valores de atributos da NCM informada",
+     "items": {
+      "type": "string"
+     }
+    },
+    "atributo": {
+     "type": "string",
+     "example": "ATT_1",
+     "position": 1,
+     "description": "C\u00f3digo do atributo<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 25"
+    }
+   }
+  },
+  "CodigoInternoIntegracaoDTO": {
+   "type": "object",
+   "properties": {
+    "codigoInterno": {
+     "type": "string",
+     "example": "COD_123",
+     "description": "C\u00f3digo interno do produto do Exportador/Importador<br>Tamanho: 60"
+    }
+   }
+  },
+  "ProdutoCampoCompostoIntegracaoDTO": {
+   "type": "object",
+   "required": [
+    "atributo"
+   ],
+   "properties": {
+    "valores": {
+     "type": "array",
+     "description": "Lista de atributos compostos limitado a quantide 5",
+     "items": {
+      "$ref": "#/definitions/ProdutoCampoSimplesIntegracaoDTO"
+     }
+    },
+    "atributo": {
+     "type": "string",
+     "example": "ATT_1",
+     "position": 1,
+     "description": "C\u00f3digo do atributo<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 25"
+    }
+   }
+  },
+  "ProdutoIntegracaoDTO": {
+   "type": "object",
+   "required": [
+    "seq"
+   ],
+   "properties": {
+    "seq": {
+     "type": "integer",
+     "format": "int32",
+     "example": 1,
+     "description": "N\u00famero sequencial utilizado para identificar o item na lista. O retorno da valida\u00e7\u00e3o se dar\u00e1 atrav\u00e9s desse n\u00famero. <br>Tamanho m\u00e1ximo: 3. <br> Importante: A lista enviada deve conter, no m\u00e1ximo, 100 elementos."
+    },
+    "codigo": {
+     "type": "integer",
+     "format": "int64",
+     "example": 123,
+     "description": "C\u00f3digo do produto. Informar somente quando for alterar/retificar um produto j\u00e1 cadastrado<br>Tamanho: 10<br>Formato: 'NNNNNNNNNN'"
+    },
+    "descricao": {
+     "type": "string",
+     "example": "Produto Teste",
+     "description": "Detalhamento complementar do produto<br>Tamanho: 3700"
+    },
+    "denominacao": {
+     "type": "string",
+     "example": "Denomina\u00e7\u00e3o Produto Teste",
+     "description": "Denomina\u00e7\u00e3o do produto<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 120"
+    },
+    "cpfCnpjRaiz": {
+     "type": "string",
+     "example": "00000000",
+     "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos<br>Tamanho: 8<br>Formato: 'NNNNNNNN'<br>Tamanho: 11<br>Formato: 'NNNNNNNNNNN'"
+    },
+    "situacao": {
+     "type": "string",
+     "example": "ATIVADO",
+     "description": "C\u00f3digo e descri\u00e7\u00e3o da situa\u00e7\u00e3o do produto <br>Dom\u00ednio: <br>(ATIVADO <br>DESATIVADO <br>RASCUNHO)"
+    },
+    "modalidade": {
+     "type": "string",
+     "example": "EXPORTACAO",
+     "description": "Modalidade de operacao <br>Dom\u00ednio: (IMPORTACAO <br>EXPORTACAO)"
+    },
+    "ncm": {
+     "type": "string",
+     "example": "02011000",
+     "description": "NCM do produto<br>Tamanho: 8<br>Formato: 'NNNNNNNN'"
+    },
+    "versao": {
+     "type": "string",
+     "example": "1",
+     "description": "Vers\u00e3o do produto (exemplo: '1') ou vers\u00e3o retificada do produto (exemplo: '1.1'). Informar somente quando estiver retificando uma vers\u00e3o do produto. <br>Tamanho m\u00e1ximo: 8"
+    },
+    "atributos": {
+     "type": "array",
+     "description": "Lista de atributos da NCM informada",
+     "items": {
+      "$ref": "#/definitions/ProdutoCampoSimplesIntegracaoDTO"
+     }
+    },
+    "atributosMultivalorados": {
+     "type": "array",
+     "description": "Lista de atributos multivalorados da NCM informada",
+     "items": {
+      "$ref": "#/definitions/ProdutoCampoMultivaloradoIntegracaoDTO"
+     }
+    },
+    "atributosCompostos": {
+     "type": "array",
+     "description": "Lista de atributos compostos da NCM informada",
+     "items": {
+      "$ref": "#/definitions/ProdutoCampoCompostoIntegracaoDTO"
+     }
+    },
+    "atributosCompostosMultivalorados": {
+     "type": "array",
+     "description": "Lista de atributos multivalorados compostos da NCM informada",
+     "items": {
+      "$ref": "#/definitions/ProdutoCampoCompostoMultivaloradoIntegracaoDTO"
+     }
+    },
+    "codigosInterno": {
+     "type": "array",
+     "description": "Lista de c\u00f3digos internos do produto do Exportador/Importador<br>Tamanho: 60",
+     "items": {
+      "type": "string"
+     }
+    },
+    "dataReferencia": {
+     "type": "string",
+     "format": "date-time",
+     "example": "2020-07-20",
+     "description": "Data de refer\u00eancia, informar somente quando for criar produto com data retroativa<br>Tamanho: 10<br>Formato: 'yyyy-MM-dd'"
+    },
+    "inicioVigencia": {
+     "type": "string",
+     "format": "date-time",
+     "example": "2020-07-20",
+     "description": "Data de inicio de vig\u00eancia. N\u00e3o informar, campo usuado somente para retorno.<br>Tamanho: 10<br>Formato: 'yyyy-MM-dd'"
+    },
+    "fimVigencia": {
+     "type": "string",
+     "format": "date-time",
+     "example": "2020-07-20",
+     "description": "Data de fim de vig\u00eancia. N\u00e3o informar, campo usuado somente para retorno.<br>Tamanho: 10<br>Formato: 'yyyy-MM-dd'"
+    }
+   }
+  },
+  "FabricanteIntegracaoDTO": {
+   "type": "object",
+   "required": [
+    "codigoPais",
+    "conhecido",
+    "cpfCnpjRaiz",
+    "seq",
+    "vincular"
+   ],
+   "properties": {
+    "seq": {
+     "type": "integer",
+     "format": "int32",
+     "example": 1,
+     "description": "N\u00famero sequencial utilizado para identificar o item na lista. O retorno da valida\u00e7\u00e3o se dar\u00e1 atrav\u00e9s desse n\u00famero. <br>Tamanho m\u00e1ximo: 3. <br> Importante: A lista enviada deve conter, no m\u00e1ximo, 100 elementos."
+    },
+    "cpfCnpjRaiz": {
+     "type": "string",
+     "example": "00000000",
+     "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos<br>Tamanho: 8<br>Formato: 'NNNNNNNN'<br>Tamanho: 11<br>Formato: 'NNNNNNNNNNN'"
+    },
+    "codigoOperadorEstrangeiro": {
+     "type": "string",
+     "example": "123",
+     "description": "C\u00f3digo do operador estrangeiro (N\u00famero de Identifica\u00e7\u00e3o do Operador Estrangeiro)<br>Tamanho: 35"
+    },
+    "cpfCnpjFabricante": {
+     "type": "string",
+     "example": "00000000000000",
+     "description": "CPF/CNPJ do fabricante nacional<br>Tamanho: 14<br>Formato: 'NNNNNNNNNNNNNN'<br>Tamanho: 11<br>Formato: 'NNNNNNNNNNN'"
+    },
+    "conhecido": {
+     "type": "boolean",
+     "example": false,
+     "description": "True para fabricante/produtor desconhecido e False para fabricante/produtor conhecido <br>Formato: True/False",
+     "default": false
+    },
+    "codigoProduto": {
+     "type": "integer",
+     "format": "int64",
+     "example": 1,
+     "description": "C\u00f3digo do produto<br>Tamanho: 10<br>Formato: 'NNNNNNNNNN'"
+    },
+    "vincular": {
+     "type": "boolean",
+     "example": true,
+     "description": "True para novo v\u00ednculo e False para desvincular fabricante/produtor existente <br>Formato: True/False",
+     "default": false
+    },
+    "dataReferencia": {
+     "type": "string",
+     "format": "date-time",
+     "example": "2020-07-20",
+     "description": " Data de refer\u00eancia, informar somente quando for vincular fabricante/produtor com data retroativa. N\u00e3o \u00e9 poss\u00edvel desvincular fabricante/produtor retroativamente. Caso o campo \"Data de refer\u00eancia\" n\u00e3o tenha sido informado, o sistema assume como sendo a data atual.<br>Tamanho: 10<br>Formato: 'yyyy-MM-dd'"
+    },
+    "codigoPais": {
+     "type": "string",
+     "example": "DE",
+     "position": 1,
+     "description": "C\u00f3digo do pa\u00eds de origem no formato ISO 3166<br>Tamanho: 2<br>Formato: 'AA'"
+    }
+   }
+  },
+  "FabricanteIntegracaoRequestDTO": {
+   "type": "object",
+   "required": [
+    "codigoPais",
+    "conhecido"
+   ],
+   "properties": {
+    "codigoOperadorEstrangeiro": {
+     "type": "string",
+     "example": "123",
+     "description": "C\u00f3digo do operador estrangeiro (N\u00famero de Identifica\u00e7\u00e3o do Operador Estrangeiro)<br>Tamanho: 35"
+    },
+    "cpfCnpjFabricante": {
+     "type": "string",
+     "example": "00000000000000",
+     "description": "CPF/CNPJ do fabricante nacional<br>Tamanho: 14<br>Formato: 'NNNNNNNNNNNNNN'<br>Tamanho: 11<br>Formato: 'NNNNNNNNNNN'"
+    },
+    "conhecido": {
+     "type": "boolean",
+     "example": false,
+     "description": "True para fabricante/produtor desconhecido e False para fabricante/produtor conhecido <br>Formato: True/False",
+     "default": false
+    },
+    "codigoProduto": {
+     "type": "integer",
+     "format": "int64",
+     "example": 1,
+     "description": "C\u00f3digo do produto<br>Tamanho: 10<br>Formato: 'NNNNNNNNNN'"
+    },
+    "codigoPais": {
+     "type": "string",
+     "example": "DE",
+     "position": 1,
+     "description": "C\u00f3digo do pa\u00eds de origem no formato ISO 3166<br>Tamanho: 2<br>Formato: 'AA'"
+    }
+   }
+  },
+  "OperadorEstrangeiroIntegracaoDTO": {
+   "type": "object",
+   "required": [
+    "codigo",
+    "codigoPais",
+    "cpfCnpjRaiz",
+    "logradouro",
+    "nome",
+    "nomeCidade"
+   ],
+   "properties": {
+    "tin": {
+     "type": "string",
+     "example": "123",
+     "description": "TIN - Trade Identification Number (N\u00famero de Identifica\u00e7\u00e3o do Operador)<br>Tamanho: 35"
+    },
+    "nome": {
+     "type": "string",
+     "example": "Fornecedor 123",
+     "description": "Nome/Raz\u00e3o Social do Operador Estrangeiro<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 150"
+    },
+    "logradouro": {
+     "type": "string",
+     "example": "Rua teste, 155, Bairro teste",
+     "description": "Logradouro do Operador Estrangeiro<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 70"
+    },
+    "nomeCidade": {
+     "type": "string",
+     "example": "Buenos Aires",
+     "description": "Nome da Cidade<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 35"
+    },
+    "codigoSubdivisaoPais": {
+     "type": "string",
+     "example": "AR-B",
+     "description": "C\u00f3digo da subdivisao do pa\u00eds. Usar tabela ISO 3166<br>Tamanho m\u00e1ximo: 6<br>Formato: 'AA-AAA'"
+    },
+    "cep": {
+     "type": "string",
+     "example": "12345",
+     "description": "C\u00f3digo postal<br>Tamanho: 9"
+    },
+    "codigoInterno": {
+     "type": "string",
+     "example": "12345",
+     "description": "C\u00f3digo interno para uso em outros sitemas<br>Tamanho: 35"
+    },
+    "email": {
+     "type": "string",
+     "example": "email@email.com",
+     "description": "E-mail do Operador Estrangeiro<br>Tamanho: 70"
+    },
+    "identificacoesAdicionais": {
+     "type": "array",
+     "description": "Lista de identifica\u00e7\u00f5es adicionais do operador estrangeiro em ag\u00eancias internacionais.",
+     "items": {
+      "$ref": "#/definitions/IdentificacaoAdicionalIntegracaoDTO"
+     }
+    },
+    "cpfCnpjRaiz": {
+     "type": "string",
+     "example": "00000000",
+     "description": "CPF ou CNPJ raiz do importador/exportador. Informar os 8 primeiros digitos do CNPJ, suprimindo os pontos<br>Tamanho: 8<br>Formato: 'NNNNNNNN'<br>Tamanho: 11<br>Formato: 'NNNNNNNNNNN'"
+    },
+    "codigo": {
+     "type": "string",
+     "example": "OPE_1",
+     "description": "C\u00f3digo do Operador Estrangeiro (utilizado somente para retorno de valor)<br>Tamanho: 35"
+    },
+    "versao": {
+     "type": "string",
+     "example": "1",
+     "description": "Vers\u00e3o do Operador Estrangeiro (utilizado somente para retorno de valor)<br>Tamanho: 8<br>Formato: 'NNNNNNNN'"
+    },
+    "situacao": {
+     "type": "string",
+     "example": "ATIVADO",
+     "description": "Situa\u00e7\u00e3o do Operador Estrangeiro<br>ATIVADO, DESATIVADO"
+    },
+    "codigoPais": {
+     "type": "string",
+     "example": "AR",
+     "description": "C\u00f3digo do pa\u00eds. Usar tabela ISO 3166<br>Tamanho: 2<br>Formato: 'AA'"
+    },
+    "inicioVigencia": {
+     "type": "string",
+     "format": "date-time",
+     "example": "2020-07-20",
+     "description": "Data de inicio de vig\u00eancia. N\u00e3o informar, campo usuado somente para retorno.<br>Tamanho: 10<br>Formato: 'yyyy-MM-dd'"
+    },
+    "fimVigencia": {
+     "type": "string",
+     "format": "date-time",
+     "example": "2020-07-20",
+     "description": "Data de fim de vig\u00eancia. N\u00e3o informar, campo usuado somente para retorno.<br>Tamanho: 10<br>Formato: 'yyyy-MM-dd'"
+    }
+   },
+   "description": "Retorna os dados de uma vers\u00e3o do operador estrangeiro."
+  },
+  "ProdutoIntegracaoRequestDTO": {
+   "type": "object",
+   "properties": {
+    "descricao": {
+     "type": "string",
+     "example": "Produto Teste",
+     "description": "Detalhamento complementar do produto<br>Tamanho: 3700"
+    },
+    "denominacao": {
+     "type": "string",
+     "example": "Denomina\u00e7\u00e3o Produto Teste",
+     "description": "Denomina\u00e7\u00e3o do produto<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 120"
+    },
+    "modalidade": {
+     "type": "string",
+     "example": "EXPORTACAO",
+     "description": "Modalidade de operacao <br>Dom\u00ednio: (IMPORTACAO <br>EXPORTACAO)"
+    },
+    "ncm": {
+     "type": "string",
+     "example": "02011000",
+     "description": "NCM do produto<br>Tamanho: 8<br>Formato: 'NNNNNNNN'"
+    },
+    "atributos": {
+     "type": "array",
+     "description": "Lista de atributos da NCM informada",
+     "items": {
+      "$ref": "#/definitions/ProdutoCampoSimplesIntegracaoDTO"
+     }
+    },
+    "atributosMultivalorados": {
+     "type": "array",
+     "description": "Lista de atributos multivalorados da NCM informada",
+     "items": {
+      "$ref": "#/definitions/ProdutoCampoMultivaloradoIntegracaoDTO"
+     }
+    },
+    "atributosCompostos": {
+     "type": "array",
+     "description": "Lista de atributos compostos da NCM informada",
+     "items": {
+      "$ref": "#/definitions/ProdutoCampoCompostoIntegracaoDTO"
+     }
+    },
+    "atributosCompostosMultivalorados": {
+     "type": "array",
+     "description": "Lista de atributos multivalorados compostos da NCM informada",
+     "items": {
+      "$ref": "#/definitions/ProdutoCampoCompostoMultivaloradoIntegracaoDTO"
+     }
+    },
+    "codigosInterno": {
+     "type": "array",
+     "description": "Lista de c\u00f3digos internos do produto do Exportador/Importador<br>Tamanho: 60",
+     "items": {
+      "type": "string"
+     }
+    },
+    "inicioVigencia": {
+     "type": "string",
+     "format": "date-time",
+     "example": "2020-07-20",
+     "description": "Data de inicio de vig\u00eancia. N\u00e3o informar, campo usuado somente para retorno.<br>Tamanho: 10<br>Formato: 'yyyy-MM-dd'"
+    },
+    "fimVigencia": {
+     "type": "string",
+     "format": "date-time",
+     "example": "2020-07-20",
+     "description": "Data de fim de vig\u00eancia. N\u00e3o informar, campo usuado somente para retorno.<br>Tamanho: 10<br>Formato: 'yyyy-MM-dd'"
+    }
+   }
+  },
+  "ProdutoIntegracaoResponseDTO": {
+   "type": "object",
+   "properties": {
+    "descricao": {
+     "type": "string",
+     "example": "Produto Teste",
+     "description": "Detalhamento complementar do produto<br>Tamanho: 3700"
+    },
+    "denominacao": {
+     "type": "string",
+     "example": "Denomina\u00e7\u00e3o Produto Teste",
+     "description": "Denomina\u00e7\u00e3o do produto<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 120"
+    },
+    "modalidade": {
+     "type": "string",
+     "example": "EXPORTACAO",
+     "description": "Modalidade de operacao <br>Dom\u00ednio: (IMPORTACAO <br>EXPORTACAO)"
+    },
+    "ncm": {
+     "type": "string",
+     "example": "02011000",
+     "description": "NCM do produto<br>Tamanho: 8<br>Formato: 'NNNNNNNN'"
+    },
+    "atributos": {
+     "type": "array",
+     "description": "Lista de atributos da NCM informada",
+     "items": {
+      "$ref": "#/definitions/ProdutoCampoSimplesIntegracaoDTO"
+     }
+    },
+    "atributosMultivalorados": {
+     "type": "array",
+     "description": "Lista de atributos multivalorados da NCM informada",
+     "items": {
+      "$ref": "#/definitions/ProdutoCampoMultivaloradoIntegracaoDTO"
+     }
+    },
+    "atributosCompostos": {
+     "type": "array",
+     "description": "Lista de atributos compostos da NCM informada",
+     "items": {
+      "$ref": "#/definitions/ProdutoCampoCompostoIntegracaoDTO"
+     }
+    },
+    "atributosCompostosMultivalorados": {
+     "type": "array",
+     "description": "Lista de atributos multivalorados compostos da NCM informada",
+     "items": {
+      "$ref": "#/definitions/ProdutoCampoCompostoMultivaloradoIntegracaoDTO"
+     }
+    },
+    "codigosInterno": {
+     "type": "array",
+     "description": "Lista de c\u00f3digos internos do produto do Exportador/Importador<br>Tamanho: 60",
+     "items": {
+      "type": "string"
+     }
+    },
+    "inicioVigencia": {
+     "type": "string",
+     "format": "date-time",
+     "example": "2020-07-20",
+     "description": "Data de inicio de vig\u00eancia. N\u00e3o informar, campo usuado somente para retorno.<br>Tamanho: 10<br>Formato: 'yyyy-MM-dd'"
+    },
+    "fimVigencia": {
+     "type": "string",
+     "format": "date-time",
+     "example": "2020-07-20",
+     "description": "Data de fim de vig\u00eancia. N\u00e3o informar, campo usuado somente para retorno.<br>Tamanho: 10<br>Formato: 'yyyy-MM-dd'"
+    },
+    "cpfCnpjRaiz": {
+     "type": "string",
+     "example": "00000000",
+     "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos<br>Tamanho: 8<br>Formato: 'NNNNNNNN'<br>Tamanho: 11<br>Formato: 'NNNNNNNNNNN'"
+    },
+    "codigo": {
+     "type": "integer",
+     "format": "int64",
+     "example": 123,
+     "description": "C\u00f3digo do produto. Informar somente quando for alterar/retificar um produto j\u00e1 cadastrado<br>Tamanho: 10<br>Formato: 'NNNNNNNNNN'"
+    },
+    "versao": {
+     "type": "string",
+     "example": "1",
+     "description": "Vers\u00e3o do produto (exemplo: '1') ou vers\u00e3o retificada do produto (exemplo: '1.1'). <br>Tamanho m\u00e1ximo: 8"
+    },
+    "situacao": {
+     "type": "string",
+     "example": "ATIVADO",
+     "description": "C\u00f3digo e descri\u00e7\u00e3o da situa\u00e7\u00e3o do produto <br>Dom\u00ednio: <br>(ATIVADO <br>DESATIVADO <br>RASCUNHO)"
+    }
+   }
+  },
+  "ProdutoCampoSimplesIntegracaoDTO": {
+   "type": "object",
+   "required": [
+    "atributo",
+    "valor"
+   ],
+   "properties": {
+    "atributo": {
+     "type": "string",
+     "example": "ATT_1",
+     "position": 1,
+     "description": "C\u00f3digo do atributo<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 25"
+    },
+    "valor": {
+     "type": "string",
+     "example": "01",
+     "position": 2,
+     "description": "Valor do atributo<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 100"
+    }
+   }
+  },
+  "FabricanteIntegracaoResponseDTO": {
+   "type": "object",
+   "required": [
+    "codigoPais",
+    "conhecido",
+    "cpfCnpjRaiz"
+   ],
+   "properties": {
+    "cpfCnpjRaiz": {
+     "type": "string",
+     "example": "00000000",
+     "description": "CPF ou CNPJ raiz da empresa respons\u00e1vel. Informar os 8 primeiros d\u00edgitos do CNPJ, suprimindo os pontos<br>Tamanho: 8<br>Formato: 'NNNNNNNN'<br>Tamanho: 11<br>Formato: 'NNNNNNNNNNN'"
+    },
+    "codigoOperadorEstrangeiro": {
+     "type": "string",
+     "example": "123",
+     "description": "C\u00f3digo do operador estrangeiro (N\u00famero de Identifica\u00e7\u00e3o do Operador Estrangeiro)<br>Tamanho: 35"
+    },
+    "cpfCnpjFabricante": {
+     "type": "string",
+     "example": "00000000000000",
+     "description": "CPF/CNPJ do fabricante nacional<br>Tamanho: 14<br>Formato: 'NNNNNNNNNNNNNN'<br>Tamanho: 11<br>Formato: 'NNNNNNNNNNN'"
+    },
+    "conhecido": {
+     "type": "boolean",
+     "example": false,
+     "description": "True para fabricante/produtor desconhecido e False para fabricante/produtor conhecido <br>Formato: True/False",
+     "default": false
+    },
+    "codigoProduto": {
+     "type": "integer",
+     "format": "int64",
+     "example": 1,
+     "description": "C\u00f3digo do produto<br>Tamanho: 10<br>Formato: 'NNNNNNNNNN'"
+    },
+    "codigoPais": {
+     "type": "string",
+     "example": "DE",
+     "position": 1,
+     "description": "C\u00f3digo do pa\u00eds de origem no formato ISO 3166<br>Tamanho: 2<br>Formato: 'AA'"
+    }
+   }
+  }
+ }
+}
