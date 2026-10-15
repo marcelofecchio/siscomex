@@ -1,20 +1,14 @@
 # Progresso
 
-Última atualização: 2026-10-15 18:00 — máquina: casa
+Última atualização: 2026-10-15 18:35 — máquina: casa
 
 ## Status atual
 
-SDK v0.1 implementado: autenticação (Chaves de Acesso e certificado A1), Cadastro de Atributos, Catálogo de Produtos (produtos), validação local, coleção Postman, exemplos, documentação e CI. `composer qa` verde (PHPStan nível max, 168 testes unitários, 96% de cobertura de linhas). Autenticação IMPEXP e consulta de atributos **validadas em Produção (somente leitura)** com as chaves de acesso do usuário, via SDK e via Postman/Newman. O ciclo de escrita do catálogo ainda **não** foi executado em Validação porque as chaves disponíveis são de Produção.
+SDK v0.1 implementado e **validado no portal real**: em Validação, autenticação IMPEXP com chaves de acesso, consulta de atributos e o ciclo completo do produto (incluir → consultar → detalhar → nova versão → histórico → código interno → desativar) passaram via SDK (`composer test:integration`, 5/5) e via Postman/Newman ("Fluxo completo", 10/10 asserções). Em Produção, apenas leituras (autenticação + atributos). `composer qa` verde (169 testes unitários). Repositório público em github.com/marcelofecchio/siscomex com CI verde (PHP 8.4 e 8.5).
 
 ## Próximo passo exato
 
-Gerar um par de **Chaves de Acesso no ambiente de Validação** (`https://val.portalunico.siscomex.gov.br` → Perfil do usuário → Chaves de acesso), informar o **CNPJ raiz** de teste e rodar:
-
-```bash
-SISCOMEX_RUN_INTEGRATION=1 SISCOMEX_AMBIENTE=validacao SISCOMEX_CNPJ_RAIZ=<raiz> composer test:integration
-```
-
-e a pasta "Fluxo completo (Validação)" da coleção Postman. Depois: Fase 8 (Packagist).
+Fase 8: criar a tag `v0.1.0`, cadastrar o repositório no Packagist e ativar o webhook do GitHub; depois atualizar o README (badge e `composer require` sem repositório VCS). Em seguida, v1.1 (Fabricantes e Operadores Estrangeiros).
 
 ## Feito
 
@@ -24,13 +18,12 @@ e a pasta "Fluxo completo (Validação)" da coleção Postman. Depois: Fase 8 (P
 - [x] Fase 3 — Cadastro de Atributos: porNcm, porCodigos, porNomes, downloadPorNcm, históricos, download público; DTOs; ValidadorProduto
 - [x] Fase 4 — Catálogo de Produtos: consultar, detalhar, histórico, incluir (inclusive retroativo), novaVersao, retificar, desativar, exportar, códigos internos
 - [x] Fase 5 — Coleção Postman + ambientes + README (testado com Newman em Produção, só leitura; bloqueio de escrita verificado sem tráfego)
-- [x] Fase 6 (parcial) — autenticação e consulta de atributos reais em Produção (leitura)
+- [x] Fase 6 — Validação: autenticação, atributos e ciclo completo do produto via SDK e Postman; Produção: só leitura
 - [x] Fase 7 — README, exemplos, CHANGELOG
 - [x] Fase 8 (parcial) — GitHub Actions; repositório público `marcelofecchio/siscomex`
 
 ## Falta
 
-- [ ] Fase 6 — ciclo completo do produto em **Validação** (SDK + Postman) — depende de chaves de Validação e CNPJ raiz
 - [ ] Fase 8 — `composer validate --strict`, tag `v0.1.0`, cadastro no Packagist + webhook, badge no README
 - [ ] v1.1 — Fabricantes-Produtores e Operadores Estrangeiros
 - [ ] Confirmar os itens `TODO(confirmar)` abaixo com respostas reais
@@ -54,13 +47,11 @@ e a pasta "Fluxo completo (Validação)" da coleção Postman. Depois: Fase 8 (P
 
 ## Dúvidas em aberto / bloqueios
 
-- **Chaves de Validação**: as chaves de `credentials.txt` são de **Produção** — em Validação a autenticação retorna `PLAT-ER8007 "Par de chaves inválido ou inexistente"` (15/10/2026 17:20, tag `[PLAT-SUXKSU2VFS]`). Confirma a hipótese de que as chaves são por ambiente. Para testes de escrita é preciso gerar chaves em Validação.
-- **CNPJ raiz** de teste não informado.
-- Seção 4 do prompt: (1) login manual em Validação com o certificado e perfil IMPEXP — **a confirmar pelo usuário**; (2) chaves por ambiente — **confirmado** (acima); (3) modo chave dispensa certificado no handshake — **confirmado** na spec e na prática (autenticação em Produção sem certificado).
-- TODO(confirmar): formato dos itens de `atributosCompostosMultivalorados[].valores` (spec: `array[array]`).
-- TODO(confirmar): formato dos itens de `detail` no erro 422 do CATP.
-- TODO(confirmar): resposta de `consulta-codigo`/`consulta-nome` (spec: objeto; SDK aceita objeto ou lista).
-- TODO(confirmar): formato do horário na mensagem de `PUCX-ER1001` (SDK aceita `HH:MM[:SS]` e `dd/MM/yyyy HH:MM`).
+- Chaves por ambiente — **confirmado**: as chaves de Produção são recusadas em Validação com `PLAT-ER8007` ("Par de chaves inválido ou inexistente"); com chaves geradas em Validação a autenticação funciona. `credentials.txt` (fora do Git) contém os dois pares e o CNPJ de teste.
+- Modo chave dispensa certificado no handshake — **confirmado** nos dois ambientes.
+- Login manual em Validação com certificado — não foi necessário (as chaves de Validação funcionaram com perfil IMPEXP).
+- TODO(confirmar): formato dos itens de `atributosCompostosMultivalorados[].valores` (spec: `array[array]`) — a NCM de teste não tem atributos compostos.
+- TODO(confirmar): formato do horário na mensagem de `PUCX-ER1001` (SDK aceita `HH:MM[:SS]` e `dd/MM/yyyy HH:MM`) — limite não atingido.
 
 ## Pontos verificados na documentação (com link e data)
 
@@ -73,3 +64,9 @@ e a pasta "Fluxo completo (Validação)" da coleção Postman. Depois: Fase 8 (P
 - 2026-10-15 — Resposta de autenticação em Produção inclui `X-CSRF-Expiration` (≈ 60 min).
 - 2026-10-15 — Download público `GET {ambiente}/cadatributos/api/atributo-ncm/download/json?perfil=PUBLICO` funciona sem autenticação em ambos os ambientes (Produção: versão 359; Validação: versão 409).
 - 2026-10-15 — Códigos de atributos diferem entre ambientes: "Categoria de produto - Catálogo Anvisa" = `ATT_14545` (Produção) × `ATT_18551` (Validação).
+- 2026-10-15 — Erro 422 do CATP (Validação): `{message: "Problemas encontrados: ", code: "PUCX-ER0123", tag, detail: [{error: {message, code: "CADA-ER5008", field: "ATT_x", ...}}]}` — cada item de `detail` vem no envelope `error` (bug corrigido no `ErroDetalhe`). O campo `info.usuario` traz o CPF do usuário: não logar o corpo bruto.
+- 2026-10-15 — `consulta-codigo` devolve **lista** de `ArquivoDiarioAtributoDTO` (a spec indica objeto).
+- 2026-10-15 — As respostas do CATP renovam `X-CSRF-Token`; as do CADA (`atributo-ncm`, `consulta-codigo`) não renovam.
+- 2026-10-15 — Incluir/detalhar/desativar devolvem `ProdutoIntegracaoResponseDTO` com `codigo` inteiro e `versao` "1"; consulta (`GET /ext/produto`) devolve lista com `seq`; histórico devolve lista de `{data, versao, situacao, usuario, observacao}`; incluir código interno → 200 sem corpo.
+- 2026-10-15 — Retificar com corpo idêntico ao da versão → 422 `CATP-ER2021` "Já existe produto idêntico cadastrado"; nova versão (PUT sem versão) com corpo idêntico foi aceita.
+- 2026-10-15 — Produtos de teste criados **e desativados** em Validação no CNPJ de teste: códigos 1 (teste de integração), 2 (inspeção de respostas) e 3 (fluxo Postman).

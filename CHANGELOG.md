@@ -16,3 +16,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 - Value objects `Ncm` e `CpfCnpjRaiz` (inclui CNPJ alfanumérico).
 - Coleção Postman v2.1 com ambientes de Validação e Produção (somente consultas), autenticação automática e fluxo completo.
 - Exemplos, documentação (README, CLAUDE.md, mapa de endpoints, specs OpenAPI) e CI no GitHub Actions.
+
+### Corrigido
+- `ValidationException::mensagens()`/`detalhes` agora leem os itens de `detail` no envelope `{"error": {...}}` usado pelo Catálogo de Produtos (antes devolviam o JSON bruto do item).
+- Coleção Postman: requisições de escrita bloqueadas são efetivamente puladas também no Newman.

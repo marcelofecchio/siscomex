@@ -7,8 +7,10 @@ namespace MFecchio\Siscomex\PortalUnico\Exceptions;
 /**
  * Um item de erro dentro da lista `detail` devolvida pelo portal.
  *
- * O formato de cada item não é documentado nas specs (TODO(confirmar)); aceitamos
- * texto simples ou objeto com message/code/field.
+ * O formato não está nas specs. Observado no Catálogo (Validação, 15/10/2026):
+ * `{"error": {"message", "code", "field", ...}}` — ex.: CADA-ER5008 "O Atributo ATT_x para o
+ * NCM y é obrigatório.", field "ATT_x". Também aceitamos o objeto sem o envelope "error"
+ * e texto simples.
  */
 final readonly class ErroDetalhe
 {
@@ -20,6 +22,9 @@ final readonly class ErroDetalhe
 
     public static function fromMixed(mixed $item): self
     {
+        if (\is_array($item) && \is_array($item['error'] ?? null)) {
+            $item = $item['error'];
+        }
         if (\is_array($item)) {
             $mensagem = $item['message'] ?? $item['mensagem'] ?? $item['descricao'] ?? json_encode($item, JSON_UNESCAPED_UNICODE);
             $codigo = $item['code'] ?? $item['codigo'] ?? null;

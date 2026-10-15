@@ -1,0 +1,17 @@
+{
+    "message": "Problemas encontrados: ",
+    "code": "PUCX-ER0123",
+    "field": null,
+    "path": null,
+    "tag": "[CATP-AKYQPM3945]",
+    "date": "2026-10-15T18:27:01",
+    "status": 422,
+    "detail": [
+        {"error": {"message": "O Atributo ATT_5426 para o NCM 84733049 é obrigatório.", "code": "CADA-ER5008", "field": "ATT_5426", "path": null, "tag": null, "date": "2026-10-15T18:27:01", "status": 422, "detail": [], "severity": null, "info": null}},
+        {"error": {"message": "O Atributo ATT_5333 para o NCM 84733049 é obrigatório.", "code": "CADA-ER5008", "field": "ATT_5333", "path": null, "tag": null, "date": "2026-10-15T18:27:01", "status": 422, "detail": [], "severity": null, "info": null}},
+        {"error": {"message": "O Atributo ATT_7866 para o NCM 84733049 é obrigatório.", "code": "CADA-ER5008", "field": "ATT_7866", "path": null, "tag": null, "date": "2026-10-15T18:27:01", "status": 422, "detail": [], "severity": null, "info": null}},
+        {"error": {"message": "O Atributo ATT_18551 para o NCM 84733049 é obrigatório.", "code": "CADA-ER5008", "field": "ATT_18551", "path": null, "tag": null, "date": "2026-10-15T18:27:01", "status": 422, "detail": [], "severity": null, "info": null}}
+    ],
+    "severity": "ERROR",
+    "info": {"mnemonico": "CATP", "sistema": "Catálogo de Produtos", "ambiente": "TRE", "visao": "PRIV", "usuario": "00000000000", "url": "/catp/api/ext/produto/12345678", "fluxo": "CATP>CADA-P002", "trackerId": "MEzUvvtFI1"}
+}

@@ -23,7 +23,7 @@ Observado na prática (não documentado): `PLAT-ER8007` — "Par de chaves invá
 | Método | Path | Parâmetros | Resposta | SDK |
 |---|---|---|---|---|
 | GET | `/ext/atributo-ncm/{codigo-ncm}` | query: `data` (yyyy-MM-dd), `modalidade` (IMPORTACAO\|EXPORTACAO), `objetivos[]` (PRODUTO, TRATAMENTO_ADMINISTRATIVO, DUIMP), `orgaosDemandantes[]` | **schema ausente na spec**; observado em produção: `{listaNcm:[{codigoNcm, listaAtributos}], detalhesAtributos:[ArquivoDiarioAtributoDTO]}` | ✅ `atributos()->porNcm()` |
-| POST | `/ext/atributo/consulta-codigo` | body `AtributoConsultaFiltroCodigoDTO {codigos[] (≤100), data}` | `ArquivoDiarioAtributoDTO` (lista) | ✅ `porCodigos()` / `porCodigo()` |
+| POST | `/ext/atributo/consulta-codigo` | body `AtributoConsultaFiltroCodigoDTO {codigos[] (≤100), data}` | `ArquivoDiarioAtributoDTO` — spec diz objeto; **observado: lista** | ✅ `porCodigos()` / `porCodigo()` |
 | POST | `/ext/atributo/consulta-nome` | body `AtributoConsultaFiltroNomeDTO {nomes[] (≤100), data}` | idem | ✅ `porNomes()` |
 | GET | `/ext/atributo-ncm/download/{tipo}` | `tipo` json\|xml; query `data`, `modalidade`, `objetivos[]`, `orgaosDemandantes[]`, `codigosNCM[]` | ZIP com JSON | ✅ `downloadPorNcm()` (json) |
 | GET | `/ext/atributo-ncm/historico-versoes` | query `versao[]` | `ChangeLogArquivoDiarioAtributoNcmDTO[]` | ✅ `historicoVersoesPorNcm()` |
@@ -55,6 +55,8 @@ Respostas: 200, 204, 400, 401, 403, 404, 422, 500.
 | DELETE | `/ext/produto/codigo-interno/{cpfCnpjRaiz}/{codigo}/{versao}` | body `{codigoInterno}` | 200/204 | ✅ `removerCodigoInterno()` |
 
 `ProdutoIntegracaoRequestDTO`: `denominacao` (1–120), `descricao` (≤3700), `modalidade`, `ncm` (8 dígitos), `atributos[] {atributo, valor (1–100)}`, `atributosMultivalorados[] {atributo, valores[]}`, `atributosCompostos[] {atributo, valores[{atributo, valor}]}`, `atributosCompostosMultivalorados[] {atributo, valores[[...]]}` (formato interno TODO(confirmar)), `codigosInterno[]` (≤60 cada).
+
+Erro 422 observado (Validação): `{message, code: "PUCX-ER0123", tag, detail: [{error: {message, code: "CADA-ER5008", field: "ATT_x"}}]}`. Outro código observado: `CATP-ER2021` (retificação idêntica à versão existente).
 
 ### Fabricantes-Produtores e Operadores Estrangeiros (🕒 v1.1)
 

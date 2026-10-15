@@ -107,6 +107,24 @@ final class ProdutosResourceTest extends TestCase
         }
     }
 
+    public function testErro422RealComDetalhesEnvelopadosEmError(): void
+    {
+        // Corpo real devolvido em Validação ao incluir produto sem os atributos obrigatórios (15/10/2026).
+        $this->http->queue(self::authResponse(), self::json(422, self::fixture('validacao', 'erro-422-atributos-obrigatorios.json')));
+
+        try {
+            $this->client()->catalogo()->produtos()->incluir('12345678', new ProdutoRequest('Teste', Modalidade::Importacao, '84733049'));
+            self::fail('Deveria lançar ValidationException');
+        } catch (ValidationException $e) {
+            self::assertSame('PUCX-ER0123', $e->codigoErro);
+            self::assertSame('[CATP-AKYQPM3945]', $e->tag);
+            self::assertCount(4, $e->detalhes);
+            self::assertSame('O Atributo ATT_5426 para o NCM 84733049 é obrigatório.', $e->mensagens()[0]);
+            self::assertSame('CADA-ER5008', $e->detalhes[0]->codigo);
+            self::assertSame('ATT_18551', $e->detalhes[3]->campo);
+        }
+    }
+
     public function testNovaVersaoERetificar(): void
     {
         $this->http->queue(self::authResponse(), self::json(200, ['versao' => '2'] + self::PRODUTO), self::json(200, ['versao' => '2.1'] + self::PRODUTO));
