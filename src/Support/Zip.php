@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Support;
+namespace MarceloFecchio\Siscomex\PortalUnico\Support;
 
-use MFecchio\Siscomex\PortalUnico\Exceptions\SiscomexException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\SiscomexException;
 
 /**
  * Extrai o conteúdo dos downloads/exportações do portal, que vêm compactados em ZIP.

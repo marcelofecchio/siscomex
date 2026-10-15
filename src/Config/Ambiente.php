@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Config;
+namespace MarceloFecchio\Siscomex\PortalUnico\Config;
 
 /**
  * Ambientes públicos do Portal Único Siscomex.

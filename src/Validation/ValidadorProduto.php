@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Validation;
+namespace MarceloFecchio\Siscomex\PortalUnico\Validation;
 
-use MFecchio\Siscomex\PortalUnico\Enum\FormaPreenchimento;
-use MFecchio\Siscomex\PortalUnico\Enum\ObjetivoAtributo;
-use MFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto\AtributosDaNcm;
-use MFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ProdutoRequest;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\FormaPreenchimento;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\ObjetivoAtributo;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto\AtributosDaNcm;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ProdutoRequest;
 
 /**
  * Validação local (antes do envio) de um produto contra os atributos da NCM.

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Tests\Unit\Auth;
+namespace MarceloFecchio\Siscomex\PortalUnico\Tests\Unit\Auth;
 
 use GuzzleHttp\Client;
-use MFecchio\Siscomex\PortalUnico\Auth\Credentials\CertificadoA1;
-use MFecchio\Siscomex\PortalUnico\Auth\Credentials\ChaveAcesso;
-use MFecchio\Siscomex\PortalUnico\Config\ClientConfig;
-use MFecchio\Siscomex\PortalUnico\Exceptions\CertificateException;
-use MFecchio\Siscomex\PortalUnico\Http\GuzzleClientFactory;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\Credentials\CertificadoA1;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\Credentials\ChaveAcesso;
+use MarceloFecchio\Siscomex\PortalUnico\Config\ClientConfig;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\CertificateException;
+use MarceloFecchio\Siscomex\PortalUnico\Http\GuzzleClientFactory;
 use PHPUnit\Framework\TestCase;
 
 final class CredentialsTest extends TestCase

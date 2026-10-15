@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Auth;
+namespace MarceloFecchio\Siscomex\PortalUnico\Auth;
 
 /**
  * Sessão autenticada no portal: JWT (header Set-Token) + X-CSRF-Token renovável.

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Tests\Integration;
+namespace MarceloFecchio\Siscomex\PortalUnico\Tests\Integration;
 
-use MFecchio\Siscomex\PortalUnico\Auth\Credentials\CertificadoA1;
-use MFecchio\Siscomex\PortalUnico\Auth\Credentials\ChaveAcesso;
-use MFecchio\Siscomex\PortalUnico\Auth\TokenStore\FileTokenStore;
-use MFecchio\Siscomex\PortalUnico\Config\Ambiente;
-use MFecchio\Siscomex\PortalUnico\Config\ClientConfig;
-use MFecchio\Siscomex\PortalUnico\Exceptions\ServiceUnavailableException;
-use MFecchio\Siscomex\PortalUnico\PortalUnicoClient;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\Credentials\CertificadoA1;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\Credentials\ChaveAcesso;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\TokenStore\FileTokenStore;
+use MarceloFecchio\Siscomex\PortalUnico\Config\Ambiente;
+use MarceloFecchio\Siscomex\PortalUnico\Config\ClientConfig;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\ServiceUnavailableException;
+use MarceloFecchio\Siscomex\PortalUnico\PortalUnicoClient;
 use PHPUnit\Framework\TestCase;
 
 /**

@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Tests\Unit\Validation;
+namespace MarceloFecchio\Siscomex\PortalUnico\Tests\Unit\Validation;
 
-use MFecchio\Siscomex\PortalUnico\Enum\Modalidade;
-use MFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto\Atributo;
-use MFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto\AtributosDaNcm;
-use MFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto\RelacaoAtributosNcm;
-use MFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ProdutoRequest;
-use MFecchio\Siscomex\PortalUnico\Tests\Support\TestCase;
-use MFecchio\Siscomex\PortalUnico\Validation\ProblemaValidacao;
-use MFecchio\Siscomex\PortalUnico\Validation\ValidadorProduto;
-use MFecchio\Siscomex\PortalUnico\ValueObject\Ncm;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\Modalidade;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto\Atributo;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto\AtributosDaNcm;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto\RelacaoAtributosNcm;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ProdutoRequest;
+use MarceloFecchio\Siscomex\PortalUnico\Tests\Support\TestCase;
+use MarceloFecchio\Siscomex\PortalUnico\Validation\ProblemaValidacao;
+use MarceloFecchio\Siscomex\PortalUnico\Validation\ValidadorProduto;
+use MarceloFecchio\Siscomex\PortalUnico\ValueObject\Ncm;
 
 final class ValidadorProdutoTest extends TestCase
 {

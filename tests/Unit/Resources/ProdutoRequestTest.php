@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Tests\Unit\Resources;
+namespace MarceloFecchio\Siscomex\PortalUnico\Tests\Unit\Resources;
 
-use MFecchio\Siscomex\PortalUnico\Enum\Modalidade;
-use MFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\Produto;
-use MFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ProdutoRequest;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\Modalidade;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\Produto;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ProdutoRequest;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 

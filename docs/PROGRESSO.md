@@ -1,6 +1,6 @@
 # Progresso
 
-Última atualização: 2026-10-15 18:35 — máquina: casa
+Última atualização: 2026-10-15 19:15 — máquina: casa
 
 ## Status atual
 
@@ -8,7 +8,7 @@ SDK v0.1 implementado e **validado no portal real**: em Validação, autenticaç
 
 ## Próximo passo exato
 
-Fase 8: criar a tag `v0.1.0`, cadastrar o repositório no Packagist e ativar o webhook do GitHub; depois atualizar o README (badge e `composer require` sem repositório VCS). Em seguida, v1.1 (Fabricantes e Operadores Estrangeiros).
+Usuário: cadastrar `https://github.com/marcelofecchio/siscomex` em <https://packagist.org/packages/submit> (conta que já tem o vendor `marcelofecchio`) e confirmar a sincronização automática (integração GitHub do Packagist). Depois conferir `composer require marcelofecchio/siscomex` num projeto limpo. Em seguida, v1.1 (Fabricantes e Operadores Estrangeiros).
 
 ## Feito
 
@@ -20,17 +20,18 @@ Fase 8: criar a tag `v0.1.0`, cadastrar o repositório no Packagist e ativar o w
 - [x] Fase 5 — Coleção Postman + ambientes + README (testado com Newman em Produção, só leitura; bloqueio de escrita verificado sem tráfego)
 - [x] Fase 6 — Validação: autenticação, atributos e ciclo completo do produto via SDK e Postman; Produção: só leitura
 - [x] Fase 7 — README, exemplos, CHANGELOG
-- [x] Fase 8 (parcial) — GitHub Actions; repositório público `marcelofecchio/siscomex`
+- [x] Fase 8 (parcial) — GitHub Actions; repositório público; pacote renomeado para `marcelofecchio/siscomex`; `composer validate --strict`; tag e release `v0.1.0` no GitHub; badge Packagist no README
+- [x] `doc/PROMPT-INICIAL.md` movido para `docs/` (pasta `doc` removida)
 
 ## Falta
 
-- [ ] Fase 8 — `composer validate --strict`, tag `v0.1.0`, cadastro no Packagist + webhook, badge no README
+- [ ] Fase 8 — cadastro no Packagist + sincronização automática (requer login do usuário em packagist.org)
 - [ ] v1.1 — Fabricantes-Produtores e Operadores Estrangeiros
 - [ ] Confirmar os itens `TODO(confirmar)` abaixo com respostas reais
 
 ## Decisões (data — decisão — motivo)
 
-- 2026-10-15 — Nome do pacote `mfecchio/siscomex-portalunico-sdk`, namespace `MFecchio\Siscomex\PortalUnico`, licença MIT — padrões sugeridos no prompt, sem objeção do usuário.
+- 2026-10-15 — Nome do pacote `marcelofecchio/siscomex`, namespace `MarceloFecchio\Siscomex\PortalUnico`, licença MIT — escolha do usuário antes da publicação, alinhada aos pacotes existentes da conta no Packagist (`marcelofecchio/correios-api`, `marcelofecchio/safe2pay-api`); substitui o padrão `mfecchio/siscomex-portalunico-sdk` sugerido no prompt.
 - 2026-10-15 — Repositório público `github.com/marcelofecchio/siscomex` — pedido do usuário.
 - 2026-10-15 — Credencial principal: **Chaves de Acesso** (o usuário forneceu um par); certificado A1 também suportado (mTLS via `CURLOPT_SSLCERTTYPE=P12` ou PEM temporário 0600). A3 não suportado.
 - 2026-10-15 — PSR-18 + PSR-17 com `php-http/discovery`; Guzzle 7 recomendado (obrigatório para mTLS) e usado automaticamente quando instalado.
@@ -70,3 +71,4 @@ Fase 8: criar a tag `v0.1.0`, cadastrar o repositório no Packagist e ativar o w
 - 2026-10-15 — Incluir/detalhar/desativar devolvem `ProdutoIntegracaoResponseDTO` com `codigo` inteiro e `versao` "1"; consulta (`GET /ext/produto`) devolve lista com `seq`; histórico devolve lista de `{data, versao, situacao, usuario, observacao}`; incluir código interno → 200 sem corpo.
 - 2026-10-15 — Retificar com corpo idêntico ao da versão → 422 `CATP-ER2021` "Já existe produto idêntico cadastrado"; nova versão (PUT sem versão) com corpo idêntico foi aceita.
 - 2026-10-15 — Produtos de teste criados **e desativados** em Validação no CNPJ de teste: códigos 1 (teste de integração), 2 (inspeção de respostas) e 3 (fluxo Postman).
+- 2026-10-15 — Uma sessão em cache, ainda dentro da validade do CSRF, foi recusada com HTTP 401 depois que outro cliente (Newman) autenticou com a **mesma chave**: indício de que uma nova autenticação invalida a sessão anterior. O SDK reautenticou uma vez e seguiu. Não compartilhe a mesma chave entre sistemas que mantêm sessões próprias (TODO(confirmar) na documentação).

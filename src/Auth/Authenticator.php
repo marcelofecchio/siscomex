@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Auth;
+namespace MarceloFecchio\Siscomex\PortalUnico\Auth;
 
-use MFecchio\Siscomex\PortalUnico\Auth\Credentials\Credential;
-use MFecchio\Siscomex\PortalUnico\Auth\TokenStore\TokenStore;
-use MFecchio\Siscomex\PortalUnico\Config\ClientConfig;
-use MFecchio\Siscomex\PortalUnico\Config\PoliticaIntervaloAutenticacao;
-use MFecchio\Siscomex\PortalUnico\Exceptions\AuthenticationException;
-use MFecchio\Siscomex\PortalUnico\Exceptions\AuthenticationThrottledException;
-use MFecchio\Siscomex\PortalUnico\Exceptions\CertificateException;
-use MFecchio\Siscomex\PortalUnico\Exceptions\TransportException;
-use MFecchio\Siscomex\PortalUnico\Http\ErrorMapper;
-use MFecchio\Siscomex\PortalUnico\Support\Sleeper;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\Credentials\Credential;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\TokenStore\TokenStore;
+use MarceloFecchio\Siscomex\PortalUnico\Config\ClientConfig;
+use MarceloFecchio\Siscomex\PortalUnico\Config\PoliticaIntervaloAutenticacao;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\AuthenticationException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\AuthenticationThrottledException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\CertificateException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\TransportException;
+use MarceloFecchio\Siscomex\PortalUnico\Http\ErrorMapper;
+use MarceloFecchio\Siscomex\PortalUnico\Support\Sleeper;
 use Psr\Clock\ClockInterface;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;

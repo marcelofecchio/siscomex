@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Tests\Integration;
+namespace MarceloFecchio\Siscomex\PortalUnico\Tests\Integration;
 
-use MFecchio\Siscomex\PortalUnico\Enum\Modalidade;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\Modalidade;
 
 final class AtributosIntegrationTest extends IntegrationTestCase
 {

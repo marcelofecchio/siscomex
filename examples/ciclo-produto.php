@@ -12,12 +12,12 @@ declare(strict_types=1);
  * domínio, "false" para booleanos, texto genérico) — apenas para demonstração.
  */
 
-use MFecchio\Siscomex\PortalUnico\Enum\FormaPreenchimento;
-use MFecchio\Siscomex\PortalUnico\Enum\Modalidade;
-use MFecchio\Siscomex\PortalUnico\Exceptions\SiscomexException;
-use MFecchio\Siscomex\PortalUnico\Exceptions\ValidationException;
-use MFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ProdutoRequest;
-use MFecchio\Siscomex\PortalUnico\Validation\ValidadorProduto;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\FormaPreenchimento;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\Modalidade;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\SiscomexException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\ValidationException;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ProdutoRequest;
+use MarceloFecchio\Siscomex\PortalUnico\Validation\ValidadorProduto;
 
 require __DIR__.'/bootstrap.php';
 

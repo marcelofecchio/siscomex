@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Support;
+namespace MarceloFecchio\Siscomex\PortalUnico\Support;
 
 /**
  * Leitura tolerante de valores vindos do JSON do portal (tipagem estrita para o PHPStan).

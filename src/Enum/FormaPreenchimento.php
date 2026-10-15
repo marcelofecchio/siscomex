@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Enum;
+namespace MarceloFecchio\Siscomex\PortalUnico\Enum;
 
 /**
  * Forma de preenchimento de um atributo (ArquivoDiarioAtributoDTO.formaPreenchimento).

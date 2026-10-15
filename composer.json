@@ -1,5 +1,5 @@
 {
-    "name": "mfecchio/siscomex-portalunico-sdk",
+    "name": "marcelofecchio/siscomex",
     "description": "SDK PHP 8.4 para a API Pública do Portal Único Siscomex: autenticação (IMPEXP), Cadastro de Atributos e Catálogo de Produtos.",
     "type": "library",
     "license": "MIT",
@@ -51,12 +51,12 @@
     },
     "autoload": {
         "psr-4": {
-            "MFecchio\\Siscomex\\PortalUnico\\": "src/"
+            "MarceloFecchio\\Siscomex\\PortalUnico\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "MFecchio\\Siscomex\\PortalUnico\\Tests\\": "tests/"
+            "MarceloFecchio\\Siscomex\\PortalUnico\\Tests\\": "tests/"
         }
     },
     "config": {

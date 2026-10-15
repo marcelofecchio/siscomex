@@ -8,8 +8,8 @@ declare(strict_types=1);
  *   php examples/consultar-atributos-ncm.php 84733049 [IMPORTACAO|EXPORTACAO]
  */
 
-use MFecchio\Siscomex\PortalUnico\Enum\Modalidade;
-use MFecchio\Siscomex\PortalUnico\Exceptions\SiscomexException;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\Modalidade;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\SiscomexException;
 
 require __DIR__.'/bootstrap.php';
 

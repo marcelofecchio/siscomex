@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto;
+namespace MarceloFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto;
 
-use MFecchio\Siscomex\PortalUnico\Support\Data;
+use MarceloFecchio\Siscomex\PortalUnico\Support\Data;
 
 /**
  * Expressão condicionante (ExpressaoCondicionanteConsultaDTO), encadeável via `composicao`

@@ -10,11 +10,11 @@ declare(strict_types=1);
  *   ou SISCOMEX_CERT_PATH / SISCOMEX_CERT_SENHA   (certificado A1 e-CPF)
  */
 
-use MFecchio\Siscomex\PortalUnico\Auth\Credentials\CertificadoA1;
-use MFecchio\Siscomex\PortalUnico\Auth\Credentials\ChaveAcesso;
-use MFecchio\Siscomex\PortalUnico\Auth\TokenStore\FileTokenStore;
-use MFecchio\Siscomex\PortalUnico\Config\Ambiente;
-use MFecchio\Siscomex\PortalUnico\PortalUnicoClient;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\Credentials\CertificadoA1;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\Credentials\ChaveAcesso;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\TokenStore\FileTokenStore;
+use MarceloFecchio\Siscomex\PortalUnico\Config\Ambiente;
+use MarceloFecchio\Siscomex\PortalUnico\PortalUnicoClient;
 use Psr\Log\AbstractLogger;
 
 require __DIR__.'/../vendor/autoload.php';

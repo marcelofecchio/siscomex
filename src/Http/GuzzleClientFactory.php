@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Http;
+namespace MarceloFecchio\Siscomex\PortalUnico\Http;
 
 use GuzzleHttp\Client;
-use MFecchio\Siscomex\PortalUnico\Auth\Credentials\CertificadoA1;
-use MFecchio\Siscomex\PortalUnico\Auth\Credentials\Credential;
-use MFecchio\Siscomex\PortalUnico\Config\ClientConfig;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\Credentials\CertificadoA1;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\Credentials\Credential;
+use MarceloFecchio\Siscomex\PortalUnico\Config\ClientConfig;
 use Psr\Http\Client\ClientInterface;
 
 /**

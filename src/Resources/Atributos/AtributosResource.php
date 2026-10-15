@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Resources\Atributos;
+namespace MarceloFecchio\Siscomex\PortalUnico\Resources\Atributos;
 
-use MFecchio\Siscomex\PortalUnico\Enum\Modalidade;
-use MFecchio\Siscomex\PortalUnico\Enum\ObjetivoAtributo;
-use MFecchio\Siscomex\PortalUnico\Http\Transport;
-use MFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto\Atributo;
-use MFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto\AtributosDaNcm;
-use MFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto\RelacaoAtributosNcm;
-use MFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto\VersaoRelacao;
-use MFecchio\Siscomex\PortalUnico\Support\Data;
-use MFecchio\Siscomex\PortalUnico\Support\Zip;
-use MFecchio\Siscomex\PortalUnico\ValueObject\Ncm;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\Modalidade;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\ObjetivoAtributo;
+use MarceloFecchio\Siscomex\PortalUnico\Http\Transport;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto\Atributo;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto\AtributosDaNcm;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto\RelacaoAtributosNcm;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto\VersaoRelacao;
+use MarceloFecchio\Siscomex\PortalUnico\Support\Data;
+use MarceloFecchio\Siscomex\PortalUnico\Support\Zip;
+use MarceloFecchio\Siscomex\PortalUnico\ValueObject\Ncm;
 
 /**
  * Cadastro de Atributos (CADA) — serviços autenticados.

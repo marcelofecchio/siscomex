@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Resources\Catalogo;
+namespace MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo;
 
-use MFecchio\Siscomex\PortalUnico\Exceptions\SiscomexException;
-use MFecchio\Siscomex\PortalUnico\Http\Transport;
-use MFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\EventoHistoricoProduto;
-use MFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\FiltroProdutos;
-use MFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\Produto;
-use MFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ProdutoRequest;
-use MFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ResultadoConsultaProdutos;
-use MFecchio\Siscomex\PortalUnico\Support\Data;
-use MFecchio\Siscomex\PortalUnico\Support\Zip;
-use MFecchio\Siscomex\PortalUnico\ValueObject\CpfCnpjRaiz;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\SiscomexException;
+use MarceloFecchio\Siscomex\PortalUnico\Http\Transport;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\EventoHistoricoProduto;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\FiltroProdutos;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\Produto;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ProdutoRequest;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ResultadoConsultaProdutos;
+use MarceloFecchio\Siscomex\PortalUnico\Support\Data;
+use MarceloFecchio\Siscomex\PortalUnico\Support\Zip;
+use MarceloFecchio\Siscomex\PortalUnico\ValueObject\CpfCnpjRaiz;
 
 /**
  * Catálogo de Produtos (CATP) — produtos.

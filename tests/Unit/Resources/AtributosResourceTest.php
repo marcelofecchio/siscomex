@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Tests\Unit\Resources;
+namespace MarceloFecchio\Siscomex\PortalUnico\Tests\Unit\Resources;
 
 use GuzzleHttp\Psr7\Response;
-use MFecchio\Siscomex\PortalUnico\Enum\FormaPreenchimento;
-use MFecchio\Siscomex\PortalUnico\Enum\Modalidade;
-use MFecchio\Siscomex\PortalUnico\Enum\ObjetivoAtributo;
-use MFecchio\Siscomex\PortalUnico\Tests\Support\TestCase;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\FormaPreenchimento;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\Modalidade;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\ObjetivoAtributo;
+use MarceloFecchio\Siscomex\PortalUnico\Tests\Support\TestCase;
 
 final class AtributosResourceTest extends TestCase
 {

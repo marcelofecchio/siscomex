@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Tests\Unit\Resources;
+namespace MarceloFecchio\Siscomex\PortalUnico\Tests\Unit\Resources;
 
 use GuzzleHttp\Psr7\Response;
-use MFecchio\Siscomex\PortalUnico\Config\Ambiente;
-use MFecchio\Siscomex\PortalUnico\Config\ClientConfig;
-use MFecchio\Siscomex\PortalUnico\Enum\Modalidade;
-use MFecchio\Siscomex\PortalUnico\Enum\SituacaoProduto;
-use MFecchio\Siscomex\PortalUnico\Exceptions\ProductionWriteBlockedException;
-use MFecchio\Siscomex\PortalUnico\Exceptions\SiscomexException;
-use MFecchio\Siscomex\PortalUnico\Exceptions\ValidationException;
-use MFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\FiltroProdutos;
-use MFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ProdutoRequest;
-use MFecchio\Siscomex\PortalUnico\Tests\Support\TestCase;
+use MarceloFecchio\Siscomex\PortalUnico\Config\Ambiente;
+use MarceloFecchio\Siscomex\PortalUnico\Config\ClientConfig;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\Modalidade;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\SituacaoProduto;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\ProductionWriteBlockedException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\SiscomexException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\ValidationException;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\FiltroProdutos;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ProdutoRequest;
+use MarceloFecchio\Siscomex\PortalUnico\Tests\Support\TestCase;
 
 final class ProdutosResourceTest extends TestCase
 {

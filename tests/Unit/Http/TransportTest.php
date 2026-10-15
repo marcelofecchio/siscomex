@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Tests\Unit\Http;
+namespace MarceloFecchio\Siscomex\PortalUnico\Tests\Unit\Http;
 
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use MFecchio\Siscomex\PortalUnico\Config\Ambiente;
-use MFecchio\Siscomex\PortalUnico\Config\ClientConfig;
-use MFecchio\Siscomex\PortalUnico\Exceptions\AuthenticationException;
-use MFecchio\Siscomex\PortalUnico\Exceptions\ProductionWriteBlockedException;
-use MFecchio\Siscomex\PortalUnico\Exceptions\RateLimitException;
-use MFecchio\Siscomex\PortalUnico\Exceptions\ServiceUnavailableException;
-use MFecchio\Siscomex\PortalUnico\Exceptions\TransportException;
-use MFecchio\Siscomex\PortalUnico\Exceptions\ValidationException;
-use MFecchio\Siscomex\PortalUnico\Http\Transport;
-use MFecchio\Siscomex\PortalUnico\Tests\Support\TestCase;
+use MarceloFecchio\Siscomex\PortalUnico\Config\Ambiente;
+use MarceloFecchio\Siscomex\PortalUnico\Config\ClientConfig;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\AuthenticationException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\ProductionWriteBlockedException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\RateLimitException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\ServiceUnavailableException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\TransportException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\ValidationException;
+use MarceloFecchio\Siscomex\PortalUnico\Http\Transport;
+use MarceloFecchio\Siscomex\PortalUnico\Tests\Support\TestCase;
 
 final class TransportTest extends TestCase
 {
@@ -256,7 +256,7 @@ final class TransportTest extends TestCase
 
     public function testDecodeJsonInvalidoLancaExcecao(): void
     {
-        $this->expectException(\MFecchio\Siscomex\PortalUnico\Exceptions\SiscomexException::class);
+        $this->expectException(\MarceloFecchio\Siscomex\PortalUnico\Exceptions\SiscomexException::class);
         Transport::decode(new Response(200, [], '<html>'));
     }
 }

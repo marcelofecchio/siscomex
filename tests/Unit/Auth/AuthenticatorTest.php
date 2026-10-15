@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Tests\Unit\Auth;
+namespace MarceloFecchio\Siscomex\PortalUnico\Tests\Unit\Auth;
 
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use MFecchio\Siscomex\PortalUnico\Auth\Credentials\ChaveAcesso;
-use MFecchio\Siscomex\PortalUnico\Config\Ambiente;
-use MFecchio\Siscomex\PortalUnico\Config\ClientConfig;
-use MFecchio\Siscomex\PortalUnico\Config\Perfil;
-use MFecchio\Siscomex\PortalUnico\Config\PoliticaIntervaloAutenticacao;
-use MFecchio\Siscomex\PortalUnico\Exceptions\AuthenticationException;
-use MFecchio\Siscomex\PortalUnico\Exceptions\AuthenticationThrottledException;
-use MFecchio\Siscomex\PortalUnico\Exceptions\TransportException;
-use MFecchio\Siscomex\PortalUnico\Tests\Support\TestCase;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\Credentials\ChaveAcesso;
+use MarceloFecchio\Siscomex\PortalUnico\Config\Ambiente;
+use MarceloFecchio\Siscomex\PortalUnico\Config\ClientConfig;
+use MarceloFecchio\Siscomex\PortalUnico\Config\Perfil;
+use MarceloFecchio\Siscomex\PortalUnico\Config\PoliticaIntervaloAutenticacao;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\AuthenticationException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\AuthenticationThrottledException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\TransportException;
+use MarceloFecchio\Siscomex\PortalUnico\Tests\Support\TestCase;
 
 final class AuthenticatorTest extends TestCase
 {

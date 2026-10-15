@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Enum;
+namespace MarceloFecchio\Siscomex\PortalUnico\Enum;
 
 /**
  * Modalidade de operação. `Ambos` só é aceito na consulta de produtos.

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Exceptions;
+namespace MarceloFecchio\Siscomex\PortalUnico\Exceptions;
 
 /**
  * Erro interno do portal (HTTP 500).

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Tests\Support;
+namespace MarceloFecchio\Siscomex\PortalUnico\Tests\Support;
 
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;

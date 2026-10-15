@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Auth\Credentials;
+namespace MarceloFecchio\Siscomex\PortalUnico\Auth\Credentials;
 
-use MFecchio\Siscomex\PortalUnico\Exceptions\CertificateException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\CertificateException;
 
 /**
  * Certificado digital ICP-Brasil A1 (arquivo .pfx/.p12 ou .pem) para autenticação mTLS

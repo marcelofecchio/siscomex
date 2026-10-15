@@ -8,8 +8,8 @@ declare(strict_types=1);
  *   php examples/atributos-publicos.php 84733049 [validacao|producao]
  */
 
-use MFecchio\Siscomex\PortalUnico\Config\Ambiente;
-use MFecchio\Siscomex\PortalUnico\PortalUnicoClient;
+use MarceloFecchio\Siscomex\PortalUnico\Config\Ambiente;
+use MarceloFecchio\Siscomex\PortalUnico\PortalUnicoClient;
 
 require __DIR__.'/../vendor/autoload.php';
 

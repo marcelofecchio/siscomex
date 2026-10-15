@@ -2,26 +2,26 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico;
+namespace MarceloFecchio\Siscomex\PortalUnico;
 
 use Http\Discovery\Psr17FactoryDiscovery;
 use Http\Discovery\Psr18ClientDiscovery;
-use MFecchio\Siscomex\PortalUnico\Auth\Authenticator;
-use MFecchio\Siscomex\PortalUnico\Auth\Credentials\Credential;
-use MFecchio\Siscomex\PortalUnico\Auth\Session;
-use MFecchio\Siscomex\PortalUnico\Auth\TokenStore\InMemoryTokenStore;
-use MFecchio\Siscomex\PortalUnico\Auth\TokenStore\TokenStore;
-use MFecchio\Siscomex\PortalUnico\Config\Ambiente;
-use MFecchio\Siscomex\PortalUnico\Config\ClientConfig;
-use MFecchio\Siscomex\PortalUnico\Config\Perfil;
-use MFecchio\Siscomex\PortalUnico\Http\GuzzleClientFactory;
-use MFecchio\Siscomex\PortalUnico\Http\Transport;
-use MFecchio\Siscomex\PortalUnico\Resources\Atributos\AtributosPublicos;
-use MFecchio\Siscomex\PortalUnico\Resources\Atributos\AtributosResource;
-use MFecchio\Siscomex\PortalUnico\Resources\Catalogo\CatalogoResource;
-use MFecchio\Siscomex\PortalUnico\Support\Sleeper;
-use MFecchio\Siscomex\PortalUnico\Support\SystemClock;
-use MFecchio\Siscomex\PortalUnico\Support\SystemSleeper;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\Authenticator;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\Credentials\Credential;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\Session;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\TokenStore\InMemoryTokenStore;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\TokenStore\TokenStore;
+use MarceloFecchio\Siscomex\PortalUnico\Config\Ambiente;
+use MarceloFecchio\Siscomex\PortalUnico\Config\ClientConfig;
+use MarceloFecchio\Siscomex\PortalUnico\Config\Perfil;
+use MarceloFecchio\Siscomex\PortalUnico\Http\GuzzleClientFactory;
+use MarceloFecchio\Siscomex\PortalUnico\Http\Transport;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Atributos\AtributosPublicos;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Atributos\AtributosResource;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\CatalogoResource;
+use MarceloFecchio\Siscomex\PortalUnico\Support\Sleeper;
+use MarceloFecchio\Siscomex\PortalUnico\Support\SystemClock;
+use MarceloFecchio\Siscomex\PortalUnico\Support\SystemSleeper;
 use Psr\Clock\ClockInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;

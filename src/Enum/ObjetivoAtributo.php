@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Enum;
+namespace MarceloFecchio\Siscomex\PortalUnico\Enum;
 
 /**
  * Objetivos aceitos no filtro `objetivos` das consultas de atributos por NCM.

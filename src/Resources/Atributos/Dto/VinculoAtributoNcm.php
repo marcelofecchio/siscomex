@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto;
+namespace MarceloFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto;
 
-use MFecchio\Siscomex\PortalUnico\Enum\Modalidade;
-use MFecchio\Siscomex\PortalUnico\Support\Data;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\Modalidade;
+use MarceloFecchio\Siscomex\PortalUnico\Support\Data;
 
 /**
  * Vínculo de um atributo a uma NCM (item de listaNcm[].listaAtributos[] do arquivo de atributos por NCM).

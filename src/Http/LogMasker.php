@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Http;
+namespace MarceloFecchio\Siscomex\PortalUnico\Http;
 
 /**
  * Mascara segredos (tokens, senhas, chaves de acesso) antes de enviá-los ao logger.

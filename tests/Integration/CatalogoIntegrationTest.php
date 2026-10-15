@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Tests\Integration;
+namespace MarceloFecchio\Siscomex\PortalUnico\Tests\Integration;
 
-use MFecchio\Siscomex\PortalUnico\Enum\FormaPreenchimento;
-use MFecchio\Siscomex\PortalUnico\Enum\Modalidade;
-use MFecchio\Siscomex\PortalUnico\Enum\SituacaoProduto;
-use MFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\FiltroProdutos;
-use MFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ProdutoRequest;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\FormaPreenchimento;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\Modalidade;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\SituacaoProduto;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\FiltroProdutos;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ProdutoRequest;
 
 /**
  * Ciclo completo incluir → consultar → detalhar → nova versão → histórico → desativar,

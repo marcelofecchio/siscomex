@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto;
+namespace MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto;
 
 /**
  * Resultado de GET /ext/produto. `parcial` = HTTP 206 (o portal truncou o resultado;

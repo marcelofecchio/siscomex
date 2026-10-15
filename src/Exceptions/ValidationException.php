@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Exceptions;
+namespace MarceloFecchio\Siscomex\PortalUnico\Exceptions;
 
 /**
  * Requisição mal formatada (HTTP 400) ou erro(s) de validação da camada de negócio (HTTP 422).

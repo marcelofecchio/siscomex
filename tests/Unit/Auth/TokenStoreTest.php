@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Tests\Unit\Auth;
+namespace MarceloFecchio\Siscomex\PortalUnico\Tests\Unit\Auth;
 
-use MFecchio\Siscomex\PortalUnico\Auth\Session;
-use MFecchio\Siscomex\PortalUnico\Auth\TokenStore\FileTokenStore;
-use MFecchio\Siscomex\PortalUnico\Auth\TokenStore\InMemoryTokenStore;
-use MFecchio\Siscomex\PortalUnico\Auth\TokenStore\Psr16TokenStore;
-use MFecchio\Siscomex\PortalUnico\Auth\TokenStore\TokenStore;
-use MFecchio\Siscomex\PortalUnico\Tests\Support\ArrayCache;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\Session;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\TokenStore\FileTokenStore;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\TokenStore\InMemoryTokenStore;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\TokenStore\Psr16TokenStore;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\TokenStore\TokenStore;
+use MarceloFecchio\Siscomex\PortalUnico\Tests\Support\ArrayCache;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 

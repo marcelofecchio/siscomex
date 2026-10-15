@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Config;
+namespace MarceloFecchio\Siscomex\PortalUnico\Config;
 
 /**
  * O que fazer quando for necessário autenticar antes de completar 60 s desde a

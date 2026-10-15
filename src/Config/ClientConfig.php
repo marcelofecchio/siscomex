@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Config;
+namespace MarceloFecchio\Siscomex\PortalUnico\Config;
 
 /**
  * Configuração imutável do cliente.
@@ -29,7 +29,7 @@ final readonly class ClientConfig
         public int $backoffInicialMs = 1000,
         public int $margemExpiracao = 60,
         public ?bool $bloquearEscritaEmProducao = null,
-        public string $userAgent = 'mfecchio-siscomex-portalunico-sdk/0.1',
+        public string $userAgent = 'marcelofecchio-siscomex/0.1',
     ) {
         if ($tentativas503 < 0 || $backoffInicialMs < 0 || $margemExpiracao < 0 || $timeout < 1) {
             throw new \InvalidArgumentException('Parâmetros numéricos de ClientConfig devem ser positivos.');

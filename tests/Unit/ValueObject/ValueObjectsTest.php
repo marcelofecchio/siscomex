@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Tests\Unit\ValueObject;
+namespace MarceloFecchio\Siscomex\PortalUnico\Tests\Unit\ValueObject;
 
-use MFecchio\Siscomex\PortalUnico\ValueObject\CpfCnpjRaiz;
-use MFecchio\Siscomex\PortalUnico\ValueObject\Ncm;
+use MarceloFecchio\Siscomex\PortalUnico\ValueObject\CpfCnpjRaiz;
+use MarceloFecchio\Siscomex\PortalUnico\ValueObject\Ncm;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 

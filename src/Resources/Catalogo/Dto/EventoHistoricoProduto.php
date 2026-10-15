@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto;
+namespace MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto;
 
-use MFecchio\Siscomex\PortalUnico\Enum\SituacaoProduto;
-use MFecchio\Siscomex\PortalUnico\Support\Data;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\SituacaoProduto;
+use MarceloFecchio\Siscomex\PortalUnico\Support\Data;
 
 /** Evento do histórico de alterações de um produto (ProdutoHistoricoResponseDTO). */
 final readonly class EventoHistoricoProduto

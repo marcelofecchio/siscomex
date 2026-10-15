@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Auth\Credentials;
+namespace MarceloFecchio\Siscomex\PortalUnico\Auth\Credentials;
 
 /**
  * Forma de autenticação no serviço "plat-auth" do portal.

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Resources\Catalogo;
+namespace MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo;
 
-use MFecchio\Siscomex\PortalUnico\Http\Transport;
+use MarceloFecchio\Siscomex\PortalUnico\Http\Transport;
 
 /**
  * Agrupa os serviços do Catálogo de Produtos.

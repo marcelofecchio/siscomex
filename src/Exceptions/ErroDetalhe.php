@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Exceptions;
+namespace MarceloFecchio\Siscomex\PortalUnico\Exceptions;
 
 /**
  * Um item de erro dentro da lista `detail` devolvida pelo portal.

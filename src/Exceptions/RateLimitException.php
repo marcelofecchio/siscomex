@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Exceptions;
+namespace MarceloFecchio\Siscomex\PortalUnico\Exceptions;
 
 /**
  * Limite de acessos por hora excedido (PUCX-ER1001). O SDK nunca repete a requisição

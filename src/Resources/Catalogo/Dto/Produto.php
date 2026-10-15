@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto;
+namespace MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto;
 
-use MFecchio\Siscomex\PortalUnico\Enum\Modalidade;
-use MFecchio\Siscomex\PortalUnico\Enum\SituacaoProduto;
-use MFecchio\Siscomex\PortalUnico\Support\Data;
-use MFecchio\Siscomex\PortalUnico\ValueObject\Ncm;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\Modalidade;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\SituacaoProduto;
+use MarceloFecchio\Siscomex\PortalUnico\Support\Data;
+use MarceloFecchio\Siscomex\PortalUnico\ValueObject\Ncm;
 
 /**
  * Produto do catálogo como devolvido pela API (ProdutoIntegracaoResponseDTO / ProdutoIntegracaoDTO).

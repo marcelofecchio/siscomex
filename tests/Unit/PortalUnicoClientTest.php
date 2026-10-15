@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Tests\Unit;
+namespace MarceloFecchio\Siscomex\PortalUnico\Tests\Unit;
 
-use MFecchio\Siscomex\PortalUnico\Config\Ambiente;
-use MFecchio\Siscomex\PortalUnico\Config\Perfil;
-use MFecchio\Siscomex\PortalUnico\PortalUnicoClient;
-use MFecchio\Siscomex\PortalUnico\Tests\Support\TestCase;
+use MarceloFecchio\Siscomex\PortalUnico\Config\Ambiente;
+use MarceloFecchio\Siscomex\PortalUnico\Config\Perfil;
+use MarceloFecchio\Siscomex\PortalUnico\PortalUnicoClient;
+use MarceloFecchio\Siscomex\PortalUnico\Tests\Support\TestCase;
 
 final class PortalUnicoClientTest extends TestCase
 {

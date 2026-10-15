@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\ValueObject;
+namespace MarceloFecchio\Siscomex\PortalUnico\ValueObject;
 
 /**
  * Código NCM (Nomenclatura Comum do Mercosul) com 8 dígitos.

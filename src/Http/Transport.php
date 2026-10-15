@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Http;
+namespace MarceloFecchio\Siscomex\PortalUnico\Http;
 
-use MFecchio\Siscomex\PortalUnico\Auth\Authenticator;
-use MFecchio\Siscomex\PortalUnico\Config\ClientConfig;
-use MFecchio\Siscomex\PortalUnico\Exceptions\ProductionWriteBlockedException;
-use MFecchio\Siscomex\PortalUnico\Exceptions\SiscomexException;
-use MFecchio\Siscomex\PortalUnico\Exceptions\TransportException;
-use MFecchio\Siscomex\PortalUnico\Support\Sleeper;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\Authenticator;
+use MarceloFecchio\Siscomex\PortalUnico\Config\ClientConfig;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\ProductionWriteBlockedException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\SiscomexException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\TransportException;
+use MarceloFecchio\Siscomex\PortalUnico\Support\Sleeper;
 use Psr\Clock\ClockInterface;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;

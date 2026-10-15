@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Tests\Unit\Http;
+namespace MarceloFecchio\Siscomex\PortalUnico\Tests\Unit\Http;
 
 use GuzzleHttp\Psr7\Response;
-use MFecchio\Siscomex\PortalUnico\Exceptions\AuthenticationException;
-use MFecchio\Siscomex\PortalUnico\Exceptions\AuthenticationThrottledException;
-use MFecchio\Siscomex\PortalUnico\Exceptions\CertificateException;
-use MFecchio\Siscomex\PortalUnico\Exceptions\ForbiddenException;
-use MFecchio\Siscomex\PortalUnico\Exceptions\NotFoundException;
-use MFecchio\Siscomex\PortalUnico\Exceptions\RateLimitException;
-use MFecchio\Siscomex\PortalUnico\Exceptions\ServerException;
-use MFecchio\Siscomex\PortalUnico\Exceptions\ServiceUnavailableException;
-use MFecchio\Siscomex\PortalUnico\Exceptions\SiscomexException;
-use MFecchio\Siscomex\PortalUnico\Exceptions\ValidationException;
-use MFecchio\Siscomex\PortalUnico\Http\ErrorMapper;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\AuthenticationException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\AuthenticationThrottledException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\CertificateException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\ForbiddenException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\NotFoundException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\RateLimitException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\ServerException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\ServiceUnavailableException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\SiscomexException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\ValidationException;
+use MarceloFecchio\Siscomex\PortalUnico\Http\ErrorMapper;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 

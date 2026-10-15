@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Exceptions;
+namespace MarceloFecchio\Siscomex\PortalUnico\Exceptions;
 
 /**
  * Falha de rede/transporte antes de obter resposta HTTP.

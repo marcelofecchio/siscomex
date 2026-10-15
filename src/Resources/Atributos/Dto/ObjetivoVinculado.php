@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto;
+namespace MarceloFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto;
 
-use MFecchio\Siscomex\PortalUnico\Support\Data;
+use MarceloFecchio\Siscomex\PortalUnico\Support\Data;
 
 /** Objetivo associado a um atributo (ObjetivoAtributoConsultaDTO), ex.: {7, "Produto"}. */
 final readonly class ObjetivoVinculado

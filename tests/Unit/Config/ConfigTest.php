@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Tests\Unit\Config;
+namespace MarceloFecchio\Siscomex\PortalUnico\Tests\Unit\Config;
 
-use MFecchio\Siscomex\PortalUnico\Config\Ambiente;
-use MFecchio\Siscomex\PortalUnico\Config\ClientConfig;
-use MFecchio\Siscomex\PortalUnico\Config\Perfil;
-use MFecchio\Siscomex\PortalUnico\Enum\FormaPreenchimento;
-use MFecchio\Siscomex\PortalUnico\Enum\Modalidade;
-use MFecchio\Siscomex\PortalUnico\Enum\ObjetivoAtributo;
-use MFecchio\Siscomex\PortalUnico\Enum\SituacaoProduto;
+use MarceloFecchio\Siscomex\PortalUnico\Config\Ambiente;
+use MarceloFecchio\Siscomex\PortalUnico\Config\ClientConfig;
+use MarceloFecchio\Siscomex\PortalUnico\Config\Perfil;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\FormaPreenchimento;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\Modalidade;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\ObjetivoAtributo;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\SituacaoProduto;
 use PHPUnit\Framework\TestCase;
 
 final class ConfigTest extends TestCase

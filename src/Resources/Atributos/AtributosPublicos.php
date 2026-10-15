@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Resources\Atributos;
+namespace MarceloFecchio\Siscomex\PortalUnico\Resources\Atributos;
 
-use MFecchio\Siscomex\PortalUnico\Http\Transport;
-use MFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto\AtributosDaNcm;
-use MFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto\RelacaoAtributosNcm;
-use MFecchio\Siscomex\PortalUnico\Support\Zip;
-use MFecchio\Siscomex\PortalUnico\ValueObject\Ncm;
+use MarceloFecchio\Siscomex\PortalUnico\Http\Transport;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto\AtributosDaNcm;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto\RelacaoAtributosNcm;
+use MarceloFecchio\Siscomex\PortalUnico\Support\Zip;
+use MarceloFecchio\Siscomex\PortalUnico\ValueObject\Ncm;
 
 /**
  * Download público (sem autenticação) da relação de atributos por NCM,

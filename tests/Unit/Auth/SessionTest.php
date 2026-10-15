@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Tests\Unit\Auth;
+namespace MarceloFecchio\Siscomex\PortalUnico\Tests\Unit\Auth;
 
-use MFecchio\Siscomex\PortalUnico\Auth\Session;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\Session;
 use PHPUnit\Framework\TestCase;
 
 final class SessionTest extends TestCase

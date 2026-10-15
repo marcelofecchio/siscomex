@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\ValueObject;
+namespace MarceloFecchio\Siscomex\PortalUnico\ValueObject;
 
 /**
  * Identificação do responsável pelo catálogo: CNPJ raiz (8 posições) ou CPF (11 dígitos),

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto;
+namespace MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto;
 
-use MFecchio\Siscomex\PortalUnico\Enum\Modalidade;
-use MFecchio\Siscomex\PortalUnico\ValueObject\Ncm;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\Modalidade;
+use MarceloFecchio\Siscomex\PortalUnico\ValueObject\Ncm;
 
 /**
  * Dados de um produto a incluir, versionar ou retificar (ProdutoIntegracaoRequestDTO).

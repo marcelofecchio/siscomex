@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Auth\TokenStore;
+namespace MarceloFecchio\Siscomex\PortalUnico\Auth\TokenStore;
 
-use MFecchio\Siscomex\PortalUnico\Auth\Session;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\Session;
 
 /**
  * Armazenamento em memória (vale apenas durante o processo atual).

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Auth\Credentials;
+namespace MarceloFecchio\Siscomex\PortalUnico\Auth\Credentials;
 
 /**
  * Arquivo PEM gerado a partir de um .pfx; removido do disco ao ser destruído.

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Tests\Unit\Http;
+namespace MarceloFecchio\Siscomex\PortalUnico\Tests\Unit\Http;
 
-use MFecchio\Siscomex\PortalUnico\Http\LogMasker;
+use MarceloFecchio\Siscomex\PortalUnico\Http\LogMasker;
 use PHPUnit\Framework\TestCase;
 
 final class LogMaskerTest extends TestCase

@@ -1,6 +1,7 @@
 # SDK PHP — API Pública do Portal Único Siscomex
 
 [![CI](https://github.com/marcelofecchio/siscomex/actions/workflows/ci.yml/badge.svg)](https://github.com/marcelofecchio/siscomex/actions/workflows/ci.yml)
+[![Packagist](https://img.shields.io/packagist/v/marcelofecchio/siscomex)](https://packagist.org/packages/marcelofecchio/siscomex)
 ![PHP](https://img.shields.io/badge/php-%5E8.4-777bb4)
 ![Licença](https://img.shields.io/badge/licen%C3%A7a-MIT-green)
 
@@ -40,12 +41,10 @@ Inclui coleção **Postman** ([`postman/`](postman/)), exemplos ([`examples/`](e
 ## Instalação
 
 ```bash
-composer require mfecchio/siscomex-portalunico-sdk guzzlehttp/guzzle
+composer require marcelofecchio/siscomex guzzlehttp/guzzle
 ```
 
-> Enquanto o pacote não estiver no Packagist, adicione o repositório VCS:
-> `composer config repositories.siscomex vcs https://github.com/marcelofecchio/siscomex` e depois
-> `composer require mfecchio/siscomex-portalunico-sdk:dev-main`.
+Versão pré-1.0: até a 1.0 a API pública ainda pode mudar entre versões menores (`^0.1` aceita apenas correções `0.1.x`).
 
 ## Pré-requisitos no Siscomex
 
@@ -66,8 +65,8 @@ SISCOMEX_CLIENT_SECRET=...
 ```
 
 ```php
-use MFecchio\Siscomex\PortalUnico\Auth\Credentials\ChaveAcesso;
-use MFecchio\Siscomex\PortalUnico\Auth\Credentials\CertificadoA1;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\Credentials\ChaveAcesso;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\Credentials\CertificadoA1;
 
 $credencial = ChaveAcesso::fromEnv();                                    // SISCOMEX_CLIENT_ID / SISCOMEX_CLIENT_SECRET
 $credencial = new ChaveAcesso($clientId, $clientSecret);
@@ -81,10 +80,10 @@ Com certificado A1, `PortalUnicoClient::create()` configura o Guzzle automaticam
 ### Criando o cliente
 
 ```php
-use MFecchio\Siscomex\PortalUnico\PortalUnicoClient;
-use MFecchio\Siscomex\PortalUnico\Config\Ambiente;
-use MFecchio\Siscomex\PortalUnico\Config\Perfil;
-use MFecchio\Siscomex\PortalUnico\Auth\TokenStore\FileTokenStore;
+use MarceloFecchio\Siscomex\PortalUnico\PortalUnicoClient;
+use MarceloFecchio\Siscomex\PortalUnico\Config\Ambiente;
+use MarceloFecchio\Siscomex\PortalUnico\Config\Perfil;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\TokenStore\FileTokenStore;
 
 $client = PortalUnicoClient::create(
     ambiente: Ambiente::Validacao,              // ou Ambiente::Producao
@@ -98,8 +97,8 @@ $client = PortalUnicoClient::create(
 Opções avançadas via `ClientConfig` (timeout, tentativas em 503, política dos 60 s, bloqueio de escrita em produção):
 
 ```php
-use MFecchio\Siscomex\PortalUnico\Config\ClientConfig;
-use MFecchio\Siscomex\PortalUnico\Config\PoliticaIntervaloAutenticacao;
+use MarceloFecchio\Siscomex\PortalUnico\Config\ClientConfig;
+use MarceloFecchio\Siscomex\PortalUnico\Config\PoliticaIntervaloAutenticacao;
 
 $client = PortalUnicoClient::create(
     credencial: $credencial,
@@ -115,8 +114,8 @@ $client = PortalUnicoClient::create(
 ### Cadastro de Atributos
 
 ```php
-use MFecchio\Siscomex\PortalUnico\Enum\Modalidade;
-use MFecchio\Siscomex\PortalUnico\Enum\ObjetivoAtributo;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\Modalidade;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\ObjetivoAtributo;
 
 // Atributos de uma NCM (aceita "84733049" ou "8473.30.49")
 $atributos = $client->atributos()->porNcm('84733049', modalidade: Modalidade::Importacao);
@@ -158,9 +157,9 @@ file_put_contents('atributos.json', $publico->baixarJsonPorNcm()); // JSON bruto
 ### Catálogo de Produtos
 
 ```php
-use MFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ProdutoRequest;
-use MFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\FiltroProdutos;
-use MFecchio\Siscomex\PortalUnico\Enum\SituacaoProduto;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ProdutoRequest;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\FiltroProdutos;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\SituacaoProduto;
 
 $produtos = $client->catalogo()->produtos();
 $cnpjRaiz = '12345678'; // ou CpfCnpjRaiz::deCnpj('12.345.678/0001-95')
@@ -197,7 +196,7 @@ $todos = $produtos->exportar($cnpjRaiz, exibirDesativados: false);
 ### Validação local antes de enviar
 
 ```php
-use MFecchio\Siscomex\PortalUnico\Validation\ValidadorProduto;
+use MarceloFecchio\Siscomex\PortalUnico\Validation\ValidadorProduto;
 
 $problemas = new ValidadorProduto()->validar($novo, $atributos);
 foreach ($problemas as $p) {
@@ -275,7 +274,7 @@ Exemplo de service provider (não incluso no pacote):
 
 ```php
 use Illuminate\Support\Facades\Cache;
-use MFecchio\Siscomex\PortalUnico\Auth\TokenStore\Psr16TokenStore;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\TokenStore\Psr16TokenStore;
 
 $this->app->singleton(PortalUnicoClient::class, fn () => PortalUnicoClient::create(
     ambiente: Ambiente::fromString(config('services.siscomex.ambiente')),

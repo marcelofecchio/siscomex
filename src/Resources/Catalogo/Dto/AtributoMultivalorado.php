@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto;
+namespace MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto;
 
-use MFecchio\Siscomex\PortalUnico\Support\Data;
+use MarceloFecchio\Siscomex\PortalUnico\Support\Data;
 
 /** Atributo multivalorado (ProdutoCampoMultivaloradoIntegracaoDTO). */
 final readonly class AtributoMultivalorado

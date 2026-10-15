@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Tests\Support;
+namespace MarceloFecchio\Siscomex\PortalUnico\Tests\Support;
 
 use GuzzleHttp\Psr7\HttpFactory;
 use GuzzleHttp\Psr7\Response;
-use MFecchio\Siscomex\PortalUnico\Auth\Credentials\ChaveAcesso;
-use MFecchio\Siscomex\PortalUnico\Auth\Credentials\Credential;
-use MFecchio\Siscomex\PortalUnico\Auth\TokenStore\InMemoryTokenStore;
-use MFecchio\Siscomex\PortalUnico\Auth\TokenStore\TokenStore;
-use MFecchio\Siscomex\PortalUnico\Config\ClientConfig;
-use MFecchio\Siscomex\PortalUnico\PortalUnicoClient;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\Credentials\ChaveAcesso;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\Credentials\Credential;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\TokenStore\InMemoryTokenStore;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\TokenStore\TokenStore;
+use MarceloFecchio\Siscomex\PortalUnico\Config\ClientConfig;
+use MarceloFecchio\Siscomex\PortalUnico\PortalUnicoClient;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use Psr\Http\Message\RequestInterface;
 

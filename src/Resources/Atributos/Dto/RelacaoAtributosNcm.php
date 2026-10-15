@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto;
+namespace MarceloFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto;
 
-use MFecchio\Siscomex\PortalUnico\Support\Data;
-use MFecchio\Siscomex\PortalUnico\ValueObject\Ncm;
+use MarceloFecchio\Siscomex\PortalUnico\Support\Data;
+use MarceloFecchio\Siscomex\PortalUnico\ValueObject\Ncm;
 
 /**
  * Relação completa de atributos por NCM (arquivo diário ATRIBUTOS_POR_NCM_AAAA_MM_DD.json):

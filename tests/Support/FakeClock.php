@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Tests\Support;
+namespace MarceloFecchio\Siscomex\PortalUnico\Tests\Support;
 
-use MFecchio\Siscomex\PortalUnico\Support\Sleeper;
+use MarceloFecchio\Siscomex\PortalUnico\Support\Sleeper;
 use Psr\Clock\ClockInterface;
 
 /**

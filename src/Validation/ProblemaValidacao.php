@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Validation;
+namespace MarceloFecchio\Siscomex\PortalUnico\Validation;
 
 final readonly class ProblemaValidacao implements \Stringable
 {

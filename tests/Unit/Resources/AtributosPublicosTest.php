@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Tests\Unit\Resources;
+namespace MarceloFecchio\Siscomex\PortalUnico\Tests\Unit\Resources;
 
 use GuzzleHttp\Psr7\Response;
-use MFecchio\Siscomex\PortalUnico\Enum\Modalidade;
-use MFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto\RelacaoAtributosNcm;
-use MFecchio\Siscomex\PortalUnico\Tests\Support\TestCase;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\Modalidade;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto\RelacaoAtributosNcm;
+use MarceloFecchio\Siscomex\PortalUnico\Tests\Support\TestCase;
 
 final class AtributosPublicosTest extends TestCase
 {

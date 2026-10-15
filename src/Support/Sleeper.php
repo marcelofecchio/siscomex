@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MFecchio\Siscomex\PortalUnico\Support;
+namespace MarceloFecchio\Siscomex\PortalUnico\Support;
 
 /**
  * Abstração de espera, para permitir testes sem sleep real.
