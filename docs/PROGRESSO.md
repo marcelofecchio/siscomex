@@ -1,14 +1,14 @@
 # Progresso
 
-Última atualização: 2026-10-15 19:15 — máquina: casa
+Última atualização: 2026-10-16 09:00 — máquina: casa
 
 ## Status atual
 
-SDK v0.1 implementado e **validado no portal real**: em Validação, autenticação IMPEXP com chaves de acesso, consulta de atributos e o ciclo completo do produto (incluir → consultar → detalhar → nova versão → histórico → código interno → desativar) passaram via SDK (`composer test:integration`, 5/5) e via Postman/Newman ("Fluxo completo", 10/10 asserções). Em Produção, apenas leituras (autenticação + atributos). `composer qa` verde (169 testes unitários). Repositório público em github.com/marcelofecchio/siscomex com CI verde (PHP 8.4 e 8.5).
+SDK v0.1 implementado e **validado no portal real**: em Validação, autenticação IMPEXP com chaves de acesso, consulta de atributos e o ciclo completo do produto (incluir → consultar → detalhar → nova versão → histórico → código interno → desativar) passaram via SDK (`composer test:integration`, 5/5) e via Postman/Newman ("Fluxo completo", 10/10 asserções). Em Produção, apenas leituras (autenticação + atributos). `composer qa` verde (169 testes unitários). Repositório público em github.com/marcelofecchio/siscomex com CI verde (PHP 8.4 e 8.5). **v0.1.0 publicada no Packagist** (`composer require marcelofecchio/siscomex`).
 
 ## Próximo passo exato
 
-Usuário: cadastrar `https://github.com/marcelofecchio/siscomex` em <https://packagist.org/packages/submit> (conta que já tem o vendor `marcelofecchio`) e confirmar a sincronização automática (integração GitHub do Packagist). Depois conferir `composer require marcelofecchio/siscomex` num projeto limpo. Em seguida, v1.1 (Fabricantes e Operadores Estrangeiros).
+v1.1: Fabricantes-Produtores e Operadores Estrangeiros do Catálogo (endpoints em `docs/api/MAPA-ENDPOINTS.md`), começando pela leitura da spec `catp.json` para os DTOs `FabricanteIntegracaoDTO` e `OperadorEstrangeiroIntegracaoDTO`.
 
 ## Feito
 
@@ -20,12 +20,12 @@ Usuário: cadastrar `https://github.com/marcelofecchio/siscomex` em <https://pac
 - [x] Fase 5 — Coleção Postman + ambientes + README (testado com Newman em Produção, só leitura; bloqueio de escrita verificado sem tráfego)
 - [x] Fase 6 — Validação: autenticação, atributos e ciclo completo do produto via SDK e Postman; Produção: só leitura
 - [x] Fase 7 — README, exemplos, CHANGELOG
-- [x] Fase 8 (parcial) — GitHub Actions; repositório público; pacote renomeado para `marcelofecchio/siscomex`; `composer validate --strict`; tag e release `v0.1.0` no GitHub; badge Packagist no README
+- [x] Fase 8 — GitHub Actions; repositório público; pacote renomeado para `marcelofecchio/siscomex`; `composer validate --strict`; tag e release `v0.1.0`; publicado no Packagist com webhook de atualização; `composer require marcelofecchio/siscomex` testado em projeto limpo (16/10/2026)
+- [x] `docs/PROMPT-INICIAL.md` revisado com os fatos confirmados e os parâmetros definidos (16/10/2026)
 - [x] `doc/PROMPT-INICIAL.md` movido para `docs/` (pasta `doc` removida)
 
 ## Falta
 
-- [ ] Fase 8 — cadastro no Packagist + sincronização automática (requer login do usuário em packagist.org)
 - [ ] v1.1 — Fabricantes-Produtores e Operadores Estrangeiros
 - [ ] Confirmar os itens `TODO(confirmar)` abaixo com respostas reais
 
