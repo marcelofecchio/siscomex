@@ -1,5 +1,5 @@
 {
-    "name": "marcelofecchio/siscomex",
+    "name": "marcelofecchio/siscomex-sdk",
     "description": "SDK PHP 8.4 para a API Pública do Portal Único Siscomex: autenticação (IMPEXP), Cadastro de Atributos e Catálogo de Produtos.",
     "type": "library",
     "license": "MIT",
@@ -20,9 +20,9 @@
         }
     ],
     "support": {
-        "issues": "https://github.com/marcelofecchio/siscomex/issues",
-        "source": "https://github.com/marcelofecchio/siscomex",
-        "docs": "https://github.com/marcelofecchio/siscomex#readme"
+        "issues": "https://github.com/marcelofecchio/siscomex-sdk/issues",
+        "source": "https://github.com/marcelofecchio/siscomex-sdk",
+        "docs": "https://github.com/marcelofecchio/siscomex-sdk#readme"
     },
     "require": {
         "php": "^8.4",

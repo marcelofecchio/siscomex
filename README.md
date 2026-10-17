@@ -1,7 +1,7 @@
 # SDK PHP — API Pública do Portal Único Siscomex
 
-[![CI](https://github.com/marcelofecchio/siscomex/actions/workflows/ci.yml/badge.svg)](https://github.com/marcelofecchio/siscomex/actions/workflows/ci.yml)
-[![Packagist](https://img.shields.io/packagist/v/marcelofecchio/siscomex)](https://packagist.org/packages/marcelofecchio/siscomex)
+[![CI](https://github.com/marcelofecchio/siscomex-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/marcelofecchio/siscomex-sdk/actions/workflows/ci.yml)
+[![Packagist](https://img.shields.io/packagist/v/marcelofecchio/siscomex-sdk)](https://packagist.org/packages/marcelofecchio/siscomex-sdk)
 ![PHP](https://img.shields.io/badge/php-%5E8.4-777bb4)
 ![Licença](https://img.shields.io/badge/licen%C3%A7a-MIT-green)
 
@@ -41,7 +41,7 @@ Inclui coleção **Postman** ([`postman/`](postman/)), exemplos ([`examples/`](e
 ## Instalação
 
 ```bash
-composer require marcelofecchio/siscomex guzzlehttp/guzzle
+composer require marcelofecchio/siscomex-sdk guzzlehttp/guzzle
 ```
 
 Versão pré-1.0: até a 1.0 a API pública ainda pode mudar entre versões menores (`^0.1` aceita apenas correções `0.1.x`).

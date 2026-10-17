@@ -2,7 +2,7 @@
 
 ## Visão geral
 
-Pacote Composer `marcelofecchio/siscomex` (namespace `MarceloFecchio\Siscomex\PortalUnico`), SDK agnóstico de framework para a API pública do Portal Único Siscomex, perfil **IMPEXP**.
+Pacote Composer `marcelofecchio/siscomex-sdk` (namespace `MarceloFecchio\Siscomex\PortalUnico`), SDK agnóstico de framework para a API pública do Portal Único Siscomex, perfil **IMPEXP**.
 
 - **Escopo v0.1**: autenticação (Chaves de Acesso e certificado A1), Cadastro de Atributos, Catálogo de Produtos (produtos), coleção Postman, exemplos.
 - **Fora do escopo**: qualquer aplicação final (telas, painel, API própria), webhooks/eventos push, Fundamento Legal/LPCO, autenticação de sistemas de órgãos públicos.

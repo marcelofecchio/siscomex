@@ -1,10 +1,10 @@
 # Progresso
 
-Última atualização: 2026-10-16 09:00 — máquina: casa
+Última atualização: 2026-10-17 09:00 — máquina: casa
 
 ## Status atual
 
-SDK v0.1 implementado e **validado no portal real**: em Validação, autenticação IMPEXP com chaves de acesso, consulta de atributos e o ciclo completo do produto (incluir → consultar → detalhar → nova versão → histórico → código interno → desativar) passaram via SDK (`composer test:integration`, 5/5) e via Postman/Newman ("Fluxo completo", 10/10 asserções). Em Produção, apenas leituras (autenticação + atributos). `composer qa` verde (169 testes unitários). Repositório público em github.com/marcelofecchio/siscomex com CI verde (PHP 8.4 e 8.5). **v0.1.0 publicada no Packagist** (`composer require marcelofecchio/siscomex`).
+SDK v0.1 implementado e **validado no portal real**: em Validação, autenticação IMPEXP com chaves de acesso, consulta de atributos e o ciclo completo do produto (incluir → consultar → detalhar → nova versão → histórico → código interno → desativar) passaram via SDK (`composer test:integration`, 5/5) e via Postman/Newman ("Fluxo completo", 10/10 asserções). Em Produção, apenas leituras (autenticação + atributos). `composer qa` verde (169 testes unitários). Repositório público em github.com/marcelofecchio/siscomex com CI verde (PHP 8.4 e 8.5). **v0.1.1 é a primeira versão com o nome final do pacote** (`composer require marcelofecchio/siscomex-sdk`); a v0.1.0 foi publicada como `marcelofecchio/siscomex`.
 
 ## Próximo passo exato
 
@@ -33,6 +33,7 @@ v1.1: Fabricantes-Produtores e Operadores Estrangeiros do Catálogo (endpoints e
 
 - 2026-10-15 — Nome do pacote `marcelofecchio/siscomex`, namespace `MarceloFecchio\Siscomex\PortalUnico`, licença MIT — escolha do usuário antes da publicação, alinhada aos pacotes existentes da conta no Packagist (`marcelofecchio/correios-api`, `marcelofecchio/safe2pay-api`); substitui o padrão `mfecchio/siscomex-portalunico-sdk` sugerido no prompt.
 - 2026-10-15 — Repositório público `github.com/marcelofecchio/siscomex` — pedido do usuário.
+- 2026-10-17 — Repositório renomeado para `siscomex-sdk` e pacote para `marcelofecchio/siscomex-sdk` (pedido do usuário; o Packagist não renomeia pacotes, então o antigo é removido e o novo cadastrado). Namespace inalterado. Tag nova `v0.1.1`, porque o `composer.json` da `v0.1.0` ainda tem o nome antigo.
 - 2026-10-15 — Credencial principal: **Chaves de Acesso** (o usuário forneceu um par); certificado A1 também suportado (mTLS via `CURLOPT_SSLCERTTYPE=P12` ou PEM temporário 0600). A3 não suportado.
 - 2026-10-15 — PSR-18 + PSR-17 com `php-http/discovery`; Guzzle 7 recomendado (obrigatório para mTLS) e usado automaticamente quando instalado.
 - 2026-10-15 — Cache de sessão via interface `TokenStore` com `InMemoryTokenStore` (padrão), `FileTokenStore` (flock) e `Psr16TokenStore` (lock opcional injetável).
