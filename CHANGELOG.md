@@ -5,7 +5,9 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 
 ## [Não lançado]
 
-Previsto para **0.2.0**. Validado no ambiente de Validação em 17/10/2026 (testes de integração e Postman CLI).
+## [0.2.0] - 2026-10-17
+
+Validado no ambiente de Validação em 17/10/2026 (testes de integração e Postman CLI).
 
 ### Adicionado
 - **Operadores estrangeiros** — `catalogo()->operadoresEstrangeiros()`: consultar (com resultado parcial 206), detalhar, histórico, incluir (inclusive retroativo), nova versão (inclusive retroativa), retificar, desativar e exportar; DTOs `OperadorEstrangeiroRequest` (imutável, com validação dos tamanhos da spec, e-mail e subdivisão ISO 3166-2), `OperadorEstrangeiro`, `IdentificacaoAdicional`, `FiltroOperadoresEstrangeiros`; enum `SituacaoOperadorEstrangeiro`; value object `CodigoPais`.
@@ -45,6 +47,7 @@ Primeira versão pública. Validada no portal real: no ambiente de Validação, 
 - Coleção Postman v2.1 com ambientes de Validação e Produção (somente consultas; escrita pulada inclusive no Newman), autenticação automática e fluxo completo.
 - Exemplos, documentação (README, CLAUDE.md, mapa de endpoints, specs OpenAPI) e CI no GitHub Actions (PHP 8.4 e 8.5).
 
-[Não lançado]: https://github.com/marcelofecchio/siscomex-sdk/compare/v0.1.1...HEAD
+[Não lançado]: https://github.com/marcelofecchio/siscomex-sdk/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/marcelofecchio/siscomex-sdk/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/marcelofecchio/siscomex-sdk/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/marcelofecchio/siscomex-sdk/releases/tag/v0.1.0

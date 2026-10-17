@@ -4,13 +4,13 @@
 
 ## Status atual
 
-**v0.2 (não lançada) na branch `feat/operadores-fabricantes-e-painel`**: operadores estrangeiros, fabricantes-produtores, busca por código interno, inclusão em lote, atributos condicionados (avaliação + `ValidadorProduto`), cache de atributos, `testarConexao()` e `CertificadoA1::fromString()` — implementados a partir de `SUGESTOES-SDK.md` (levantamento do painel) e **validados na Validação em 17/10/2026** (integração 6/6; Postman CLI nas pastas novas, só leitura, 6/6). `composer qa` verde (252 testes unitários).
+**v0.2.0 lançada em 17/10/2026** (PR da branch `feat/operadores-fabricantes-e-painel`, CI verde, tag `v0.2.0`, release no GitHub e Packagist): operadores estrangeiros, fabricantes-produtores, busca por código interno, inclusão em lote, atributos condicionados (avaliação + `ValidadorProduto`), cache de atributos, `testarConexao()` e `CertificadoA1::fromString()` — implementados a partir de `SUGESTOES-SDK.md` (levantamento do painel) e **validados na Validação em 17/10/2026** (integração 6/6; Postman CLI nas pastas novas, só leitura, 6/6). `composer qa` verde (252 testes unitários).
 
 SDK v0.1 implementado e **validado no portal real**: em Validação, autenticação IMPEXP com chaves de acesso, consulta de atributos e o ciclo completo do produto (incluir → consultar → detalhar → nova versão → histórico → código interno → desativar) passaram via SDK (`composer test:integration`, 5/5) e via Postman/Newman ("Fluxo completo", 10/10 asserções). Em Produção, apenas leituras (autenticação + atributos). `composer qa` verde (169 testes unitários). Repositório público em github.com/marcelofecchio/siscomex com CI verde (PHP 8.4 e 8.5). **v0.1.1 é a primeira versão com o nome final do pacote** (`composer require marcelofecchio/siscomex-sdk`); a v0.1.0 foi publicada como `marcelofecchio/siscomex`.
 
 ## Próximo passo exato
 
-Revisar e mesclar a branch `feat/operadores-fabricantes-e-painel` em `main`; lançar **v0.2.0** (mover o bloco "Não lançado" do CHANGELOG, atualizar `ClientConfig::$userAgent` para `/0.2`, tag + release; o Packagist atualiza pelo webhook). Depois, atualizar o painel para usar os recursos novos.
+Atualizar o painel para `marcelofecchio/siscomex-sdk:^0.2` e usar os recursos novos (operadores, fabricantes, código interno, lote, testar conexão, condicionados).
 
 ## Feito
 
@@ -25,11 +25,11 @@ Revisar e mesclar a branch `feat/operadores-fabricantes-e-painel` em `main`; lan
 - [x] Fase 8 — GitHub Actions; repositório público; pacote renomeado para `marcelofecchio/siscomex`; `composer validate --strict`; tag e release `v0.1.0`; publicado no Packagist com webhook de atualização; `composer require marcelofecchio/siscomex` testado em projeto limpo (16/10/2026)
 - [x] `docs/PROMPT-INICIAL.md` revisado com os fatos confirmados e os parâmetros definidos (16/10/2026)
 - [x] `doc/PROMPT-INICIAL.md` movido para `docs/` (pasta `doc` removida)
+- [x] 17/10/2026 — v0.2.0: PR, CI, merge em `main`, tag, release e Packagist
 - [x] 17/10/2026 — `SUGESTOES-SDK.md` verificado contra as specs e a Validação e implementado (itens 1, 2, 3, 4, 5, 7, 8, 10 e o `CertificadoA1::fromString()`); itens 6 e 9 e parte dos de baixa prioridade descartados com motivo (ver Decisões)
 
 ## Falta
 
-- [ ] Lançar v0.2.0 (ver "Próximo passo exato")
 - [ ] Painel: usar `operadoresEstrangeiros()`, `fabricantes()`, `buscarPorCodigoInterno()`, `incluirLote()`, `testarConexao()` e `obrigatoriosPara()`; remover as lacunas do SDK do PROGRESSO do painel
 - [ ] Confirmar os itens `TODO(confirmar)` abaixo com respostas reais
 
