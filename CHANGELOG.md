@@ -5,6 +5,26 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 
 ## [Não lançado]
 
+## [0.3.0] - 2026-10-17
+
+Validado no ambiente de Validação em 17/10/2026 (integração 7/7; Postman CLI nas pastas novas).
+
+### Adicionado
+- **Erro normalizado** — `SiscomexException::erro()` devolve `ErroApi` (status, código, tag, severidade, campo, detalhes, `porCampo()`, `codigos()`, `toArray()`) para qualquer exceção; `mensagemAmigavel()` com o mapa `CodigosErro` (apenas códigos documentados nas specs ou observados no portal).
+- **Produto + fabricantes** — `produtos()->incluirComFabricantes()` com `ResultadoInclusaoComFabricantes` (`Completo` | `ProdutoSemVinculo`, `paraReprocessar()`, `retomarApos()`); `fabricantes()->vincularTodos()`; `Fabricante` (sem código de produto) e `ProdutoComFabricantes`; `incluirLote()` aceita itens com fabricantes (novo status `IncluidoSemVinculo` e `ResultadoLote::vinculosParaReprocessar()`).
+- **Portal Único falso para testes** — `Testing\PortalUnicoFake` com cenários prontos (produto incluído, código interno livre/ativo/desativado/duplicado, erro de validação, rate limit, indisponibilidade, falha de rede, operador, fabricante), autenticação automática e inspeção das requisições.
+- **Simulação de escrita** — `ClientConfig(simularEscrita: true)`: POST/PUT/DELETE não são enviados (nem autenticam); `escritasSimuladas()` registra o que seria enviado.
+- **Tabelas Comex (TABX)** — `tabelas()`: `listar()`, `metadados()`, `consultar()` (paginação por `Content-Range`, 206 = há mais páginas), `todos()` (gerador sobre todas as páginas), `paises()`; `FiltroTabela`.
+- `Ambiente::janelaDeIndisponibilidade()` / `provavelmenteIndisponivel()` (parada diária 01h–03h; manutenção da Validação).
+- README: seção "Versionamento e estabilidade" e APIs marcadas `@experimental`.
+- Coleção Postman: pasta Tabelas Comex (TABX) e "Fluxo operador e fabricante (Validação)"; instruções do Postman CLI.
+
+### Alterado
+- `FabricanteRequest` passa a delegar a validação a `Fabricante` e expõe `$fabricante`; as propriedades deixaram de ser promovidas no construtor (assinatura e comportamento iguais).
+- `ResultadoLote::incluidos()` inclui também os itens `IncluidoSemVinculo`; `pendentes()` devolve `ProdutoComFabricantes` para itens que tinham fabricantes.
+- `ItemLote::mensagens()` inclui as mensagens dos vínculos que falharam.
+- `ValidationException::mensagensPorCampo()` usa o `field` do nível superior do erro, quando houver, em vez da chave "".
+
 ## [0.2.0] - 2026-10-17
 
 Validado no ambiente de Validação em 17/10/2026 (testes de integração e Postman CLI).
@@ -47,7 +67,8 @@ Primeira versão pública. Validada no portal real: no ambiente de Validação, 
 - Coleção Postman v2.1 com ambientes de Validação e Produção (somente consultas; escrita pulada inclusive no Newman), autenticação automática e fluxo completo.
 - Exemplos, documentação (README, CLAUDE.md, mapa de endpoints, specs OpenAPI) e CI no GitHub Actions (PHP 8.4 e 8.5).
 
-[Não lançado]: https://github.com/marcelofecchio/siscomex-sdk/compare/v0.2.0...HEAD
+[Não lançado]: https://github.com/marcelofecchio/siscomex-sdk/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/marcelofecchio/siscomex-sdk/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/marcelofecchio/siscomex-sdk/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/marcelofecchio/siscomex-sdk/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/marcelofecchio/siscomex-sdk/releases/tag/v0.1.0

@@ -17,6 +17,7 @@ use MarceloFecchio\Siscomex\PortalUnico\ValueObject\CodigoPais;
  * FabricanteRequest::operadorEstrangeiro(codigoProduto: 123, codigoPais: 'CN', codigoOperador: 'OPE_1');
  * FabricanteRequest::fabricanteNacional(codigoProduto: 123, cpfCnpjFabricante: '12.345.678/0001-95', codigoPais: 'BR');
  * FabricanteRequest::desconhecido(codigoProduto: 123, codigoPais: 'DE');
+ * Fabricante::desconhecido('DE')->paraProduto(123); // equivalente, a partir de um Fabricante
  * ```
  *
  * `conhecido` tem o sentido do nome: true = fabricante/produtor conhecido. A descrição da spec
@@ -26,40 +27,51 @@ use MarceloFecchio\Siscomex\PortalUnico\ValueObject\CodigoPais;
  */
 final readonly class FabricanteRequest
 {
-    public const int MAX_CODIGO_OPERADOR = 35;
+    public const int MAX_CODIGO_OPERADOR = Fabricante::MAX_CODIGO_OPERADOR;
+
+    public Fabricante $fabricante;
 
     public CodigoPais $codigoPais;
+
+    public bool $conhecido;
+
+    public ?string $codigoOperadorEstrangeiro;
 
     public ?string $cpfCnpjFabricante;
 
     public function __construct(
         public int $codigoProduto,
         CodigoPais|string $codigoPais,
-        public bool $conhecido,
-        public ?string $codigoOperadorEstrangeiro = null,
+        bool $conhecido,
+        ?string $codigoOperadorEstrangeiro = null,
         ?string $cpfCnpjFabricante = null,
     ) {
-        $this->codigoPais = CodigoPais::of($codigoPais);
-        $this->cpfCnpjFabricante = $cpfCnpjFabricante === null ? null : self::normalizarCpfCnpj($cpfCnpjFabricante);
-        $this->validar();
+        if ($codigoProduto < 1) {
+            throw new \InvalidArgumentException('Informe o código do produto ao qual o fabricante será vinculado.');
+        }
+        $this->fabricante = new Fabricante($codigoPais, $conhecido, $codigoOperadorEstrangeiro, $cpfCnpjFabricante);
+        $this->codigoPais = $this->fabricante->codigoPais;
+        $this->conhecido = $this->fabricante->conhecido;
+        $this->codigoOperadorEstrangeiro = $this->fabricante->codigoOperadorEstrangeiro;
+        $this->cpfCnpjFabricante = $this->fabricante->cpfCnpjFabricante;
     }
 
     /** Fabricante/produtor estrangeiro já cadastrado como operador estrangeiro. */
     public static function operadorEstrangeiro(int $codigoProduto, CodigoPais|string $codigoPais, string $codigoOperador): self
     {
-        return new self($codigoProduto, $codigoPais, true, codigoOperadorEstrangeiro: $codigoOperador);
+        return Fabricante::operadorEstrangeiro($codigoPais, $codigoOperador)->paraProduto($codigoProduto);
     }
 
     /** Fabricante/produtor nacional, identificado por CPF ou CNPJ completo. */
     public static function fabricanteNacional(int $codigoProduto, string $cpfCnpjFabricante, CodigoPais|string $codigoPais): self
     {
-        return new self($codigoProduto, $codigoPais, true, cpfCnpjFabricante: $cpfCnpjFabricante);
+        return Fabricante::nacional($cpfCnpjFabricante, $codigoPais)->paraProduto($codigoProduto);
     }
 
     /** Fabricante/produtor desconhecido: informa-se apenas o país de origem. */
     public static function desconhecido(int $codigoProduto, CodigoPais|string $codigoPais): self
     {
-        return new self($codigoProduto, $codigoPais, false);
+        return Fabricante::desconhecido($codigoPais)->paraProduto($codigoProduto);
     }
 
     /**
@@ -78,33 +90,5 @@ final readonly class FabricanteRequest
         ];
 
         return array_filter($dados, static fn(mixed $v): bool => $v !== null);
-    }
-
-    private function validar(): void
-    {
-        if ($this->codigoProduto < 1) {
-            throw new \InvalidArgumentException('Informe o código do produto ao qual o fabricante será vinculado.');
-        }
-        if ($this->codigoOperadorEstrangeiro !== null && (trim($this->codigoOperadorEstrangeiro) === '' || \strlen($this->codigoOperadorEstrangeiro) > self::MAX_CODIGO_OPERADOR)) {
-            throw new \InvalidArgumentException(\sprintf('Código do operador estrangeiro deve ter entre 1 e %d caracteres.', self::MAX_CODIGO_OPERADOR));
-        }
-        $identificacoes = ($this->codigoOperadorEstrangeiro === null ? 0 : 1) + ($this->cpfCnpjFabricante === null ? 0 : 1);
-        if ($this->conhecido && $identificacoes !== 1) {
-            throw new \InvalidArgumentException('Fabricante conhecido: informe o código do operador estrangeiro ou o CPF/CNPJ do fabricante nacional (apenas um).');
-        }
-        if (!$this->conhecido && $identificacoes !== 0) {
-            throw new \InvalidArgumentException('Fabricante desconhecido não deve ter operador estrangeiro nem CPF/CNPJ informado.');
-        }
-    }
-
-    /** CPF (11 dígitos) ou CNPJ completo (14 posições; as 12 primeiras podem ser alfanuméricas). */
-    private static function normalizarCpfCnpj(string $valor): string
-    {
-        $limpo = strtoupper(preg_replace('/[\s.\/\-]/', '', $valor) ?? '');
-        if (preg_match('/^(\d{11}|[A-Z0-9]{12}\d{2})$/', $limpo) !== 1) {
-            throw new \InvalidArgumentException(\sprintf('CPF/CNPJ do fabricante inválido: "%s". Informe o CPF (11 dígitos) ou o CNPJ completo (14 posições).', $valor));
-        }
-
-        return $limpo;
     }
 }

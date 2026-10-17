@@ -29,19 +29,25 @@ class SiscomexException extends \RuntimeException
         parent::__construct($message, $httpStatus ?? 0, $previous);
     }
 
+    /** O erro em formato estável (código, tag, campo, detalhes e mensagem amigável). */
+    public function erro(): ErroApi
+    {
+        return ErroApi::deExcecao($this);
+    }
+
+    /** Mensagem para o usuário final (descrição conhecida do código ou a do portal). */
+    public function mensagemAmigavel(): string
+    {
+        return $this->erro()->mensagemAmigavel();
+    }
+
     /**
      * O erro ou algum de seus detalhes tem um destes códigos?
      * Ex.: `$e->possuiCodigo('CATP-ER2021')` (retificação idêntica à versão existente).
      */
     public function possuiCodigo(string ...$codigos): bool
     {
-        foreach ([$this->codigoErro, ...array_map(static fn(ErroDetalhe $d): ?string => $d->codigo, $this->detalhes)] as $codigo) {
-            if ($codigo !== null && \in_array($codigo, $codigos, true)) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->erro()->possuiCodigo(...$codigos);
     }
 
     /** Texto pronto para abrir chamado na Central Serpro. */

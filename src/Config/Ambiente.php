@@ -39,6 +39,37 @@ enum Ambiente: string
         };
     }
 
+    /**
+     * Motivo pelo qual o portal provavelmente está indisponível no momento informado, ou null.
+     * Apenas informativo (para a UI avisar): não bloqueia chamadas — a Validação já respondeu
+     * normalmente dentro dessas janelas.
+     *
+     * - Ambos: parada programada diária das 01h às 03h (PUCX-ER0401, plat-auth.json).
+     * - Validação: manutenções de segunda a sexta das 18h às 7h e nos fins de semana
+     *   (https://docs.portalunico.siscomex.gov.br/ambientes/).
+     *
+     * Horários de Brasília (America/Sao_Paulo).
+     */
+    public function janelaDeIndisponibilidade(\DateTimeInterface $em): ?string
+    {
+        $local = \DateTimeImmutable::createFromInterface($em)->setTimezone(new \DateTimeZone('America/Sao_Paulo'));
+        $hora = (int) $local->format('G');
+
+        if ($hora >= 1 && $hora < 3) {
+            return 'Parada programada diária do Portal Único (01h às 03h).';
+        }
+        if ($this === self::Validacao && ((int) $local->format('N') >= 6 || $hora >= 18 || $hora < 7)) {
+            return 'Janela de manutenção do ambiente de Validação (dias úteis das 18h às 7h e fins de semana).';
+        }
+
+        return null;
+    }
+
+    public function provavelmenteIndisponivel(\DateTimeInterface $em): bool
+    {
+        return $this->janelaDeIndisponibilidade($em) !== null;
+    }
+
     public function isProducao(): bool
     {
         return $this === self::Producao;

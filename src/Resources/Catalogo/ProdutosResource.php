@@ -5,21 +5,24 @@ declare(strict_types=1);
 namespace MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo;
 
 use MarceloFecchio\Siscomex\PortalUnico\Enum\StatusItemLote;
-use MarceloFecchio\Siscomex\PortalUnico\Exceptions\AuthenticationException;
-use MarceloFecchio\Siscomex\PortalUnico\Exceptions\ProductionWriteBlockedException;
-use MarceloFecchio\Siscomex\PortalUnico\Exceptions\RateLimitException;
-use MarceloFecchio\Siscomex\PortalUnico\Exceptions\ServiceUnavailableException;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\StatusVinculo;
 use MarceloFecchio\Siscomex\PortalUnico\Exceptions\SiscomexException;
 use MarceloFecchio\Siscomex\PortalUnico\Exceptions\TransportException;
 use MarceloFecchio\Siscomex\PortalUnico\Http\Transport;
 use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ConsultaCodigoInterno;
 use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\EventoHistoricoProduto;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\Fabricante;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\FabricanteRequest;
 use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\FiltroProdutos;
 use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ItemLote;
 use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\Produto;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ProdutoComFabricantes;
 use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ProdutoRequest;
 use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ResultadoConsultaProdutos;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ResultadoInclusaoComFabricantes;
 use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ResultadoLote;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ResultadoVinculo;
+use MarceloFecchio\Siscomex\PortalUnico\Support\ClassificacaoErro;
 use MarceloFecchio\Siscomex\PortalUnico\Support\Data;
 use MarceloFecchio\Siscomex\PortalUnico\Support\Versao;
 use MarceloFecchio\Siscomex\PortalUnico\ValueObject\CpfCnpjRaiz;
@@ -35,7 +38,12 @@ final readonly class ProdutosResource
 {
     public const string PREFIXO = '/catp/api/ext/produto';
 
-    public function __construct(private Transport $transport) {}
+    private FabricantesResource $fabricantes;
+
+    public function __construct(private Transport $transport, ?FabricantesResource $fabricantes = null)
+    {
+        $this->fabricantes = $fabricantes ?? new FabricantesResource($transport);
+    }
 
     /** GET /ext/produto — consulta produtos pelos filtros. */
     public function consultar(FiltroProdutos $filtro): ResultadoConsultaProdutos
@@ -112,6 +120,30 @@ final readonly class ProdutosResource
     }
 
     /**
+     * Inclui o produto e, em seguida, vincula os fabricantes — a sequência que todo integrador
+     * repete, já que o vínculo exige o código do produto.
+     *
+     * Erros na inclusão do produto são lançados como em incluir(). Depois que o produto existe,
+     * nada é lançado: cada vínculo tem seu status e o resultado diz se ficou Completo ou
+     * ProdutoSemVinculo. Nesse caso, reprocesse só os vínculos:
+     * `fabricantes()->vincularTodos($cnpj, $resultado->paraReprocessar())`.
+     *
+     * @experimental
+     *
+     * @param list<Fabricante> $fabricantes
+     */
+    public function incluirComFabricantes(
+        CpfCnpjRaiz|string $cpfCnpjRaiz,
+        ProdutoRequest $produto,
+        array $fabricantes,
+        ?\DateTimeInterface $dataReferencia = null,
+    ): ResultadoInclusaoComFabricantes {
+        $incluido = $this->incluir($cpfCnpjRaiz, $produto, $dataReferencia);
+
+        return new ResultadoInclusaoComFabricantes($incluido, $this->vincularAoProduto($cpfCnpjRaiz, $incluido, $fabricantes));
+    }
+
+    /**
      * Inclui vários produtos em sequência, sem repetir automaticamente nenhum envio.
      *
      * - Recusa do portal ao item (HTTP 400/404/422): registra Erro e segue para o próximo.
@@ -120,11 +152,18 @@ final readonly class ProdutosResource
      * - Falha de rede durante o POST: o item fica Incerto (pode ter sido incluído) e o lote para.
      * - Demais erros HTTP (ex.: 500): registra Erro e segue.
      *
+     * Itens ProdutoComFabricantes têm os fabricantes vinculados logo após a inclusão; se algum
+     * vínculo falhar o item fica IncluidoSemVinculo (reprocesse com
+     * `fabricantes()->vincularTodos($cnpj, $resultado->vinculosParaReprocessar())`). Rate limit
+     * ou falha de rede num vínculo também interrompem o lote.
+     *
      * O callback recebe cada item processado; devolver false interrompe o lote (qualquer outro
      * retorno, inclusive void, continua).
      *
-     * @param iterable<int|string, ProdutoRequest> $produtos    a chave identifica o item (ex.: linha da planilha)
-     * @param (\Closure(ItemLote): mixed)|null      $aoProgredir
+     * @experimental
+     *
+     * @param iterable<int|string, ProdutoRequest|ProdutoComFabricantes> $produtos    a chave identifica o item (ex.: linha da planilha)
+     * @param (\Closure(ItemLote): mixed)|null                            $aoProgredir
      */
     public function incluirLote(CpfCnpjRaiz|string $cpfCnpjRaiz, iterable $produtos, ?\Closure $aoProgredir = null): ResultadoLote
     {
@@ -132,24 +171,29 @@ final readonly class ProdutosResource
         $itens = [];
         $interrupcao = null;
 
-        foreach ($produtos as $chave => $request) {
+        foreach ($produtos as $chave => $entrada) {
+            [$request, $fabricantes] = $entrada instanceof ProdutoComFabricantes ? [$entrada->produto, $entrada->fabricantes] : [$entrada, []];
             if ($interrupcao !== null) {
-                $itens[] = new ItemLote($chave, $request, StatusItemLote::Pendente);
+                $itens[] = new ItemLote($chave, $request, StatusItemLote::Pendente, fabricantes: $fabricantes);
                 continue;
             }
 
             try {
-                $item = new ItemLote($chave, $request, StatusItemLote::Incluido, produto: $this->incluir($cpfCnpjRaiz, $request));
+                $produto = $this->incluir($cpfCnpjRaiz, $request);
+                $vinculos = $this->vincularAoProduto($cpfCnpjRaiz, $produto, $fabricantes);
+                $semVinculo = array_filter($vinculos, static fn(ResultadoVinculo $v): bool => !$v->vinculado()) !== [];
+                $item = new ItemLote($chave, $request, $semVinculo ? StatusItemLote::IncluidoSemVinculo : StatusItemLote::Incluido, $produto, fabricantes: $fabricantes, vinculos: $vinculos);
+                $interrupcao = ResultadoInclusaoComFabricantes::interrupcaoEm($vinculos);
             } catch (TransportException $e) {
-                $item = new ItemLote($chave, $request, StatusItemLote::Incerto, erro: $e);
+                $item = new ItemLote($chave, $request, StatusItemLote::Incerto, erro: $e, fabricantes: $fabricantes);
                 $interrupcao = $e;
             } catch (SiscomexException $e) {
-                if (self::interrompeLote($e)) {
-                    $itens[] = new ItemLote($chave, $request, StatusItemLote::Pendente, erro: $e);
+                if (ClassificacaoErro::interrompeSequencia($e)) {
+                    $itens[] = new ItemLote($chave, $request, StatusItemLote::Pendente, erro: $e, fabricantes: $fabricantes);
                     $interrupcao = $e;
                     continue;
                 }
-                $item = new ItemLote($chave, $request, StatusItemLote::Erro, erro: $e);
+                $item = new ItemLote($chave, $request, StatusItemLote::Erro, erro: $e, fabricantes: $fabricantes);
             }
 
             $itens[] = $item;
@@ -235,14 +279,23 @@ final readonly class ProdutosResource
         $this->transport->request($method, $path, json: ['codigoInterno' => $codigoInterno]);
     }
 
-    /** Erros que afetam todo o lote (e não só o item): rate limit, indisponibilidade e acesso. */
-    private static function interrompeLote(SiscomexException $e): bool
+    /**
+     * @param list<Fabricante> $fabricantes
+     *
+     * @return list<ResultadoVinculo>
+     */
+    private function vincularAoProduto(CpfCnpjRaiz|string $cpfCnpjRaiz, Produto $produto, array $fabricantes): array
     {
-        if ($e instanceof RateLimitException || $e instanceof ServiceUnavailableException || $e instanceof ProductionWriteBlockedException) {
-            return true;
+        if ($fabricantes === []) {
+            return [];
         }
+        if ($produto->codigo === null || $produto->codigo < 1) {
+            // Só acontece com ClientConfig::$simularEscrita: o portal não gerou código.
+            return array_map(static fn(Fabricante $f): ResultadoVinculo => new ResultadoVinculo($f, null, StatusVinculo::Pendente), $fabricantes);
+        }
+        $codigo = $produto->codigo;
 
-        return \in_array($e->httpStatus, [401, 403], true) || ($e instanceof AuthenticationException && !\in_array($e->httpStatus, [400, 404, 422], true));
+        return $this->fabricantes->vincularTodos($cpfCnpjRaiz, array_map(static fn(Fabricante $f): FabricanteRequest => $f->paraProduto($codigo), $fabricantes));
     }
 
     private function produtoDaResposta(mixed $dados, string $operacao): Produto

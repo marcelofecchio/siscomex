@@ -7,7 +7,9 @@ namespace MarceloFecchio\Siscomex\PortalUnico\Tests\Integration;
 use MarceloFecchio\Siscomex\PortalUnico\Enum\FormaPreenchimento;
 use MarceloFecchio\Siscomex\PortalUnico\Enum\Modalidade;
 use MarceloFecchio\Siscomex\PortalUnico\Enum\SituacaoCodigoInterno;
+use MarceloFecchio\Siscomex\PortalUnico\Enum\SituacaoInclusaoComFabricantes;
 use MarceloFecchio\Siscomex\PortalUnico\Enum\SituacaoOperadorEstrangeiro;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\Fabricante;
 use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\FabricanteRequest;
 use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\FiltroOperadoresEstrangeiros;
 use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\OperadorEstrangeiroRequest;
@@ -69,14 +71,17 @@ final class OperadoresFabricantesIntegrationTest extends IntegrationTestCase
             $pendentes = array_diff($atributos->obrigatoriosPara($request)->codigos(), $request->codigosAtributosInformados());
             self::assertSame([], array_values($pendentes), 'nenhum condicionado obrigatório pendente');
 
-            $produto = $catalogo->produtos()->incluir($cnpj, $request);
+            $inclusao = $catalogo->produtos()->incluirComFabricantes($cnpj, $request, [
+                Fabricante::operadorEstrangeiro('CN', $codigoOperador),
+                Fabricante::desconhecido('DE'),
+            ]);
+            $produto = $inclusao->produto;
             $codigoProduto = (int) $produto->codigo;
+            self::assertSame(SituacaoInclusaoComFabricantes::Completo, $inclusao->situacao());
+            self::assertTrue($inclusao->vinculos[0]->vinculo?->conhecido);
             self::assertSame(SituacaoCodigoInterno::Ativo, $catalogo->produtos()->buscarPorCodigoInterno($cnpj, $codigoInterno)->situacao());
 
             $vinculo = FabricanteRequest::operadorEstrangeiro($codigoProduto, 'CN', $codigoOperador);
-            self::assertTrue($catalogo->fabricantes()->vincular($cnpj, $vinculo)?->conhecido);
-            $catalogo->fabricantes()->vincular($cnpj, FabricanteRequest::desconhecido($codigoProduto, 'DE'));
-
             $historico = $catalogo->fabricantes()->historico($cnpj, $codigoProduto);
             self::assertCount(2, $historico);
             self::assertTrue($historico[0]->inclusao());

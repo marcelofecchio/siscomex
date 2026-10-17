@@ -1,0 +1,806 @@
+{
+ "swagger": "2.0",
+ "info": {
+  "description": "<h3>TABX - Tabelas Comex</h3>\n\n<h4>Introdu&ccedil;&atilde;o</h4>\n\n<p>A API do Tabelas Comex (TABX) reunir&aacute; todos os servi&ccedil;os para consulta dos metadados e manuten&ccedil;&atilde;o dos dados das tabelas do Com&eacute;rcio Exterior que atendem o Portal &Uacute;nico.</p>\n\t\n<h4>URLs de Acesso</h4>\n\n<p>Para utilizar os servi&ccedil;os dispon&iacute;veis nessa API deve-se seguir o seguinte padr&atilde;o de URL:</p>\n\n<p><em>https://{ambiente}/tabx/api/ext/{servi&ccedil;o}</em></p>\n\n<p>Onde, em <strong>{ambiente}</strong> deve-se informar o ambiente desejado dentre os ambientes dispon&iacute;veis na tabela abaixo e em <strong>{servi&ccedil;o}</strong> utilizar a URI do servi&ccedil;o desejado.</p>\n\n<style type=\"text/css\">\n.tg  {border-collapse:collapse;border-color:#bbb;border-spacing:0;width: 604px;}\n.tg td{background-color:#E0FFEB;border-color:#bbb;border-style:solid;border-width:1px;color:#594F4F;\n  font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;word-break:normal;}\n.tg th{background-color:#9DE0AD;border-color:#bbb;border-style:solid;border-width:1px;color:#493F3F;\n  font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}\n.tg .tg-cabecalho{text-align:left;vertical-align:top;}\n.tg .tg-corpo{border-color:inherit;text-align:left;vertical-align:top;}\n</style>\n\n<table class=\"tg\" style=\"width: 804px;\">\n<thead>\n  <tr>\n    <th class=\"tg-cabecalho\"><span style=\"font-weight:bold\">Nome do ambiente</span></th>\n    <th class=\"tg-cabecalho\"><span style=\"font-weight:bold\">URL de acesso</span></th>\n    <th class=\"tg-cabecalho\"><span style=\"font-weight:bold\">P&uacute;blico alvo</span></th>\n  </tr>\n</thead>\n<tbody>\n  <tr>\n    <td class=\"tg-corpo\">Ambiente de Homologa&ccedil;&atilde;o</td>\n    <td class=\"tg-corpo\">hom.pucomex.serpro.gov.br</td>\n    <td class=\"tg-corpo\">Intervenientes p&uacute;blicos (conforme perfil de acesso)</td>\n  </tr>\n  <tr>\n    <td class=\"tg-corpo\">Ambiente de Valida&ccedil;&atilde;o das Empresas</td>\n    <td class=\"tg-corpo\">val.portalunico.siscomex.gov.br</td>\n    <td class=\"tg-corpo\">Intervenientes privados</td>\n  </tr>\n  <tr>\n    <td class=\"tg-corpo\">Ambiente de Produ&ccedil;&atilde;o</td>\n    <td class=\"tg-corpo\">portalunico.siscomex.gov.br</td>\n    <td class=\"tg-corpo\">Todos os intervenientes (p&uacute;blicos e privados)</td>\n  </tr>\n</tbody>\n</table>\n\n<p><strong>Exemplo:</strong> Para o servi&ccedil;o &quot;Consulta dos dados da tabela&quot; a URI &eacute; &quot;ext/tabela/{nomeTabela}&quot;.</p>\n\n<p>Logo, abaixo temos um exemplo de URL completa considerando o ambiente de Valida&ccedil;&atilde;o, consumindo este servi&ccedil;o</p>\n\n<p><em>https://val.portalunico.siscomex.gov.br/tabx/api/ext/tabela/GRUPO_EXIGENCIA</em></p>\n\n<h4>As opera&ccedil;&otilde;es que podem ser gerenciadas pela API do sistema s&atilde;o:</h4>\n\n<h4>Metadados da Tabela</h4>\n<ul>\n\t<li>Listar tabelas;</li>\n\t<li>Consultar metadados da tabela.</li>\n</ul>\n\n<h4>Dados da Tabela (Registros)</h4>\n<ul>\n\t<li>Consultar dados da tabela;</li>\n\t<li>Incluir dado na tabela;</li>\n\t<li>Alterar dado da tabela;</li>\n\t<li>Excluir dado da tabela.</li>\n</ul>\n\n<p><b>Obs 1:</b><br>\nTodas as opera&ccedil;&otilde;es contam com uma descri&ccedil;&atilde;o geral da opera&ccedil;&atilde;o abaixo da url, al&eacute;m da descri&ccedil;&atilde;o resumida exibida ao seu lado.</p>\n\n<p><b>Obs 2:</b><br>\nOs servi&ccedil;os admitem os seguintes formatos de data/hora:<br>\n- Completo: yyyy-MM-dd'T'HH:mm:ss.SSSZ<br>\n- Sem timezone: yyyy-MM-dd'T'HH:mm:ss.SSS<br>\n- Sem timezone e sem milissegundos: yyyy-MM-dd'T'HH:mm:ss<br>\nOnde o padr&atilde;o (default) &eacute; o formato completo.<br>\nQuando o campo data/hora n&atilde;o &eacute; preenchido por completo, os servi&ccedil;os o complementam com milissegundos '000' e timezone '-0300', caso seja necess&aacute;rio.</p>\n\n<br>\n<div class=\"container\">\n<details>\n    <summary><b>Exemplos de Consultas de Dados da Tabela</b></summary>\n  <div>\n\t  <ul>\n\t\t<li><b>Consulta retornando dados vigentes da tabela principal (n&iacute;vel 0 - default):</b>\n\t\t\t<p><em>GET https://val.portalunico.siscomex.gov.br/tabx/api/ext/tabela/GRUPO_EXIGENCIA</em></p>\n\t\t\tNesse caso, o TABX retorna todos os dados da tabela GRUPO_EXIGENCIA vigentes na data/hora corrente (default) e com todos os campos de retorno poss&iacute;veis.\n\t\t\t<br>Os dados das tabelas estrangeiras n&atilde;o s&atilde;o retornados.\n\t\t\t<br><br>\n\t\t</li>\n\t\t<li><b>Consulta retornando dados vigentes da tabela principal e da(s) tabela(s) estrangeira(s) (n&iacute;vel 1):</b>\n\t\t\t<p><em>GET https://val.portalunico.siscomex.gov.br/tabx/api/ext/tabela/GRUPO_EXIGENCIA?nivel=1</em></p>\n\t\t\tNesse caso, o TABX retorna todos os dados da tabela GRUPO_EXIGENCIA vigentes na data/hora corrente (default) e com todos os campos de retorno poss&iacute;veis.\n\t\t\t<br>Os dados das tabelas estrangeiras tamb&eacute;m s&atilde;o retornados, vigentes na data/hora corrente (default) e com todos os campos de retorno poss&iacute;veis.\n\t\t\t<br><br>\n\t\t</li>\n\t  \t<li><b>Consulta especificando campos de retorno da tabela principal:</b>\n\t  \t\t<p><em>GET https://val.portalunico.siscomex.gov.br/tabx/api/ext/tabela/GRUPO_EXIGENCIA?camposRetorno=[{\"nomeTabela\":\"GRUPO_EXIGENCIA\",\"nome\":\"CODIGO\"},{\"nomeTabela\":\"GRUPO_EXIGENCIA\",\"nome\":\"NOME\"}]</em></p>\n\t  \t\tNesse caso, o TABX retorna todos os dados da tabela GRUPO_EXIGENCIA vigentes na data/hora corrente (default), mas apenas com os campos de retorno CODIGO e NOME.\n\t\t\t<br>Os dados das tabelas estrangeiras n&atilde;o s&atilde;o retornados.\n\t\t\t<br><br>\n\t  \t</li>\n\t  \t<li><b>Consulta especificando campos de retorno da tabela estrangeira:</b>\n\t  \t\t<p><em>GET https://val.portalunico.siscomex.gov.br/tabx/api/ext/tabela/GRUPO_EXIGENCIA?camposRetorno=[{\"nomeTabela\":\"GRUPO_EXIGENCIA\",\"nome\":\"CODIGO\"},{\"nomeTabela\":\"GRUPO_EXIGENCIA\",\"nome\":\"NOME\"},{\"nomeTabela\":\"ORGAO_ANUENTE\",\"nome\":\"SIGLA\"}]&nivel=1</em></p>\n\t  \t\tNesse caso, o TABX retorna todos os dados da tabela GRUPO_EXIGENCIA vigentes na data/hora corrente (default), mas apenas com os campos de retorno CODIGO e NOME.\n\t\t\t<br>Os dados das tabelas estrangeiras s&atilde;o retornados, vigentes na data/hora corrente (default), mas apenas com o campo de retorno SIGLA.\n\t\t\t<br><br>\t\n\t  \t</li>\n\t  \t<li><b>Consulta especificando filtros da tabela principal:</b>\n\t  \t\t<p><em>GET https://val.portalunico.siscomex.gov.br/tabx/api/ext/tabela/GRUPO_EXIGENCIA?filtros=[{\"nomeTabela\":\"GRUPO_EXIGENCIA\",\"nome\":\"DATA_INICIO\",\"valores\":[\"2021-09-01T17:00:00.865-0300\"]},{\"nomeTabela\":\"GRUPO_EXIGENCIA\",\"nome\":\"DATA_FIM\",\"valores\":[\"2021-09-30T17:00:00.865-0300\"]}]</em></p>\n\t  \t\tNesse caso, o TABX retorna todos os dados da tabela GRUPO_EXIGENCIA vigentes no per&iacute;odo de vig\u00eancia informado e com todos os campos de retorno poss&iacute;veis.\n\t\t\t<br>Os dados das tabelas estrangeiras n&atilde;o s&atilde;o retornados.\n\t\t\t<br><br>\n\t  \t</li>\n\t  \t<li><b>Consulta especificando filtros da tabela principal com m&uacute;ltiplos valores:</b>\n\t  \t\t<p><em>GET https://val.portalunico.siscomex.gov.br/tabx/api/ext/tabela/GRUPO_EXIGENCIA?filtros=[{\"nomeTabela\":\"GRUPO_EXIGENCIA\",\"nome\":\"CODIGO\",\"valores\":[\"01\",\"02\"]}]</em></p>\n\t  \t\tNesse caso, o TABX retorna apenas os dados da tabela GRUPO_EXIGENCIA com os c&oacute;digos informados, vigentes na data/hora corrente (default) e com todos os campos de retorno poss&iacute;veis.\n \t\t\t<br>Os dados das tabelas estrangeiras n&atilde;o s&atilde;o retornados.\n\t\t\t<br><br>\n\t  \t</li>\n\t\t<li><b>Consulta especificando filtros da tabela estrangeira:</b>\n\t\t\t<p><em>GET https://val.portalunico.siscomex.gov.br/tabx/api/ext/tabela/GRUPO_EXIGENCIA?filtros=[{\"nomeTabela\":\"ORGAO_ANUENTE\",\"nome\":\"SIGLA\",\"valores\":[\"RFB\"]}]&nivel=1</em></p>\n\t\t\tNesse caso, o TABX retorna apenas os dados da tabela GRUPO_EXIGENCIA com a sigla do &oacute;rg&atilde;o anuente informada, vigentes na data/hora corrente (default) e com todos os campos de retorno poss&iacute;veis.\n\t\t\t<br>Os dados das tabelas estrangeiras tamb&eacute;m s&atilde;o retornados, vigentes na data/hora corrente (default) e com todos os campos de retorno poss&iacute;veis.\n\t\t\t<br><br>\n\t\t</li>\t  \n\t  \t<li><b>Consulta especificando filtros da tabela estrangeira com m&uacute;ltiplos valores:</b>\n\t  \t\t<p><em>GET https://val.portalunico.siscomex.gov.br/tabx/api/ext/tabela/GRUPO_EXIGENCIA?filtros=[{\"nomeTabela\":\"ORGAO_ANUENTE\",\"nome\":\"SIGLA\",\"valores\":[\"RFB\",\"ANATEL\"]}]&nivel=1</em></p>\n\t  \t\tNesse caso, o TABX retorna apenas os dados da tabela GRUPO_EXIGENCIA com as siglas dos &oacute;rg&atilde;os anuentes informadas, vigentes na data/hora corrente (default) e com todos os campos de retorno poss&iacute;veis.\n\t\t\t<br>Os dados das tabelas estrangeiras tamb&eacute;m s&atilde;o retornados, vigentes na data/hora corrente (default) e com todos os campos de retorno poss&iacute;veis.\n\t\t\t<br><br>\n\t  \t</li>\n\t  \t<li><b>Consulta especificando campos de ordena&ccedil;&atilde;o da tabela principal:</b>\n\t  \t\t<p><em>GET https://val.portalunico.siscomex.gov.br/tabx/api/ext/tabela/GRUPO_EXIGENCIA?camposOrdenacao=[{\"nomeTabela\":\"GRUPO_EXIGENCIA\",\"nome\":\"CODIGO\",\"tipoOrdenacao\":\"DESC\"}]</em></p>\n\t  \t\tNesse caso, o TABX retorna todos os dados da tabela GRUPO_EXIGENCIA vigentes na data/hora corrente (default) e com todos os campos de retorno poss&iacute;veis.\n\t\t\t<br>Os dados das tabelas estrangeiras n&atilde;o s&atilde;o retornados.\n\t\t\t<br>Os dados retornados s&atilde;o ordenados pelo campo CODIGO, tipo de ordena&ccedil;&atilde;o DESC.\n\t\t\t<br><br>\n\t  \t</li>\n\t  \t<li><b>Consulta especificando campos de ordena&ccedil;&atilde;o da tabela estrangeira:</b>\n\t  \t\t<p><em>GET https://val.portalunico.siscomex.gov.br/tabx/api/ext/tabela/GRUPO_EXIGENCIA?camposOrdenacao=[{\"nomeTabela\":\"GRUPO_EXIGENCIA\",\"nome\":\"CODIGO\",\"tipoOrdenacao\":\"DESC\"},{\"nomeTabela\":\"ORGAO_ANUENTE\",\"nome\":\"SIGLA\",\"tipoOrdenacao\":\"ASC\"}]&nivel=1</em></p>\n\t  \t\tNesse caso, o TABX retorna todos os dados da tabela GRUPO_EXIGENCIA vigentes na data/hora corrente (default) e com todos os campos de retorno poss&iacute;veis.\n\t\t\t<br>Os dados das tabelas estrangeiras tamb&eacute;m s&atilde;o retornados, vigentes na data/hora corrente (default) e com todos os campos de retorno poss&iacute;veis.\n\t\t\t<br>Os dados retornados s&atilde;o ordenados pelos campos CODIGO, tipo de ordena&ccedil;&atilde;o DESC e SIGLA da tabela ORGAO_ANUENTE, tipo de ordena&ccedil;&atilde;o ASC.\n\t\t\t<br>Obs.: Os campos de ordena&ccedil;&atilde;o definem a ordem dos dados retornados. Dentro de cada dado, os campos s&atilde;o ordenados seguindo a ordem dos campos definida nos metadados.\n\t\t\t<br><br>\n\t  \t</li>\n\t  \t<li><b>Consulta completa com todos os tipos de par&acirc;metros:</b>\n\t  \t\t<p><em>GET https://val.portalunico.siscomex.gov.br/tabx/api/ext/tabela/GRUPO_EXIGENCIA?camposRetorno=[{\"nomeTabela\":\"GRUPO_EXIGENCIA\",\"nome\":\"CODIGO\"},{\"nomeTabela\":\"GRUPO_EXIGENCIA\",\"nome\":\"NOME\"},{\"nomeTabela\":\"ORGAO_ANUENTE\",\"nome\":\"SIGLA\"}]&filtros=[{\"nomeTabela\":\"ORGAO_ANUENTE\",\"nome\":\"SIGLA\",\"valores\":[\"RFB\",\"ANATEL\"]}]&camposOrdenacao=[{\"nomeTabela\":\"GRUPO_EXIGENCIA\",\"nome\":\"CODIGO\",\"tipoOrdenacao\":\"DESC\"}]&nivel=1&offset=1</em></p>\n\t  \t\tNesse caso, o TABX retorna apenas os dados da tabela GRUPO_EXIGENCIA com as siglas dos &oacute;rg&atilde;os anuentes informadas, vigentes na data/hora corrente (default), mas apenas com os campos de retorno CODIGO e NOME.\n\t\t\t<br>Os dados das tabelas estrangeiras s&atilde;o retornados, vigentes na data/hora corrente (default), mas apenas com o campo de retorno SIGLA.\n\t\t\t<br>Os dados retornados s&atilde;o ordenados pelo campo CODIGO, tipo de ordena&ccedil;&atilde;o DESC.\n\t\t\t<br>\n\t  \t</li>\n\t  </ul>\n  </div>\n</details>\n</div>\n\n<div class=\"container\">\n<details>\n    <summary><b>Exemplo de Inclus&atilde;o de Dado na Tabela</b></summary>\n  <div>\n\t  <ul>\n\t\t<li><b>Inclus&atilde;o de dado com todos os campos obrigat&oacute;rios informados:</b>\n\t\t\t<p><em>POST https://val.portalunico.siscomex.gov.br/tabx/api/ext/tabela/GRUPO_EXIGENCIA</em></p>\n\t\t\tCampos:\n\t\t\t<br>[{\"nome\":\"CODIGO\",\"valor\":\"01\"},\n\t\t\t<br>{\"nome\":\"NOME\",\"valor\":\"NOME DO GRUPO 01\"},\n\t\t\t<br>{\"nome\":\"CODIGO_ORGAO_ANUENTE\",\"valor\":\"RFB\"},\n\t\t\t<br>{\"nome\":\"INDICADOR_DESPACHO_IMP\",\"valor\":\"S\"},\n\t\t\t<br>{\"nome\":\"INDICADOR_DESPACHO_EXP\",\"valor\":\"S\"},\n\t\t\t<br>{\"nome\":\"DATA_INICIO\",\"valor\":\"2023-12-01T17:00:00.865-0300\"},\n\t\t\t<br>{\"nome\":\"DATA_FIM\",\"valor\":\"2023-12-31T17:00:00.865-0300\"}]\n\t\t\t<br>\n\t\t</li>\n\t  </ul>\n  </div>\n</details>\n</div>\n\n<div class=\"container\">\n<details>\n    <summary><b>Exemplo de Altera&ccedil;&atilde;o de Dado da Tabela</b></summary>\n  <div>\n\t  <ul>\n\t\t<li><b>Altera&ccedil;&atilde;o somente dos campos informados do dado com c&oacute;digo de neg&oacute;cio '01':</b>\n\t\t\t<p><em>PUT https://val.portalunico.siscomex.gov.br/tabx/api/ext/tabela/GRUPO_EXIGENCIA/01</em></p>\n\t\t\tCampos:\n\t\t\t<br>[{\"nome\":\"NOME\",\"valor\":\"NOME ALTERADO DO GRUPO 01\"},\n\t\t\t<br>{\"nome\":\"CODIGO_ORGAO_ANUENTE\",\"valor\":\"ANATEL\"}]\n\t\t\t<br>\n\t\t</li>\n\t  </ul>\n  </div>\n</details>\n</div>\n\n<div class=\"container\">\n<details>\n    <summary><b>Exemplo de Exclus&atilde;o de Dado da Tabela</b></summary>\n  <div>\n\t  <ul>\n\t\t<li><b>Exclus&atilde;o do dado com c&oacute;digo de neg&oacute;cio '01':</b>\n\t\t\t<p><em>DELETE https://val.portalunico.siscomex.gov.br/tabx/api/ext/tabela/GRUPO_EXIGENCIA/01</em></p>\n\t\t</li>\n\t  </ul>\n  </div>\n</details>\n</div>\n\n</html>\n",
+  "version": "1.0.0",
+  "title": "Tabelas Comex"
+ },
+ "host": "tsi-pucomex-tabx.np.estaleiro.serpro.gov.br",
+ "basePath": "/tabx",
+ "paths": {
+  "/api/ext/tabela": {
+   "get": {
+    "tags": [
+     "Metadados da Tabela"
+    ],
+    "summary": "Listar tabelas.",
+    "description": "Use esta funcionalidade para listar tabelas.",
+    "operationId": "listarTabelasUsingGET",
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o.",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o.",
+      "required": true,
+      "type": "string"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "OK",
+      "schema": {
+       "$ref": "#/definitions/TabelaApiRepresentation"
+      }
+     },
+     "400": {
+      "description": "Requisi\u00e7\u00e3o mal formada",
+      "schema": {
+       "$ref": "#/definitions/Error"
+      }
+     },
+     "403": {
+      "description": "Usu\u00e1rio n\u00e3o tem permiss\u00e3o para acessar o recurso solicitado",
+      "schema": {
+       "$ref": "#/definitions/Error"
+      }
+     },
+     "404": {
+      "description": "Recurso n\u00e3o encontrado",
+      "schema": {
+       "$ref": "#/definitions/Error"
+      }
+     },
+     "422": {
+      "description": "Erro de neg\u00f3cio",
+      "schema": {
+       "$ref": "#/definitions/Error"
+      }
+     },
+     "500": {
+      "description": "Erro inesperado",
+      "schema": {
+       "$ref": "#/definitions/Error"
+      }
+     }
+    },
+    "deprecated": false
+   }
+  },
+  "/api/ext/tabela/{nomeTabela}": {
+   "get": {
+    "tags": [
+     "Dados da Tabela (Registros)"
+    ],
+    "summary": "Consultar dados da tabela.",
+    "description": "Use esta funcionalidade para consultar os dados da tabela.",
+    "operationId": "consultarUsingGET",
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o.",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o.",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "camposOrdenacao",
+      "in": "query",
+      "description": "Campos de ordena\u00e7\u00e3o da consulta.<br>Modelo: <a href=\"#model-CampoOrdenacaoApiRepresentation\">CampoOrdenacaoApiRepresentation.</a>",
+      "required": false,
+      "type": "string",
+      "allowEmptyValue": false,
+      "x-example": "[{\"nomeTabela\":\"GRUPO_EXIGENCIA\", \"nome\":\"CODIGO\", \"tipoOrdenacao\":\"DESC\"}]"
+     },
+     {
+      "name": "camposRetorno",
+      "in": "query",
+      "description": "Campos de retorno da consulta.<br>Modelo: <a href=\"#model-CampoRetornoApiRepresentation\">CampoRetornoApiRepresentation.</a>",
+      "required": false,
+      "type": "string",
+      "allowEmptyValue": false,
+      "x-example": "[{\"nomeTabela\":\"GRUPO_EXIGENCIA\", \"nome\":\"CODIGO\"},{\"nomeTabela\":\"GRUPO_EXIGENCIA\", \"nome\":\"NOME\"}]"
+     },
+     {
+      "name": "filtros",
+      "in": "query",
+      "description": "Filtros da consulta.<br>Modelo: <a href=\"#model-FiltroCampoApiRepresentation\">FiltroCampoApiRepresentation.</a>",
+      "required": false,
+      "type": "string",
+      "allowEmptyValue": false,
+      "x-example": "[{\"nomeTabela\":\"GRUPO_EXIGENCIA\", \"nome\":\"CODIGO\",\"valores\":[\"01\",\"02\"]}]"
+     },
+     {
+      "name": "nivel",
+      "in": "query",
+      "description": "N\u00edvel da consulta. Dom\u00ednio:<br>0 - Apenas dados da tabela pesquisada (principal)<br>1 - Dados da tabela pesquisada e dados da(s) tabela(s) referenciada(s) pelo(s) campo(s) estrangeiros(s) (apenas primeiro n\u00edvel de relacionamento)",
+      "required": false,
+      "type": "string",
+      "allowEmptyValue": false,
+      "x-example": "0"
+     },
+     {
+      "name": "nomeTabela",
+      "in": "path",
+      "description": "Nome da tabela.<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 50",
+      "required": true,
+      "type": "string",
+      "x-example": "GRUPO_EXIGENCIA"
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "description": "Offset. \u00cdndice do primeiro elemento a ser retornado na pesquisa.<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: N",
+      "required": false,
+      "type": "string",
+      "allowEmptyValue": false,
+      "x-example": "1"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "OK",
+      "schema": {
+       "$ref": "#/definitions/DadosTabelaApiRepresentation"
+      }
+     },
+     "400": {
+      "description": "Requisi\u00e7\u00e3o mal formada",
+      "schema": {
+       "$ref": "#/definitions/Error"
+      }
+     },
+     "403": {
+      "description": "Usu\u00e1rio n\u00e3o tem permiss\u00e3o para acessar o recurso solicitado",
+      "schema": {
+       "$ref": "#/definitions/Error"
+      }
+     },
+     "404": {
+      "description": "Recurso n\u00e3o encontrado",
+      "schema": {
+       "$ref": "#/definitions/Error"
+      }
+     },
+     "422": {
+      "description": "Erro de neg\u00f3cio",
+      "schema": {
+       "$ref": "#/definitions/Error"
+      }
+     },
+     "500": {
+      "description": "Erro inesperado",
+      "schema": {
+       "$ref": "#/definitions/Error"
+      }
+     }
+    },
+    "deprecated": false
+   },
+   "post": {
+    "tags": [
+     "Dados da Tabela (Registros)"
+    ],
+    "summary": "Incluir dado na tabela.",
+    "description": "Use esta funcionalidade para incluir um dado na tabela. Dispon\u00edvel apenas para Intervenientes Privados.",
+    "operationId": "incluirUsingPOST",
+    "consumes": [
+     "application/json"
+    ],
+    "produces": [
+     "*/*"
+    ],
+    "parameters": [
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o.",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o.",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "in": "body",
+      "name": "campos",
+      "description": "Campos da tabela para inclus\u00e3o.",
+      "required": true,
+      "schema": {
+       "type": "array",
+       "items": {
+        "$ref": "#/definitions/CampoInclusaoAlteracaoApiRepresentation"
+       }
+      }
+     },
+     {
+      "name": "nomeTabela",
+      "in": "path",
+      "description": "Nome da tabela.<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 50",
+      "required": true,
+      "type": "string",
+      "x-example": "GRUPO_EXIGENCIA"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "OK"
+     }
+    },
+    "deprecated": false
+   }
+  },
+  "/api/ext/tabela/{nomeTabela}/metadado": {
+   "get": {
+    "tags": [
+     "Metadados da Tabela"
+    ],
+    "summary": "Consultar metadados da tabela.",
+    "description": "Use esta funcionalidade para consultar os metadados da tabela.",
+    "operationId": "consultarMetadadoUsingGET",
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o.",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o.",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "nomeTabela",
+      "in": "path",
+      "description": "Nome da tabela.<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 50",
+      "required": true,
+      "type": "string",
+      "x-example": "GRUPO_EXIGENCIA"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "OK",
+      "schema": {
+       "$ref": "#/definitions/TabelaCamposApiRepresentation"
+      }
+     },
+     "400": {
+      "description": "Requisi\u00e7\u00e3o mal formada",
+      "schema": {
+       "$ref": "#/definitions/Error"
+      }
+     },
+     "403": {
+      "description": "Usu\u00e1rio n\u00e3o tem permiss\u00e3o para acessar o recurso solicitado",
+      "schema": {
+       "$ref": "#/definitions/Error"
+      }
+     },
+     "404": {
+      "description": "Recurso n\u00e3o encontrado",
+      "schema": {
+       "$ref": "#/definitions/Error"
+      }
+     },
+     "422": {
+      "description": "Erro de neg\u00f3cio",
+      "schema": {
+       "$ref": "#/definitions/Error"
+      }
+     },
+     "500": {
+      "description": "Erro inesperado",
+      "schema": {
+       "$ref": "#/definitions/Error"
+      }
+     }
+    },
+    "deprecated": false
+   }
+  },
+  "/api/ext/tabela/{nomeTabela}/{codigo}": {
+   "put": {
+    "tags": [
+     "Dados da Tabela (Registros)"
+    ],
+    "summary": "Alterar dado da tabela.",
+    "description": "Use esta funcionalidade para alterar um dado da tabela. Dispon\u00edvel apenas para Intervenientes Privados.",
+    "operationId": "alterarUsingPUT",
+    "consumes": [
+     "application/json"
+    ],
+    "produces": [
+     "*/*"
+    ],
+    "parameters": [
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o.",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o.",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "in": "body",
+      "name": "campos",
+      "description": "Campos da tabela para altera\u00e7\u00e3o.",
+      "required": true,
+      "schema": {
+       "type": "array",
+       "items": {
+        "$ref": "#/definitions/CampoInclusaoAlteracaoApiRepresentation"
+       }
+      }
+     },
+     {
+      "name": "codigo",
+      "in": "path",
+      "description": "C\u00f3digo de neg\u00f3cio.<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: definido nos metadados da tabela",
+      "required": true,
+      "type": "string",
+      "x-example": "01"
+     },
+     {
+      "name": "nomeTabela",
+      "in": "path",
+      "description": "Nome da tabela.<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 50",
+      "required": true,
+      "type": "string",
+      "x-example": "GRUPO_EXIGENCIA"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "OK"
+     }
+    },
+    "deprecated": false
+   },
+   "delete": {
+    "tags": [
+     "Dados da Tabela (Registros)"
+    ],
+    "summary": "Excluir dado da tabela.",
+    "description": "Use esta funcionalidade para excluir um dado da tabela. Dispon\u00edvel apenas para Intervenientes Privados.",
+    "operationId": "excluirUsingDELETE",
+    "produces": [
+     "*/*"
+    ],
+    "parameters": [
+     {
+      "name": "Authorization",
+      "in": "header",
+      "description": "JSON Web Token (JWT) contendo as informa\u00e7\u00f5es do usu\u00e1rio. Este token \u00e9 recuperado no par\u00e2metro Set-Token no response da autentica\u00e7\u00e3o.",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "X-CSRF-Token",
+      "in": "header",
+      "description": "Token de preven\u00e7\u00e3o contra ataques CSRF. Este token \u00e9 recuperado no par\u00e2metro X-CSRF-Token no response da autentica\u00e7\u00e3o.",
+      "required": true,
+      "type": "string"
+     },
+     {
+      "name": "codigo",
+      "in": "path",
+      "description": "C\u00f3digo de neg\u00f3cio.<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: definido nos metadados da tabela",
+      "required": true,
+      "type": "string",
+      "x-example": "01"
+     },
+     {
+      "name": "nomeTabela",
+      "in": "path",
+      "description": "Nome da tabela.<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 50",
+      "required": true,
+      "type": "string",
+      "x-example": "GRUPO_EXIGENCIA"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "OK"
+     }
+    },
+    "deprecated": false
+   }
+  }
+ },
+ "definitions": {
+  "CampoApiRepresentation": {
+   "type": "object",
+   "required": [
+    "autoNumerado",
+    "campoEstrangeiro",
+    "chaveNegocio",
+    "nome",
+    "obrigatorio",
+    "possuiDominio",
+    "restricaoUnicidade",
+    "tipo"
+   ],
+   "properties": {
+    "nome": {
+     "type": "string",
+     "example": "INDICADOR_DESPACHO_EXP",
+     "description": "Nome do campo.<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 40"
+    },
+    "rotulo": {
+     "type": "string",
+     "example": "Indicador de despacho de exporta\u00e7\u00e3o",
+     "description": "R\u00f3tulo do campo.<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 50"
+    },
+    "descricao": {
+     "type": "string",
+     "example": "Indicador de despacho de exporta\u00e7\u00e3o",
+     "description": "Descri\u00e7\u00e3o do campo.<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 100"
+    },
+    "tipo": {
+     "type": "string",
+     "example": "STRING",
+     "description": "Tipo do campo.<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 50",
+     "enum": [
+      "INTEIRO",
+      "DECIMAL",
+      "STRING",
+      "DATA",
+      "DATA_HORA",
+      "BOOLEANO"
+     ]
+    },
+    "tamanho": {
+     "type": "integer",
+     "format": "int32",
+     "example": 1,
+     "description": "Tamanho do campo.<br>Valor m\u00ednimo: 1<br>Valor m\u00e1ximo: 9999"
+    },
+    "casasDecimais": {
+     "type": "integer",
+     "format": "int32",
+     "example": 0,
+     "description": "Casas decimais do campo.<br>Valor: 0 ou 1"
+    },
+    "formato": {
+     "type": "string",
+     "description": "Formato do campo.<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 30"
+    },
+    "obrigatorio": {
+     "type": "boolean",
+     "example": true,
+     "description": "Obrigatoriedade do campo."
+    },
+    "autoNumerado": {
+     "type": "boolean",
+     "example": true,
+     "description": "Indicador de autonumerado."
+    },
+    "chaveNegocio": {
+     "type": "boolean",
+     "example": false,
+     "description": "Indicador de chave de neg\u00f3cio."
+    },
+    "campoEstrangeiro": {
+     "type": "boolean",
+     "example": false,
+     "description": "Indicador de campo estrangeiro."
+    },
+    "restricaoUnicidade": {
+     "type": "boolean",
+     "example": true,
+     "description": "Indicador de restri\u00e7\u00e3o por unicidade."
+    },
+    "possuiDominio": {
+     "type": "boolean",
+     "example": true,
+     "description": "Indicador de exist\u00eancia de dom\u00ednio."
+    },
+    "nomeTabelaEstrangeira": {
+     "type": "string",
+     "description": "Nome da tabela estrangeira.<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 50"
+    },
+    "dominios": {
+     "type": "array",
+     "description": "Dom\u00ednios do campo.",
+     "items": {
+      "$ref": "#/definitions/DominioCampoApiRepresentation"
+     }
+    }
+   },
+   "title": "CampoApiRepresentation"
+  },
+  "CampoConsultaApiRepresentantion": {
+   "type": "object",
+   "required": [
+    "nome"
+   ],
+   "properties": {
+    "nome": {
+     "type": "string",
+     "example": "NOME",
+     "description": "Nome do campo.<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 40"
+    },
+    "valor": {
+     "type": "string",
+     "example": "Grupo de exig\u00eancia para material nacionalizado",
+     "description": "Valor atribu\u00eddo ao campo.<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: definido nos metadados da tabela"
+    },
+    "dadosTabelaEstrangeira": {
+     "description": "Dados da tabela estrangeira.",
+     "$ref": "#/definitions/DadosTabelaApiRepresentation"
+    }
+   },
+   "title": "CampoConsultaApiRepresentantion"
+  },
+  "CampoInclusaoAlteracaoApiRepresentation": {
+   "type": "object",
+   "required": [
+    "nome"
+   ],
+   "properties": {
+    "nome": {
+     "type": "string",
+     "example": "NOME",
+     "description": "Nome do campo.<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 40"
+    },
+    "valor": {
+     "type": "string",
+     "example": "Grupo de exig\u00eancia para material nacionalizado",
+     "description": "Valor atribu\u00eddo ao campo.<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: definido nos metadados da tabela"
+    }
+   },
+   "title": "CampoInclusaoAlteracaoApiRepresentation"
+  },
+  "CampoOrdenacaoApiRepresentation": {
+   "type": "object",
+   "required": [
+    "nome",
+    "nomeTabela"
+   ],
+   "properties": {
+    "nomeTabela": {
+     "type": "string",
+     "example": "GRUPO_EXIGENCIA",
+     "description": "Nome da tabela."
+    },
+    "nome": {
+     "type": "string",
+     "example": "CODIGO",
+     "description": "Nome do campo."
+    },
+    "tipoOrdenacao": {
+     "type": "string",
+     "example": "DESC",
+     "description": "Tipo de ordena\u00e7\u00e3o.<br>Dom\u00ednio:",
+     "enum": [
+      "ASC",
+      "DESC"
+     ]
+    }
+   },
+   "title": "CampoOrdenacaoApiRepresentation"
+  },
+  "CampoRetornoApiRepresentation": {
+   "type": "object",
+   "required": [
+    "nome",
+    "nomeTabela"
+   ],
+   "properties": {
+    "nomeTabela": {
+     "type": "string",
+     "example": "GRUPO_EXIGENCIA",
+     "description": "Nome da tabela."
+    },
+    "nome": {
+     "type": "string",
+     "example": "DESCRICAO",
+     "description": "Nome do campo."
+    }
+   },
+   "title": "CampoRetornoApiRepresentation"
+  },
+  "DadoTabelaApiRepresentation": {
+   "type": "object",
+   "properties": {
+    "campos": {
+     "type": "array",
+     "description": "Campos da tabela.",
+     "items": {
+      "$ref": "#/definitions/CampoConsultaApiRepresentantion"
+     }
+    }
+   },
+   "title": "DadoTabelaApiRepresentation"
+  },
+  "DadosTabelaApiRepresentation": {
+   "type": "object",
+   "required": [
+    "nomeTabela"
+   ],
+   "properties": {
+    "nomeTabela": {
+     "type": "string",
+     "example": "GRUPO_EXIGENCIA",
+     "description": "Nome da tabela.<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 50"
+    },
+    "dados": {
+     "type": "array",
+     "description": "Dados da tabela.",
+     "items": {
+      "$ref": "#/definitions/DadoTabelaApiRepresentation"
+     }
+    }
+   },
+   "title": "DadosTabelaApiRepresentation"
+  },
+  "DominioCampoApiRepresentation": {
+   "type": "object",
+   "required": [
+    "codigo",
+    "descricao"
+   ],
+   "properties": {
+    "codigo": {
+     "type": "string",
+     "example": "S",
+     "description": "C\u00f3digo do dom\u00ednio do campo.<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 3"
+    },
+    "descricao": {
+     "type": "string",
+     "example": "Sim",
+     "description": "Descri\u00e7\u00e3o do dom\u00ednio do campo.<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 100"
+    }
+   },
+   "title": "DominioCampoApiRepresentation"
+  },
+  "Error": {
+   "type": "object",
+   "properties": {
+    "timestamp": {
+     "type": "string",
+     "format": "date-time",
+     "example": "2019-07-23T08:30:58.189",
+     "description": "Data e hora em que ocorreu o problema (<em>no formato ISO 8601</em>)"
+    },
+    "message": {
+     "type": "string",
+     "example": "mensagen de erro",
+     "description": "Mensagem de erro"
+    },
+    "path": {
+     "type": "string",
+     "example": "caminho do erro",
+     "description": "Caminho do recurso com erro"
+    }
+   },
+   "title": "Error",
+   "description": "Representa\u00e7\u00e3o de Erros"
+  },
+  "FiltroCampoApiRepresentation": {
+   "type": "object",
+   "required": [
+    "nome",
+    "nomeTabela",
+    "valores"
+   ],
+   "properties": {
+    "nomeTabela": {
+     "type": "string",
+     "example": "GRUPO_EXIGENCIA",
+     "description": "Nome da tabela."
+    },
+    "nome": {
+     "type": "string",
+     "example": "CODIGO",
+     "description": "Nome do campo."
+    },
+    "valores": {
+     "type": "array",
+     "example": [
+      "01",
+      "02"
+     ],
+     "description": "Valores atribu\u00eddo ao filtro.",
+     "items": {
+      "type": "string"
+     }
+    }
+   },
+   "title": "FiltroCampoApiRepresentation"
+  },
+  "TabelaApiRepresentation": {
+   "type": "object",
+   "required": [
+    "nome"
+   ],
+   "properties": {
+    "nome": {
+     "type": "string",
+     "example": "GRUPO_EXIGENCIA",
+     "description": "Nome da tabela.<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 50"
+    },
+    "rotulo": {
+     "type": "string",
+     "example": "Grupo de Exig\u00eancia",
+     "description": "R\u00f3tulo da tabela.<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 50"
+    },
+    "descricao": {
+     "type": "string",
+     "example": "Tabela de Grupo de Exig\u00eancia",
+     "description": "Descri\u00e7\u00e3o da tabela.<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 1000"
+    }
+   },
+   "title": "TabelaApiRepresentation"
+  },
+  "TabelaCamposApiRepresentation": {
+   "type": "object",
+   "required": [
+    "nome"
+   ],
+   "properties": {
+    "nome": {
+     "type": "string",
+     "example": "GRUPO_EXIGENCIA",
+     "description": "Nome da tabela.<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 50"
+    },
+    "rotulo": {
+     "type": "string",
+     "example": "Grupo de Exig\u00eancia",
+     "description": "R\u00f3tulo da tabela.<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 50"
+    },
+    "descricao": {
+     "type": "string",
+     "example": "Tabela de Grupo de Exig\u00eancia",
+     "description": "Descri\u00e7\u00e3o da tabela.<br>Tamanho m\u00ednimo: 1<br>Tamanho m\u00e1ximo: 1000"
+    },
+    "campos": {
+     "type": "array",
+     "description": "Campos da tabela.",
+     "items": {
+      "$ref": "#/definitions/CampoApiRepresentation"
+     }
+    }
+   },
+   "title": "TabelaCamposApiRepresentation"
+  }
+ }
+}

@@ -1,0 +1,87 @@
+[
+    {
+        "nome": "CIDADE_ATIT",
+        "rotulo": "Cidade ATIT",
+        "descricao": "Tabela de Cidade ATIT."
+    },
+    {
+        "nome": "EMBALAGEM_ATIT",
+        "rotulo": "Embalagens ATIT",
+        "descricao": "Tabela de Embalagens ATIT."
+    },
+    {
+        "nome": "ENQUADRAMENTO",
+        "rotulo": "Enquadramento",
+        "descricao": "Tabela de Enquadramento"
+    },
+    {
+        "nome": "FUNDAMENTO_LEGAL_TT",
+        "rotulo": "Fundamento Legal do Tratamento Tributário",
+        "descricao": "Tabela de Fundamento Legal do Tratamento Tributário"
+    },
+    {
+        "nome": "GRUPO_EXIGENCIA",
+        "rotulo": "Grupo de Exigência",
+        "descricao": "Tabela de Grupo de Exigência"
+    },
+    {
+        "nome": "LIPS_ZFM",
+        "rotulo": "Insumos da ZFM",
+        "descricao": "Tabela de Insumos da ZFM."
+    },
+    {
+        "nome": "MOTIVO_SITUACAO_ESPECIAL_DUIMP",
+        "rotulo": "Motivo da Situação Especial - DUIMP",
+        "descricao": "Tabela de Motivo da Situação Especial da DUIMP"
+    },
+    {
+        "nome": "ORGAO_ANUENTE",
+        "rotulo": "Órgão",
+        "descricao": "Tabela de Órgão"
+    },
+    {
+        "nome": "PAIS",
+        "rotulo": "País",
+        "descricao": "Tabela de País"
+    },
+    {
+        "nome": "PORTO",
+        "rotulo": "Porto",
+        "descricao": "Tabela de Porto"
+    },
+    {
+        "nome": "RECINTO_ATIT",
+        "rotulo": "Recinto ATIT",
+        "descricao": "Tabela de Recinto ATIT."
+    },
+    {
+        "nome": "SOLICITANTE",
+        "rotulo": "Solicitante",
+        "descricao": "Tabela de Solicitante"
+    },
+    {
+        "nome": "TIPO_AREA_EQUIPAMENTO",
+        "rotulo": "Tipo de Área ou Equipamento",
+        "descricao": "Tabela de Tipo de Área ou Equipamento"
+    },
+    {
+        "nome": "TIPO_CONHECIMENTO",
+        "rotulo": "Tipo de Conhecimento",
+        "descricao": "Tabela de Tipo de Conhecimento"
+    },
+    {
+        "nome": "TIPO_CONTEINER",
+        "rotulo": "Tipo de Contêiner",
+        "descricao": "Tipo de Contêiner. Tabela padrão internacional ISO 6346."
+    },
+    {
+        "nome": "TIPO_DECLARACAO_ADUANEIRA",
+        "rotulo": "Tipo de Declaração Aduaneira",
+        "descricao": "Tabela de Tipo de Declaração Aduaneira"
+    },
+    {
+        "nome": "UNIDADE_ATIT",
+        "rotulo": "Unidade ATIT",
+        "descricao": "Tabela de Unidade ATIT."
+    }
+]

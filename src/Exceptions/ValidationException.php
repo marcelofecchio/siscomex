@@ -27,14 +27,6 @@ class ValidationException extends SiscomexException
      */
     public function mensagensPorCampo(): array
     {
-        if ($this->detalhes === []) {
-            return ['' => [$this->getMessage()]];
-        }
-        $porCampo = [];
-        foreach ($this->detalhes as $detalhe) {
-            $porCampo[$detalhe->campo ?? ''][] = $detalhe->mensagem;
-        }
-
-        return $porCampo;
+        return $this->erro()->porCampo();
     }
 }
