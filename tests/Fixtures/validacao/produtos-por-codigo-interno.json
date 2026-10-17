@@ -1,0 +1,76 @@
+[
+    {
+        "seq": 1,
+        "codigo": 4,
+        "denominacao": "SDK experimento 174508",
+        "cpfCnpjRaiz": "12345678",
+        "situacao": "Desativado",
+        "modalidade": "IMPORTACAO",
+        "ncm": "84733049",
+        "versao": "1",
+        "atributos": [
+            {
+                "atributo": "ATT_5426",
+                "valor": "false"
+            },
+            {
+                "atributo": "ATT_5333",
+                "valor": "false"
+            },
+            {
+                "atributo": "ATT_7866",
+                "valor": "Teste"
+            },
+            {
+                "atributo": "ATT_18551",
+                "valor": "99"
+            }
+        ],
+        "atributosMultivalorados": [],
+        "atributosCompostos": [],
+        "atributosCompostosMultivalorados": [],
+        "codigosInterno": [
+            "SKU-SDK-2",
+            "SKU-SDK-1"
+        ],
+        "inicioVigencia": "2026-10-17T14:45:07",
+        "fimVigencia": "2026-10-17T14:45:45"
+    },
+    {
+        "seq": 2,
+        "codigo": 5,
+        "descricao": "P2",
+        "denominacao": "SDK experimento 174508",
+        "cpfCnpjRaiz": "12345678",
+        "situacao": "Desativado",
+        "modalidade": "IMPORTACAO",
+        "ncm": "84733049",
+        "versao": "1",
+        "atributos": [
+            {
+                "atributo": "ATT_5426",
+                "valor": "false"
+            },
+            {
+                "atributo": "ATT_5333",
+                "valor": "false"
+            },
+            {
+                "atributo": "ATT_7866",
+                "valor": "Teste"
+            },
+            {
+                "atributo": "ATT_18551",
+                "valor": "99"
+            }
+        ],
+        "atributosMultivalorados": [],
+        "atributosCompostos": [],
+        "atributosCompostosMultivalorados": [],
+        "codigosInterno": [
+            "SKU-SDK-1"
+        ],
+        "inicioVigencia": "2026-10-17T14:45:11",
+        "fimVigencia": "2026-10-17T14:45:45"
+    }
+]

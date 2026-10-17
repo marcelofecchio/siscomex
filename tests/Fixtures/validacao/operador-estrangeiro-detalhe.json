@@ -1,0 +1,18 @@
+{
+    "tin": "TIN174422",
+    "nome": "SDK Teste Operador 174422",
+    "logradouro": "No. 1 Keji Road",
+    "nomeCidade": "Shenzhen",
+    "codigoSubdivisaoPais": "CN-GD",
+    "cep": "518000",
+    "codigoInterno": "FORN-SDK-1",
+    "email": "v2r@example.com",
+    "identificacoesAdicionais": [],
+    "cpfCnpjRaiz": "12345678",
+    "codigo": "OPE_2",
+    "versao": "2.1",
+    "situacao": "Desativado",
+    "codigoPais": "CN",
+    "inicioVigencia": "2026-10-17T14:44:23",
+    "fimVigencia": "2026-10-17T14:45:45"
+}

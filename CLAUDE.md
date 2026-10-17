@@ -4,9 +4,8 @@
 
 Pacote Composer `marcelofecchio/siscomex-sdk` (namespace `MarceloFecchio\Siscomex\PortalUnico`), SDK agnóstico de framework para a API pública do Portal Único Siscomex, perfil **IMPEXP**.
 
-- **Escopo v0.1**: autenticação (Chaves de Acesso e certificado A1), Cadastro de Atributos, Catálogo de Produtos (produtos), coleção Postman, exemplos.
-- **Fora do escopo**: qualquer aplicação final (telas, painel, API própria), webhooks/eventos push, Fundamento Legal/LPCO, autenticação de sistemas de órgãos públicos.
-- **Próximo (v1.1)**: Fabricantes-Produtores e Operadores Estrangeiros do Catálogo.
+- **Escopo**: autenticação (Chaves de Acesso e certificado A1), Cadastro de Atributos (inclusive condicionados), Catálogo de Produtos (produtos, código interno, inclusão em lote, operadores estrangeiros, fabricantes-produtores), coleção Postman, exemplos.
+- **Fora do escopo**: qualquer aplicação final (telas, painel, API própria), webhooks/eventos push, Fundamento Legal/LPCO, autenticação de sistemas de órgãos públicos, geração de planilhas (fica para um pacote opcional).
 
 ## Stack
 
@@ -16,12 +15,12 @@ PHP ^8.4 · PSR-18/17/7 (Guzzle 7 como padrão) · PSR-16 · PSR-3 · PSR-20 (cl
 
 ```
 src/
-  PortalUnicoClient.php        fachada: atributos(), catalogo()->produtos(), atributosPublicos(), autenticar()
+  PortalUnicoClient.php        fachada: atributos(), catalogo()->produtos()|operadoresEstrangeiros()|fabricantes(), atributosPublicos(), autenticar(), testarConexao()
   Config/                      Ambiente, Perfil, ClientConfig, PoliticaIntervaloAutenticacao
-  Auth/                        Authenticator, Session, Credentials/ (ChaveAcesso, CertificadoA1), TokenStore/
+  Auth/                        Authenticator, Session, ResultadoConexao, Credentials/ (ChaveAcesso, CertificadoA1), TokenStore/
   Http/                        Transport (headers, CSRF, 401, retry, bloqueio de escrita), ErrorMapper, LogMasker, GuzzleClientFactory
   Resources/Atributos/         AtributosResource, AtributosPublicos, Dto/
-  Resources/Catalogo/          CatalogoResource, ProdutosResource, Dto/
+  Resources/Catalogo/          CatalogoResource, ProdutosResource, OperadoresEstrangeirosResource, FabricantesResource, Dto/
   Validation/                  ValidadorProduto
   Enum/ ValueObject/ Support/ Exceptions/
 tests/Unit · tests/Integration (desligados por padrão) · tests/Fixtures/{validacao,producao}

@@ -18,4 +18,23 @@ class ValidationException extends SiscomexException
 
         return $mensagens === [] ? [$this->getMessage()] : $mensagens;
     }
+
+    /**
+     * Mensagens agrupadas pelo campo/atributo afetado (ex.: "ATT_1234"); erros sem campo
+     * ficam na chave "".
+     *
+     * @return array<string, list<string>>
+     */
+    public function mensagensPorCampo(): array
+    {
+        if ($this->detalhes === []) {
+            return ['' => [$this->getMessage()]];
+        }
+        $porCampo = [];
+        foreach ($this->detalhes as $detalhe) {
+            $porCampo[$detalhe->campo ?? ''][] = $detalhe->mensagem;
+        }
+
+        return $porCampo;
+    }
 }

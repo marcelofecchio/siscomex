@@ -108,6 +108,45 @@ final class CredentialsTest extends TestCase
         self::assertFileExists($pem, 'arquivo original não pode ser apagado');
     }
 
+    public function testCertificadoFromStringGravaTemporarioEApagaAoDestruir(): void
+    {
+        $conteudo = (string) file_get_contents($this->gerarPfx('senha-teste'));
+
+        $cert = CertificadoA1::fromString($conteudo, 'senha-teste');
+        $caminho = $cert->caminho;
+
+        self::assertFileExists($caminho);
+        self::assertStringEndsWith('.pfx', $caminho);
+        self::assertTrue($cert->isPkcs12());
+        self::assertSame($conteudo, file_get_contents($caminho));
+        if (\DIRECTORY_SEPARATOR === '/') {
+            self::assertSame(0o600, fileperms($caminho) & 0o777);
+        }
+        self::assertSame(
+            $cert->identificador(),
+            CertificadoA1::fromString($conteudo, 'senha-teste')->identificador(),
+            'mesmo conteúdo, mesma chave de sessão — o caminho temporário muda a cada processo',
+        );
+
+        $pem = $cert->paraPem();
+        self::assertStringContainsString('PRIVATE KEY', (string) file_get_contents($pem->caminho));
+        unset($pem);
+
+        unset($cert);
+        gc_collect_cycles();
+        self::assertFileDoesNotExist($caminho);
+    }
+
+    public function testCertificadoFromStringDetectaPemERecusaVazio(): void
+    {
+        $cert = CertificadoA1::fromString("-----BEGIN CERTIFICATE-----\nAAAA\n-----END CERTIFICATE-----\n");
+        self::assertStringEndsWith('.pem', $cert->caminho);
+        self::assertFalse($cert->isPkcs12());
+
+        $this->expectException(CertificateException::class);
+        CertificadoA1::fromString('');
+    }
+
     public function testGuzzleFactoryConfiguraCertificado(): void
     {
         $cert = new CertificadoA1($this->gerarPfx('s'), 's');

@@ -29,6 +29,21 @@ class SiscomexException extends \RuntimeException
         parent::__construct($message, $httpStatus ?? 0, $previous);
     }
 
+    /**
+     * O erro ou algum de seus detalhes tem um destes códigos?
+     * Ex.: `$e->possuiCodigo('CATP-ER2021')` (retificação idêntica à versão existente).
+     */
+    public function possuiCodigo(string ...$codigos): bool
+    {
+        foreach ([$this->codigoErro, ...array_map(static fn(ErroDetalhe $d): ?string => $d->codigo, $this->detalhes)] as $codigo) {
+            if ($codigo !== null && \in_array($codigo, $codigos, true)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /** Texto pronto para abrir chamado na Central Serpro. */
     public function resumoParaChamado(): string
     {

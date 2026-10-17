@@ -14,6 +14,7 @@ use MarceloFecchio\Siscomex\PortalUnico\Config\ClientConfig;
 use MarceloFecchio\Siscomex\PortalUnico\PortalUnicoClient;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use Psr\Http\Message\RequestInterface;
+use Psr\SimpleCache\CacheInterface;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -33,7 +34,7 @@ abstract class TestCase extends BaseTestCase
         $this->store = new InMemoryTokenStore();
     }
 
-    protected function client(?ClientConfig $config = null, ?Credential $credential = null, bool $semCredencial = false): PortalUnicoClient
+    protected function client(?ClientConfig $config = null, ?Credential $credential = null, bool $semCredencial = false, ?CacheInterface $cacheAtributos = null): PortalUnicoClient
     {
         $factory = new HttpFactory();
 
@@ -47,6 +48,7 @@ abstract class TestCase extends BaseTestCase
             streamFactory: $factory,
             clock: $this->clock,
             sleeper: $this->clock,
+            cacheAtributos: $cacheAtributos,
         );
     }
 

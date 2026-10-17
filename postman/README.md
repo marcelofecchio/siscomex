@@ -4,7 +4,7 @@ Arquivos:
 
 | Arquivo | Conteúdo |
 |---|---|
-| `Siscomex-PortalUnico.postman_collection.json` | Coleção v2.1: Autenticação, Cadastro de Atributos, Catálogo de Produtos e Fluxo completo |
+| `Siscomex-PortalUnico.postman_collection.json` | Coleção v2.1: Autenticação, Cadastro de Atributos, Catálogo de Produtos, Operadores Estrangeiros, Fabricantes-Produtores e Fluxo completo |
 | `Validacao.postman_environment.json` | Ambiente de Validação/Treinamento — escrita permitida |
 | `Producao.postman_environment.json` | Ambiente de Produção — **somente consultas** (`permitirEscrita=false`) |
 | `gerar-colecao.php` | Gerador dos três JSON acima (`php postman/gerar-colecao.php`) — edite ele, não os JSON |
@@ -33,6 +33,7 @@ Arquivos:
 - **Tests da coleção**: capturam `Set-Token`, `X-CSRF-Token` e `X-CSRF-Expiration` de **toda** resposta e atualizam o ambiente; em erros, verificam o formato `{message, code, tag}` e registram a `tag` (use-a em chamados à Central Serpro).
 - **Proteção de escrita**: com `permitirEscrita` diferente de `true` (padrão em Produção), requisições POST/PUT/DELETE — exceto autenticação e consultas via POST — são **puladas** (`pm.execution.skipRequest()`) e redirecionadas para um host `.invalid`, então nunca chegam ao portal. As requisições que gravam dados têm o prefixo **[ESCRITA]**.
 - **Fluxo completo (Validação)**: o passo 1 lê os atributos da NCM e monta `produtoBody` com os obrigatórios de objetivo *Produto* (valores de exemplo); os passos seguintes incluem, detalham, versionam, consultam o histórico e desativam o produto.
+- **Operadores Estrangeiros** e **Fabricantes-Produtores**: usam as variáveis `codigoPais` (ISO 3166, padrão `CN`), `codigoOperador` e `versaoOperador` (preenchidas ao incluir um operador) e `codigoProduto`. O vínculo de fabricante usa `conhecido: true` com o operador; para fabricante desconhecido envie `conhecido: false` só com o país.
 
 > Os códigos de atributos são diferentes entre Validação e Produção (ex.: "Categoria de produto - Catálogo Anvisa" é `ATT_18551` em Validação e `ATT_14545` em Produção em 15/10/2026). Nunca reutilize um body de um ambiente no outro.
 
