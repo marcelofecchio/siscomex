@@ -1,4 +1,4 @@
-# Mapa de endpoints — Autenticação, Cadastro de Atributos e Catálogo de Produtos
+# Mapa de endpoints — Autenticação, Cadastro de Atributos, Catálogo de Produtos e Tabelas Comex
 
 Fonte: specs OpenAPI em [`specs/`](specs/) (baixadas em 15/10/2026) + documentação oficial em <https://docs.portalunico.siscomex.gov.br/>.
 Todos os serviços autenticados exigem os headers `Authorization` (valor de `Set-Token`) e `X-CSRF-Token`.
@@ -93,3 +93,21 @@ O vínculo é separado do produto: `ProdutoIntegracaoRequestDTO` não tem campo 
 Observado na Validação (17/10/2026): `conhecido=true` = fabricante **conhecido** (a descrição da spec diz o contrário) — sem operador, a API responde 422 com `detail` `PUCX-ER0101` "Campo Fabricante/produtor estrangeiro é obrigatório" e `PUCX-ER0102` (sem `code` no nível superior); `conhecido=false` só com o país é aceito. No histórico, `conhecido` vem como **"Sim"/"Não"** (spec: "true"/"false"), `cpfCnpjTin` traz o TIN do operador e os eventos vêm do mais recente para o mais antigo. A exportação devolveu **204** logo após o vínculo.
 
 Evento push `catp-prod-desativado` (produto desativado por ofício): documentado no README; webhooks fora do escopo.
+
+## Tabelas Comex (`tabx.json`, base `{ambiente}/tabx/api`) — ✅ `tabelas()`, somente leitura
+
+Spec baixada em 17/10/2026 de `https://docs.portalunico.siscomex.gov.br/api/tabx/tabx.json`. Requer `Authorization` e `X-CSRF-Token`; o perfil IMPEXP consegue ler (verificado na Validação).
+
+| Método | Path | Entrada | Resposta | SDK |
+|---|---|---|---|---|
+| GET | `/ext/tabela` | — | `TabelaApiRepresentation[] {nome, rotulo, descricao}` | ✅ `listar()` |
+| GET | `/ext/tabela/{nomeTabela}/metadado` | `nomeTabela` (1–50) | `TabelaCamposApiRepresentation {nome, rotulo, descricao, campos[]}` | ✅ `metadados()` |
+| GET | `/ext/tabela/{nomeTabela}` | query `filtros`, `camposRetorno`, `camposOrdenacao`, `nivel` (0\|1), `offset` | `DadosTabelaApiRepresentation {nomeTabela, dados[{campos[{nome, valor, dadosTabelaEstrangeira}]}]}` | ✅ `consultar()`, `todos()`, `paises()` |
+| POST / PUT / DELETE | `/ext/tabela/{nomeTabela}[/{codigo}]` | body `campos` | — | — (manutenção pelos órgãos) |
+
+Observado na Validação (17/10/2026):
+- `filtros`, `camposRetorno` e `camposOrdenacao`: a spec só diz "Modelo: ...". O portal aceita **listas JSON URL-codificadas** (`[{"nome":"SIGLA_ISO2","valores":["CN","DE"]}]`, `[{"nome":"NOME","tipoOrdenacao":"DESC"}]`); objeto único → 422 `TABX-IN0067`; JSON cru, sem codificar → 400. O filtro é por igualdade.
+- Paginação: até 500 registros (`Accept-Ranges: dado 500`), `offset` começa em 1, `Content-Range: 1 - 500/2635`; **206 enquanto houver mais páginas**, 200 na última.
+- Nenhum registro → **404 sem corpo**; tabela inexistente → 422 `TABX-IN0003`.
+- Tabelas disponíveis (17): CIDADE_ATIT, EMBALAGEM_ATIT, ENQUADRAMENTO, FUNDAMENTO_LEGAL_TT, GRUPO_EXIGENCIA, LIPS_ZFM, MOTIVO_SITUACAO_ESPECIAL_DUIMP, ORGAO_ANUENTE, PAIS, PORTO, RECINTO_ATIT, SOLICITANTE, TIPO_AREA_EQUIPAMENTO, TIPO_CONHECIMENTO, TIPO_CONTEINER, TIPO_DECLARACAO_ADUANEIRA, UNIDADE_ATIT. Não há tabela de unidades de medida.
+- PAIS: 250 registros, campos SIGLA_ISO2 (chave), SIGLA_ISO3, NOME, NOME_INGLES, NOME_FRANCES, CODIGO_NUMERICO, DATA_INICIO, DATA_FIM (`yyyy-MM-dd'T'HH:mm:ss.SSSZ`, vazio = sem fim), INTERNO_VERSAO; inclui `XX` "A DESIGNAR".

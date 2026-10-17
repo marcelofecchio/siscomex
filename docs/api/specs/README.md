@@ -7,6 +7,7 @@ Baixadas em **15/10/2026** de <https://docs.portalunico.siscomex.gov.br/> (as p�
 | `plat-auth.json` | `/api/plat/plat-auth.json` (Swagger `swagger-51c654fd.html`) | OpenAPI 3.0.1 — Autenticação v75.0.0 |
 | `catp.json` | `/api/catp/catp.json` (Swagger `swagger-d5e7b137.html`) | Swagger 2.0 — Catálogo de Produtos v1.0.0 |
 | `cadatributos.json` | `/api/cada/cadatributos.json` (Swagger `swagger-f68672de.html`) | Swagger 2.0 — Cadastro de Atributos v1.0.0 |
+| `tabx.json` | `/api/tabx/tabx.json` (baixado em 17/10/2026; o índice `/api/` responde 403) | Swagger 2.0 — Tabelas Comex v1.0.0 |
 
 Para atualizar:
 
@@ -15,6 +16,7 @@ cd docs/api/specs
 curl -sSLO https://docs.portalunico.siscomex.gov.br/api/plat/plat-auth.json
 curl -sSLO https://docs.portalunico.siscomex.gov.br/api/catp/catp.json
 curl -sSLO https://docs.portalunico.siscomex.gov.br/api/cada/cadatributos.json
+curl -sSLO -A 'Mozilla/5.0' https://docs.portalunico.siscomex.gov.br/api/tabx/tabx.json
 git diff --stat .
 ```
 

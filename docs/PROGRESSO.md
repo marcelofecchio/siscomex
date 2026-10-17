@@ -1,8 +1,10 @@
 # Progresso
 
-Última atualização: 2026-10-17 15:07 — máquina: DESKTOP-NGLSJ67
+Última atualização: 2026-10-17 19:48 — máquina: DESKTOP-NGLSJ67
 
 ## Status atual
+
+**v0.3 (não lançada) na branch `feat/erro-api-fabricantes-fake-tabx`**: a partir do segundo `SUGESTOES-SDK.md` (item 1, Excel, descartado pelo usuário) — `ErroApi` + `CodigosErro`, `incluirComFabricantes()` / `vincularTodos()` / lote com fabricantes, `Testing\PortalUnicoFake`, `ClientConfig::$simularEscrita`, Tabelas Comex (`tabelas()`, com paginação real), `Ambiente::janelaDeIndisponibilidade()` e seção de versionamento/APIs `@experimental`. **Validado na Validação em 17/10/2026**: integração 7/7; Postman CLI — "Fluxo operador e fabricante" 8/8 requisições e pasta TABX 9/9 asserções. `composer qa` verde (289 testes unitários).
 
 **v0.2.0 lançada em 17/10/2026** (PR da branch `feat/operadores-fabricantes-e-painel`, CI verde, tag `v0.2.0`, release no GitHub e Packagist): operadores estrangeiros, fabricantes-produtores, busca por código interno, inclusão em lote, atributos condicionados (avaliação + `ValidadorProduto`), cache de atributos, `testarConexao()` e `CertificadoA1::fromString()` — implementados a partir de `SUGESTOES-SDK.md` (levantamento do painel) e **validados na Validação em 17/10/2026** (integração 6/6; Postman CLI nas pastas novas, só leitura, 6/6). `composer qa` verde (252 testes unitários).
 
@@ -10,7 +12,7 @@ SDK v0.1 implementado e **validado no portal real**: em Validação, autenticaç
 
 ## Próximo passo exato
 
-Atualizar o painel para `marcelofecchio/siscomex-sdk:^0.2` e usar os recursos novos (operadores, fabricantes, código interno, lote, testar conexão, condicionados).
+Revisar e mesclar o PR da branch `feat/erro-api-fabricantes-fake-tabx`; lançar **v0.3.0** (CHANGELOG "Não lançado" → `[0.3.0]`, User-Agent `/0.3`, tag + release). Depois, painel em `^0.3`: `ErroApi`/`mensagemAmigavel()` na UI de importação, `incluirComFabricantes()`/lote com fabricantes, `PortalUnicoFake` nos testes, `simularEscrita` na pré-validação, `tabelas()->paises()` no select de país.
 
 ## Feito
 
@@ -26,12 +28,15 @@ Atualizar o painel para `marcelofecchio/siscomex-sdk:^0.2` e usar os recursos no
 - [x] `docs/PROMPT-INICIAL.md` revisado com os fatos confirmados e os parâmetros definidos (16/10/2026)
 - [x] `doc/PROMPT-INICIAL.md` movido para `docs/` (pasta `doc` removida)
 - [x] 17/10/2026 — v0.2.0: PR, CI, merge em `main`, tag, release e Packagist
+- [x] 17/10/2026 — segundo `SUGESTOES-SDK.md`: itens 2, 3, 4, 5 e os de baixa prioridade viáveis (TABX/países, paginação na TABX, janela de indisponibilidade, política de versionamento); Postman atualizado
 - [x] 17/10/2026 — `SUGESTOES-SDK.md` verificado contra as specs e a Validação e implementado (itens 1, 2, 3, 4, 5, 7, 8, 10 e o `CertificadoA1::fromString()`); itens 6 e 9 e parte dos de baixa prioridade descartados com motivo (ver Decisões)
 
 ## Falta
 
 - [ ] Painel: usar `operadoresEstrangeiros()`, `fabricantes()`, `buscarPorCodigoInterno()`, `incluirLote()`, `testarConexao()` e `obrigatoriosPara()`; remover as lacunas do SDK do PROGRESSO do painel
 - [ ] Confirmar os itens `TODO(confirmar)` abaixo com respostas reais
+- [ ] Bateria controlada de escrita em **Produção** antes de o painel gravar lá — decisão e execução do responsável (a regra 1 proíbe escrita em Produção em desenvolvimento/testes; não automatizar)
+- [ ] Atualizar o Postman CLI (1.74.0 → 1.75.0): `postman update` falhou nesta máquina ("Não é possível criar um arquivo já existente" — o executável fica em `WindowsApps`); reinstalar pelo instalador oficial com o terminal fechado
 
 ## Decisões (data — decisão — motivo)
 
@@ -61,6 +66,16 @@ Atualizar o painel para `marcelofecchio/siscomex-sdk:^0.2` e usar os recursos no
 - 2026-10-17 — Condições de atributos: avaliação da esquerda para a direita (nenhuma condição real mistura `||` e `&&`), lógica de três valores (`null` = indeterminado não exige o condicionado), operadores levantados nas relações públicas dos dois ambientes (`==`, `!=`, `>`, `>=`, `<=`).
 - 2026-10-17 — Cache de atributos: respostas brutas de `porNcm()` em PSR-16, chave por ambiente+path+query, TTL até a meia-noite de Brasília (atualização diária); invalidação por `historicoVersoesPorNcm` não foi feita (o TTL diário já acompanha a publicação).
 - 2026-10-17 — `CertificadoA1::fromString()`: o identificador da sessão usa o hash do conteúdo (o caminho temporário muda a cada processo e quebraria o reaproveitamento da sessão / regra dos 60 s).
+
+- 2026-10-17 — Item 1 do segundo `SUGESTOES-SDK.md` (Excel) ignorado por pedido do usuário.
+- 2026-10-17 — `CodigosErro` só com códigos documentados (plat-auth.json) ou observados; PUCX-ER0101/0102 descritos como genéricos ("campo obrigatório/inválido") porque a spec os usa para Role-Type e o Catálogo para campos do corpo.
+- 2026-10-17 — `incluirComFabricantes()` lança os erros da inclusão do produto (como `incluir()`) e só captura os dos vínculos — o estado "erro" da sugestão vira exceção; `Incerto` não entra em `paraReprocessar()` para não duplicar vínculo.
+- 2026-10-17 — `Fabricante` (sem código de produto) criado para o fluxo composto; `FabricanteRequest` delega a validação a ele (uma regra só).
+- 2026-10-17 — `simularEscrita`: intercepta no `Transport` antes de autenticar; resposta = eco do corpo (200) ou 204; sem códigos do portal, os vínculos ficam `Pendente` sem erro. Tem prioridade sobre o bloqueio de produção (nada é enviado).
+- 2026-10-17 — `PortalUnicoFake` em `src/Testing` (autoload normal) e sem depender do Guzzle: usa PSR-17 discovery; responde a autenticação automaticamente; `tentativas503: 0` por padrão.
+- 2026-10-17 — TABX somente leitura (as escritas são dos órgãos). `paises()` filtra vigentes por DATA_INICIO/DATA_FIM e ordena por NOME no portal.
+- 2026-10-17 — Paginação ergonômica: implementada para a TABX (que pagina); no Catálogo continua não aplicável (206 = truncado) — `parcial` já é uniforme em produtos e operadores.
+- 2026-10-17 — Bateria de escrita em Produção não executada: conflita com a regra inegociável 1; fica como pendência do responsável e critério para a 1.0.
 
 ## Dúvidas em aberto / bloqueios
 
@@ -94,3 +109,6 @@ Atualizar o painel para `marcelofecchio/siscomex-sdk:^0.2` e usar os recursos no
 - 2026-10-17 — Validação, operadores: `codigo` texto (`OPE_2`); retificação gera `2.1` e desativa a versão anterior; retificação idêntica → 422 `CATP-ER5013`; consulta traz `seq`/`dataReferencia` e omite desativados sem `exibirDesativados=true`.
 - 2026-10-17 — Validação, fabricantes: `conhecido=true` + operador e `conhecido=false` só com país foram aceitos; `conhecido=true` sem operador → 422 com `detail` `PUCX-ER0101`/`PUCX-ER0102` e sem `code` no topo; histórico com `conhecido` "Sim"/"Não", mais recente primeiro.
 - 2026-10-17 — Registros de teste criados **e desativados** em Validação no CNPJ de teste: operador `OPE_2` (CN) e os do teste de integração; produtos 4 e 5 e os do teste de integração; produto 2 reativado e desativado de novo. Fixtures sanitizadas em `tests/Fixtures/validacao/{operador-estrangeiro-*,fabricante-historico,produtos-por-codigo-interno}.json`.
+- 2026-10-17 — TABX (Validação): spec `tabx.json` pública (o índice `/api/` responde 403); IMPEXP lê; filtros/retorno/ordenação como listas JSON URL-codificadas (objeto → 422 `TABX-IN0067`; JSON cru → 400 no Postman); `Content-Range: 1 - 500/2635`, `Accept-Ranges: dado 500`, offset a partir de 1, **206 = há mais páginas**, 200 na última; sem resultado → 404 sem corpo; tabela inexistente → 422 `TABX-IN0003`; 17 tabelas, sem unidades de medida; PAIS com 250 registros (inclui `XX` "A DESIGNAR").
+- 2026-10-17 — Postman CLI: duas execuções com menos de 60 s (ou SDK + coleção com a mesma chave) → `PLAT-ER2033` na autenticação e 401 na primeira requisição; com intervalo, a pasta TABX passou 9/9.
+- 2026-10-17 — Registros de teste criados **e desativados** em Validação nesta rodada: produto 10 e operador `OPE_5` (fluxo Postman) e os produtos/operadores dos testes de integração (`incluirComFabricantes`).

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MarceloFecchio\Siscomex\PortalUnico\Http;
 
+use Http\Discovery\Psr17FactoryDiscovery;
 use MarceloFecchio\Siscomex\PortalUnico\Auth\Authenticator;
 use MarceloFecchio\Siscomex\PortalUnico\Config\ClientConfig;
 use MarceloFecchio\Siscomex\PortalUnico\Exceptions\ProductionWriteBlockedException;
@@ -29,11 +30,18 @@ use Psr\Log\LoggerInterface;
  * - em 401, reautentica uma única vez e repete a requisição;
  * - repete com backoff exponencial apenas em 503 (exceto PUCX-ER0401) e em erros de rede
  *   de requisições GET; nunca em 4xx nem em PUCX-ER1001;
- * - recusa escrita em produção quando a proteção estiver ativa.
+ * - recusa escrita em produção quando a proteção estiver ativa;
+ * - com ClientConfig::$simularEscrita, não envia escritas (veja escritasSimuladas()).
  */
 final class Transport
 {
     private const array METODOS_LEITURA = ['GET', 'HEAD'];
+
+    /** Header das respostas geradas pela simulação de escrita. */
+    public const string HEADER_SIMULACAO = 'X-Siscomex-Simulacao';
+
+    /** @var list<EscritaSimulada> */
+    private array $escritasSimuladas = [];
 
     public function __construct(
         private readonly ClientInterface $http,
@@ -49,6 +57,16 @@ final class Transport
     public function config(): ClientConfig
     {
         return $this->config;
+    }
+
+    /**
+     * Escritas não enviadas por ClientConfig::$simularEscrita, na ordem em que ocorreram.
+     *
+     * @return list<EscritaSimulada>
+     */
+    public function escritasSimuladas(): array
+    {
+        return $this->escritasSimuladas;
     }
 
     /**
@@ -68,6 +86,10 @@ final class Transport
     ): ResponseInterface {
         $method = strtoupper($method);
         $isRead = $readOnly ?? \in_array($method, self::METODOS_LEITURA, true);
+
+        if (!$isRead && $this->config->simularEscrita) {
+            return $this->simularEscrita($method, $path, $query, $json);
+        }
 
         if (!$isRead && $this->config->escritaBloqueada()) {
             throw new ProductionWriteBlockedException(\sprintf(
@@ -215,6 +237,30 @@ final class Transport
         }
 
         return $parts === [] ? '' : '?'.implode('&', $parts);
+    }
+
+    /**
+     * Registra a escrita sem enviá-la e devolve o próprio corpo (200) ou 204 sem corpo.
+     * Não autentica: a simulação funciona sem credencial e sem rede.
+     *
+     * @param array<string, scalar|list<scalar>|null> $query
+     */
+    private function simularEscrita(string $method, string $path, array $query, mixed $json): ResponseInterface
+    {
+        $url = $this->config->ambiente->baseUrl().$path.self::buildQuery($query);
+        $this->escritasSimuladas[] = new EscritaSimulada($method, $path, $url, $json, $this->clock->now());
+        $this->logger->info('Escrita simulada (não enviada): {method} {url}', ['method' => $method, 'url' => $url]);
+
+        $response = Psr17FactoryDiscovery::findResponseFactory()
+            ->createResponse($json === null ? 204 : 200)
+            ->withHeader(self::HEADER_SIMULACAO, '1');
+        if ($json === null) {
+            return $response;
+        }
+
+        return $response
+            ->withHeader('Content-Type', 'application/json')
+            ->withBody($this->streams->createStream(json_encode($json, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)));
     }
 
     /** @param array<string, string> $headers */

@@ -355,6 +355,38 @@ $fabricantes = [
     ],
 ];
 
+$X = ['tabx', 'api', 'ext', 'tabela'];
+// O portal recusa (400) o JSON cru na query: os valores vão URL-codificados, mantendo a variável legível.
+$filtroPais = str_replace(rawurlencode('{{codigoPais}}'), '{{codigoPais}}', rawurlencode((string) json_encode([['nome' => 'SIGLA_ISO2', 'valores' => ['{{codigoPais}}']]])));
+$testeTabelaPaginada = status(200, 206, 404)."\npm.test('Content-Range com faixa e total', function () {\n    if (pm.response.code === 404) { return; } // 404 sem corpo = nenhum registro\n    pm.expect(pm.response.headers.get('Content-Range')).to.match(/^\\d+ - \\d+\\/\\d+$/);\n});";
+
+$tabelas = [
+    'name' => 'Tabelas Comex (TABX)',
+    'description' => 'Tabelas de apoio do comércio exterior (PAIS, PORTO, ORGAO_ANUENTE...). Somente consultas: as operações de inclusão/alteração são para os órgãos. Paginação: até 500 registros, offset a partir de 1, faixa e total no header Content-Range; 206 enquanto houver mais páginas, 200 na última. Filtros, camposRetorno e camposOrdenacao são listas JSON na query; sem resultado = 404 sem corpo.',
+    'item' => [
+        req('Listar tabelas', 'GET', $X, testes: status(200)),
+        req('Metadados da tabela PAIS', 'GET', [...$X, 'PAIS', 'metadado'], testes: status(200)."\npm.test('Chave de negócio SIGLA_ISO2', () => pm.expect(pm.response.json().campos.find(c => c.chaveNegocio).nome).to.eql('SIGLA_ISO2'));"),
+        req('Países (página 1)', 'GET', [...$X, 'PAIS'], ['camposOrdenacao' => rawurlencode((string) json_encode([['nome' => 'NOME', 'tipoOrdenacao' => 'ASC']]))], testes: $testeTabelaPaginada),
+        req('País pela sigla ISO2', 'GET', [...$X, 'PAIS'], ['filtros' => $filtroPais], testes: $testeTabelaPaginada, descricao: 'Filtro por igualdade; a variável codigoPais define a sigla.'),
+        req('Portos a partir do registro 501', 'GET', [...$X, 'PORTO'], ['offset' => '501'], testes: $testeTabelaPaginada),
+    ],
+];
+
+$fluxoFabricante = [
+    'name' => 'Fluxo operador e fabricante (Validação)',
+    'description' => 'Execute em sequência no Runner, apenas no ambiente de Validação: inclui um operador estrangeiro, um produto, vincula o operador como fabricante, confere o histórico e desfaz tudo (desvincula e desativa).',
+    'item' => [
+        req('1. [ESCRITA] Incluir operador estrangeiro', 'POST', [...$O, '{{cnpjRaiz}}', '{{codigoPais}}'], body: $bodyOperador, testes: $testeOperador),
+        req('2. Atributos da NCM (monta o produto)', 'GET', [...$C, 'atributo-ncm', '{{ncm}}'], ['modalidade' => '{{modalidade}}'], testes: $montarProduto),
+        req('3. [ESCRITA] Incluir produto', 'POST', [...$P, '{{cnpjRaiz}}'], body: '{{produtoBody}}', testes: $testeProduto),
+        req('4. [ESCRITA] Vincular operador como fabricante', 'POST', [...$F, '{{cnpjRaiz}}'], body: $bodyFabricante, testes: status(200)."\npm.test('Fabricante conhecido vinculado', () => pm.expect(pm.response.json().conhecido).to.eql(true));"),
+        req('5. Histórico de fabricantes', 'GET', [...$F, 'historico', '{{cnpjRaiz}}', '{{codigoProduto}}'], testes: status(200)."\npm.test('Inclusão registrada com conhecido \"Sim\"', () => pm.expect(pm.response.json().some(e => e.operacao === 'Inclusão' && e.conhecido === 'Sim')).to.be.true);"),
+        req('6. [ESCRITA] Desvincular fabricante', 'PUT', [...$F, '{{cnpjRaiz}}'], body: $bodyFabricante, testes: status(200, 204)),
+        req('7. [ESCRITA] Desativar produto', 'PUT', [...$P, 'desativar', '{{cnpjRaiz}}', '{{codigoProduto}}'], testes: status(200, 204)),
+        req('8. [ESCRITA] Desativar operador', 'PUT', [...$O, 'desativar', '{{cnpjRaiz}}', '{{codigoPais}}', '{{codigoOperador}}', '{{versaoOperador}}'], testes: status(200, 204)),
+    ],
+];
+
 $fluxo = [
     'name' => 'Fluxo completo (Validação)',
     'description' => 'Execute em sequência no Runner, apenas no ambiente de Validação: atributos da NCM → incluir → detalhar → nova versão → desativar.',
@@ -372,11 +404,11 @@ $colecao = [
     'info' => [
         'name' => 'Siscomex — Portal Único (IMPEXP)',
         '_postman_id' => '6f1d6a8e-3c39-4a63-9a43-5b8b8f3c1a01',
-        'description' => "Autenticação, Cadastro de Atributos e Catálogo de Produtos da API pública do Portal Único Siscomex.\n\nSelecione o ambiente (Validação ou Produção). A coleção autentica automaticamente, reaproveita o token, respeita 60 s entre autenticações e captura o X-CSRF-Token renovado de toda resposta.\n\nVeja postman/README.md.",
+        'description' => "Autenticação, Cadastro de Atributos, Catálogo de Produtos (produtos, operadores estrangeiros, fabricantes) e Tabelas Comex da API pública do Portal Único Siscomex.\n\nSelecione o ambiente (Validação ou Produção). A coleção autentica automaticamente, reaproveita o token, respeita 60 s entre autenticações e captura o X-CSRF-Token renovado de toda resposta.\n\nVeja postman/README.md.",
         'schema' => 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json',
     ],
     'event' => [script('prerequest', $preRequestColecao), script('test', $testesColecao)],
-    'item' => [$autenticacao, $atributos, $catalogo, $operadores, $fabricantes, $fluxo],
+    'item' => [$autenticacao, $atributos, $catalogo, $operadores, $fabricantes, $tabelas, $fluxo, $fluxoFabricante],
 ];
 
 /** @return array<string, mixed> */

@@ -20,9 +20,9 @@ final readonly class CatalogoResource
 
     public function __construct(Transport $transport)
     {
-        $this->produtos = new ProdutosResource($transport);
-        $this->operadoresEstrangeiros = new OperadoresEstrangeirosResource($transport);
         $this->fabricantes = new FabricantesResource($transport);
+        $this->produtos = new ProdutosResource($transport, $this->fabricantes);
+        $this->operadoresEstrangeiros = new OperadoresEstrangeirosResource($transport);
     }
 
     public function produtos(): ProdutosResource

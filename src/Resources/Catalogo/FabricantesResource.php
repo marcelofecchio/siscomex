@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 namespace MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo;
 
+use MarceloFecchio\Siscomex\PortalUnico\Enum\StatusVinculo;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\SiscomexException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\TransportException;
 use MarceloFecchio\Siscomex\PortalUnico\Http\Transport;
 use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\EventoHistoricoFabricante;
 use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\FabricanteRequest;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ResultadoVinculo;
 use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\VinculoFabricante;
+use MarceloFecchio\Siscomex\PortalUnico\Support\ClassificacaoErro;
 use MarceloFecchio\Siscomex\PortalUnico\Support\Data;
 use MarceloFecchio\Siscomex\PortalUnico\ValueObject\CodigoPais;
 use MarceloFecchio\Siscomex\PortalUnico\ValueObject\CpfCnpjRaiz;
@@ -32,6 +37,46 @@ final readonly class FabricantesResource
     public function vincular(CpfCnpjRaiz|string $cpfCnpjRaiz, FabricanteRequest $fabricante): ?VinculoFabricante
     {
         return self::vinculo($this->transport->json('POST', self::PREFIXO.'/'.CpfCnpjRaiz::of($cpfCnpjRaiz), json: $fabricante->toArray()));
+    }
+
+    /**
+     * Vincula vários fabricantes em sequência, sem repetir nenhum envio — use também para
+     * reprocessar `ResultadoInclusaoComFabricantes::paraReprocessar()`.
+     *
+     * Recusa do portal (4xx, 500) → Erro e segue; rate limit, 503 e 401/403 → o atual e os
+     * seguintes ficam Pendente; falha de rede → Incerto e os seguintes Pendente.
+     *
+     * @experimental
+     *
+     * @param list<FabricanteRequest> $fabricantes
+     *
+     * @return list<ResultadoVinculo>
+     */
+    public function vincularTodos(CpfCnpjRaiz|string $cpfCnpjRaiz, array $fabricantes): array
+    {
+        $cpfCnpjRaiz = CpfCnpjRaiz::of($cpfCnpjRaiz);
+        $resultados = [];
+        $interrupcao = null;
+
+        foreach ($fabricantes as $request) {
+            if ($interrupcao !== null) {
+                $resultados[] = new ResultadoVinculo($request->fabricante, $request->codigoProduto, StatusVinculo::Pendente);
+                continue;
+            }
+
+            try {
+                $resultados[] = new ResultadoVinculo($request->fabricante, $request->codigoProduto, StatusVinculo::Vinculado, $this->vincular($cpfCnpjRaiz, $request));
+            } catch (TransportException $e) {
+                $resultados[] = new ResultadoVinculo($request->fabricante, $request->codigoProduto, StatusVinculo::Incerto, erro: $e);
+                $interrupcao = $e;
+            } catch (SiscomexException $e) {
+                $interrompe = ClassificacaoErro::interrompeSequencia($e);
+                $resultados[] = new ResultadoVinculo($request->fabricante, $request->codigoProduto, $interrompe ? StatusVinculo::Pendente : StatusVinculo::Erro, erro: $e);
+                $interrupcao = $interrompe ? $e : null;
+            }
+        }
+
+        return $resultados;
     }
 
     /**

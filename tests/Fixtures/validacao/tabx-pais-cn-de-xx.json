@@ -1,0 +1,152 @@
+{
+    "nomeTabela": "PAIS",
+    "dados": [
+        {
+            "campos": [
+                {
+                    "nome": "SIGLA_ISO2",
+                    "valor": "CN",
+                    "dadosTabelaEstrangeira": null
+                },
+                {
+                    "nome": "SIGLA_ISO3",
+                    "valor": "CHN",
+                    "dadosTabelaEstrangeira": null
+                },
+                {
+                    "nome": "NOME",
+                    "valor": "China, República Popular",
+                    "dadosTabelaEstrangeira": null
+                },
+                {
+                    "nome": "NOME_INGLES",
+                    "valor": "CHINA",
+                    "dadosTabelaEstrangeira": null
+                },
+                {
+                    "nome": "NOME_FRANCES",
+                    "valor": "CHINE (LA)",
+                    "dadosTabelaEstrangeira": null
+                },
+                {
+                    "nome": "CODIGO_NUMERICO",
+                    "valor": "160",
+                    "dadosTabelaEstrangeira": null
+                },
+                {
+                    "nome": "DATA_INICIO",
+                    "valor": "2025-08-07T11:20:36.036-0300",
+                    "dadosTabelaEstrangeira": null
+                },
+                {
+                    "nome": "DATA_FIM",
+                    "valor": "",
+                    "dadosTabelaEstrangeira": null
+                },
+                {
+                    "nome": "INTERNO_VERSAO",
+                    "valor": "2",
+                    "dadosTabelaEstrangeira": null
+                }
+            ]
+        },
+        {
+            "campos": [
+                {
+                    "nome": "SIGLA_ISO2",
+                    "valor": "DE",
+                    "dadosTabelaEstrangeira": null
+                },
+                {
+                    "nome": "SIGLA_ISO3",
+                    "valor": "DEU",
+                    "dadosTabelaEstrangeira": null
+                },
+                {
+                    "nome": "NOME",
+                    "valor": "Alemanha",
+                    "dadosTabelaEstrangeira": null
+                },
+                {
+                    "nome": "NOME_INGLES",
+                    "valor": "GERMANY",
+                    "dadosTabelaEstrangeira": null
+                },
+                {
+                    "nome": "NOME_FRANCES",
+                    "valor": "ALLEMAGNE (L)",
+                    "dadosTabelaEstrangeira": null
+                },
+                {
+                    "nome": "CODIGO_NUMERICO",
+                    "valor": "23",
+                    "dadosTabelaEstrangeira": null
+                },
+                {
+                    "nome": "DATA_INICIO",
+                    "valor": "2025-08-07T11:20:34.806-0300",
+                    "dadosTabelaEstrangeira": null
+                },
+                {
+                    "nome": "DATA_FIM",
+                    "valor": "",
+                    "dadosTabelaEstrangeira": null
+                },
+                {
+                    "nome": "INTERNO_VERSAO",
+                    "valor": "2",
+                    "dadosTabelaEstrangeira": null
+                }
+            ]
+        },
+        {
+            "campos": [
+                {
+                    "nome": "SIGLA_ISO2",
+                    "valor": "XX",
+                    "dadosTabelaEstrangeira": null
+                },
+                {
+                    "nome": "SIGLA_ISO3",
+                    "valor": "XXX",
+                    "dadosTabelaEstrangeira": null
+                },
+                {
+                    "nome": "NOME",
+                    "valor": "A DESIGNAR",
+                    "dadosTabelaEstrangeira": null
+                },
+                {
+                    "nome": "NOME_INGLES",
+                    "valor": "A DESIGNAR",
+                    "dadosTabelaEstrangeira": null
+                },
+                {
+                    "nome": "NOME_FRANCES",
+                    "valor": "A DESIGNAR",
+                    "dadosTabelaEstrangeira": null
+                },
+                {
+                    "nome": "CODIGO_NUMERICO",
+                    "valor": "994",
+                    "dadosTabelaEstrangeira": null
+                },
+                {
+                    "nome": "DATA_INICIO",
+                    "valor": "2024-01-31T00:00:00.000-0300",
+                    "dadosTabelaEstrangeira": null
+                },
+                {
+                    "nome": "DATA_FIM",
+                    "valor": "",
+                    "dadosTabelaEstrangeira": null
+                },
+                {
+                    "nome": "INTERNO_VERSAO",
+                    "valor": "1",
+                    "dadosTabelaEstrangeira": null
+                }
+            ]
+        }
+    ]
+}

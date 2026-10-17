@@ -2,7 +2,7 @@
     "info": {
         "name": "Siscomex — Portal Único (IMPEXP)",
         "_postman_id": "6f1d6a8e-3c39-4a63-9a43-5b8b8f3c1a01",
-        "description": "Autenticação, Cadastro de Atributos e Catálogo de Produtos da API pública do Portal Único Siscomex.\n\nSelecione o ambiente (Validação ou Produção). A coleção autentica automaticamente, reaproveita o token, respeita 60 s entre autenticações e captura o X-CSRF-Token renovado de toda resposta.\n\nVeja postman/README.md.",
+        "description": "Autenticação, Cadastro de Atributos, Catálogo de Produtos (produtos, operadores estrangeiros, fabricantes) e Tabelas Comex da API pública do Portal Único Siscomex.\n\nSelecione o ambiente (Validação ou Produção). A coleção autentica automaticamente, reaproveita o token, respeita 60 s entre autenticações e captura o X-CSRF-Token renovado de toda resposta.\n\nVeja postman/README.md.",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "event": [
@@ -1700,6 +1700,233 @@
             ]
         },
         {
+            "name": "Tabelas Comex (TABX)",
+            "description": "Tabelas de apoio do comércio exterior (PAIS, PORTO, ORGAO_ANUENTE...). Somente consultas: as operações de inclusão/alteração são para os órgãos. Paginação: até 500 registros, offset a partir de 1, faixa e total no header Content-Range; 206 enquanto houver mais páginas, 200 na última. Filtros, camposRetorno e camposOrdenacao são listas JSON na query; sem resultado = 404 sem corpo.",
+            "item": [
+                {
+                    "name": "Listar tabelas",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200)', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/tabx/api/ext/tabela",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "tabx",
+                                "api",
+                                "ext",
+                                "tabela"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Metadados da tabela PAIS",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200)', () => pm.expect(pm.response.code).to.be.oneOf([200]));",
+                                    "pm.test('Chave de negócio SIGLA_ISO2', () => pm.expect(pm.response.json().campos.find(c => c.chaveNegocio).nome).to.eql('SIGLA_ISO2'));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/tabx/api/ext/tabela/PAIS/metadado",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "tabx",
+                                "api",
+                                "ext",
+                                "tabela",
+                                "PAIS",
+                                "metadado"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Países (página 1)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 206, 404)', () => pm.expect(pm.response.code).to.be.oneOf([200, 206, 404]));",
+                                    "pm.test('Content-Range com faixa e total', function () {",
+                                    "    if (pm.response.code === 404) { return; } // 404 sem corpo = nenhum registro",
+                                    "    pm.expect(pm.response.headers.get('Content-Range')).to.match(/^\\d+ - \\d+\\/\\d+$/);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/tabx/api/ext/tabela/PAIS?camposOrdenacao=%5B%7B%22nome%22%3A%22NOME%22%2C%22tipoOrdenacao%22%3A%22ASC%22%7D%5D",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "tabx",
+                                "api",
+                                "ext",
+                                "tabela",
+                                "PAIS"
+                            ],
+                            "query": [
+                                {
+                                    "key": "camposOrdenacao",
+                                    "value": "%5B%7B%22nome%22%3A%22NOME%22%2C%22tipoOrdenacao%22%3A%22ASC%22%7D%5D"
+                                }
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "País pela sigla ISO2",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 206, 404)', () => pm.expect(pm.response.code).to.be.oneOf([200, 206, 404]));",
+                                    "pm.test('Content-Range com faixa e total', function () {",
+                                    "    if (pm.response.code === 404) { return; } // 404 sem corpo = nenhum registro",
+                                    "    pm.expect(pm.response.headers.get('Content-Range')).to.match(/^\\d+ - \\d+\\/\\d+$/);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/tabx/api/ext/tabela/PAIS?filtros=%5B%7B%22nome%22%3A%22SIGLA_ISO2%22%2C%22valores%22%3A%5B%22{{codigoPais}}%22%5D%7D%5D",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "tabx",
+                                "api",
+                                "ext",
+                                "tabela",
+                                "PAIS"
+                            ],
+                            "query": [
+                                {
+                                    "key": "filtros",
+                                    "value": "%5B%7B%22nome%22%3A%22SIGLA_ISO2%22%2C%22valores%22%3A%5B%22{{codigoPais}}%22%5D%7D%5D"
+                                }
+                            ]
+                        },
+                        "description": "Filtro por igualdade; a variável codigoPais define a sigla."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Portos a partir do registro 501",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 206, 404)', () => pm.expect(pm.response.code).to.be.oneOf([200, 206, 404]));",
+                                    "pm.test('Content-Range com faixa e total', function () {",
+                                    "    if (pm.response.code === 404) { return; } // 404 sem corpo = nenhum registro",
+                                    "    pm.expect(pm.response.headers.get('Content-Range')).to.match(/^\\d+ - \\d+\\/\\d+$/);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/tabx/api/ext/tabela/PORTO?offset=501",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "tabx",
+                                "api",
+                                "ext",
+                                "tabela",
+                                "PORTO"
+                            ],
+                            "query": [
+                                {
+                                    "key": "offset",
+                                    "value": "501"
+                                }
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
             "name": "Fluxo completo (Validação)",
             "description": "Execute em sequência no Runner, apenas no ambiente de Validação: atributos da NCM → incluir → detalhar → nova versão → desativar.",
             "item": [
@@ -2016,6 +2243,435 @@
                                 "desativar",
                                 "{{cnpjRaiz}}",
                                 "{{codigoProduto}}"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Fluxo operador e fabricante (Validação)",
+            "description": "Execute em sequência no Runner, apenas no ambiente de Validação: inclui um operador estrangeiro, um produto, vincula o operador como fabricante, confere o histórico e desfaz tudo (desvincula e desativa).",
+            "item": [
+                {
+                    "name": "1. [ESCRITA] Incluir operador estrangeiro",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200)', () => pm.expect(pm.response.code).to.be.oneOf([200]));",
+                                    "pm.test('Operador retornado com código e versão', function () {",
+                                    "    const j = pm.response.json();",
+                                    "    pm.expect(j.codigo).to.be.a('string');",
+                                    "    pm.environment.set('codigoOperador', j.codigo);",
+                                    "    pm.environment.set('versaoOperador', j.versao);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/operador-estrangeiro/{{cnpjRaiz}}/{{codigoPais}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "operador-estrangeiro",
+                                "{{cnpjRaiz}}",
+                                "{{codigoPais}}"
+                            ]
+                        },
+                        "description": "",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nome\": \"Fornecedor Teste\",\n    \"logradouro\": \"No. 1 Keji Road\",\n    \"nomeCidade\": \"Shenzhen\",\n    \"codigoSubdivisaoPais\": \"CN-GD\",\n    \"cep\": \"518000\",\n    \"codigoInterno\": \"FORN-TESTE-1\",\n    \"email\": \"fornecedor@example.com\",\n    \"tin\": \"\",\n    \"identificacoesAdicionais\": []\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "2. Atributos da NCM (monta o produto)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 204)', () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));",
+                                    "pm.test('Estrutura {listaNcm, detalhesAtributos}', function () {",
+                                    "    if (pm.response.code === 204) { return; }",
+                                    "    const j = pm.response.json();",
+                                    "    pm.expect(j).to.have.property('listaNcm');",
+                                    "    pm.expect(j).to.have.property('detalhesAtributos');",
+                                    "});",
+                                    "// Monta o corpo do produto com os atributos obrigatórios (objetivo Produto) e valores de exemplo.",
+                                    "const j = pm.response.json();",
+                                    "const detalhes = {};",
+                                    "(j.detalhesAtributos || []).forEach(function (d) { detalhes[d.codigo] = d; });",
+                                    "const item = (j.listaNcm || [])[0] || { listaAtributos: [] };",
+                                    "const prefixo = pm.environment.get('modalidade') === 'EXPORTACAO' ? 'Export' : 'Import';",
+                                    "const atributos = [];",
+                                    "item.listaAtributos.filter(function (a) { return a.obrigatorio && String(a.modalidade).indexOf(prefixo) === 0; }).forEach(function (a) {",
+                                    "    const d = detalhes[a.codigo] || {};",
+                                    "    if (!(d.objetivos || []).some(function (o) { return o.descricao === 'Produto'; })) { return; }",
+                                    "    let valor = 'Teste';",
+                                    "    switch (d.formaPreenchimento) {",
+                                    "        case 'LISTA_ESTATICA': valor = ((d.dominio || [])[0] || {}).codigo || '01'; break;",
+                                    "        case 'BOOLEANO': valor = 'false'; break;",
+                                    "        case 'NUMERO_INTEIRO': case 'NUMERO_REAL': valor = '1'; break;",
+                                    "        case 'DATA': valor = new Date().toISOString().slice(0, 10); break;",
+                                    "    }",
+                                    "    atributos.push({ atributo: a.codigo, valor: valor });",
+                                    "});",
+                                    "pm.environment.set('produtoBody', JSON.stringify({",
+                                    "    denominacao: 'Produto de teste Postman ' + Date.now(),",
+                                    "    descricao: 'Fluxo completo da coleção Postman',",
+                                    "    modalidade: pm.environment.get('modalidade') || 'IMPORTACAO',",
+                                    "    ncm: pm.environment.get('ncm'),",
+                                    "    atributos: atributos,",
+                                    "    atributosMultivalorados: [],",
+                                    "    atributosCompostos: [],",
+                                    "    atributosCompostosMultivalorados: [],",
+                                    "    codigosInterno: []",
+                                    "}));",
+                                    "console.log('Atributos obrigatórios preenchidos: ' + atributos.map(function (a) { return a.atributo; }).join(', '));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/cadatributos/api/ext/atributo-ncm/{{ncm}}?modalidade={{modalidade}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cadatributos",
+                                "api",
+                                "ext",
+                                "atributo-ncm",
+                                "{{ncm}}"
+                            ],
+                            "query": [
+                                {
+                                    "key": "modalidade",
+                                    "value": "{{modalidade}}"
+                                }
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "3. [ESCRITA] Incluir produto",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200)', () => pm.expect(pm.response.code).to.be.oneOf([200]));",
+                                    "pm.test('Produto retornado com código e versão', function () {",
+                                    "    const p = pm.response.json();",
+                                    "    pm.expect(p).to.have.property('codigo');",
+                                    "    pm.expect(p).to.have.property('versao');",
+                                    "    pm.environment.set('codigoProduto', String(p.codigo));",
+                                    "    pm.environment.set('versao', String(p.versao));",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/produto/{{cnpjRaiz}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "produto",
+                                "{{cnpjRaiz}}"
+                            ]
+                        },
+                        "description": "",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{{produtoBody}}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "4. [ESCRITA] Vincular operador como fabricante",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200)', () => pm.expect(pm.response.code).to.be.oneOf([200]));",
+                                    "pm.test('Fabricante conhecido vinculado', () => pm.expect(pm.response.json().conhecido).to.eql(true));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/fabricante/{{cnpjRaiz}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "fabricante",
+                                "{{cnpjRaiz}}"
+                            ]
+                        },
+                        "description": "",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"codigoProduto\": {{codigoProduto}},\n  \"codigoPais\": \"{{codigoPais}}\",\n  \"conhecido\": true,\n  \"codigoOperadorEstrangeiro\": \"{{codigoOperador}}\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "5. Histórico de fabricantes",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200)', () => pm.expect(pm.response.code).to.be.oneOf([200]));",
+                                    "pm.test('Inclusão registrada com conhecido \"Sim\"', () => pm.expect(pm.response.json().some(e => e.operacao === 'Inclusão' && e.conhecido === 'Sim')).to.be.true);"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/fabricante/historico/{{cnpjRaiz}}/{{codigoProduto}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "fabricante",
+                                "historico",
+                                "{{cnpjRaiz}}",
+                                "{{codigoProduto}}"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "6. [ESCRITA] Desvincular fabricante",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 204)', () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/fabricante/{{cnpjRaiz}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "fabricante",
+                                "{{cnpjRaiz}}"
+                            ]
+                        },
+                        "description": "",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"codigoProduto\": {{codigoProduto}},\n  \"codigoPais\": \"{{codigoPais}}\",\n  \"conhecido\": true,\n  \"codigoOperadorEstrangeiro\": \"{{codigoOperador}}\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "7. [ESCRITA] Desativar produto",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 204)', () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/produto/desativar/{{cnpjRaiz}}/{{codigoProduto}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "produto",
+                                "desativar",
+                                "{{cnpjRaiz}}",
+                                "{{codigoProduto}}"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "8. [ESCRITA] Desativar operador",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 204)', () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/operador-estrangeiro/desativar/{{cnpjRaiz}}/{{codigoPais}}/{{codigoOperador}}/{{versaoOperador}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "operador-estrangeiro",
+                                "desativar",
+                                "{{cnpjRaiz}}",
+                                "{{codigoPais}}",
+                                "{{codigoOperador}}",
+                                "{{versaoOperador}}"
                             ]
                         },
                         "description": ""

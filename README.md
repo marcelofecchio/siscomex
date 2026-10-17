@@ -9,7 +9,9 @@ SDK PHP 8.4, agnóstico de framework, para a **API pública do Portal Único Sis
 
 - **Autenticação** por **Chaves de Acesso** ou **certificado digital A1** (mTLS), com reaproveitamento de sessão, regra dos 60 s e renovação automática do `X-CSRF-Token`;
 - **Cadastro de Atributos** — atributos por NCM, consulta por código/nome, downloads e histórico de versões, inclusive o download **público** sem autenticação;
-- **Catálogo de Produtos** — produtos (incluir, consultar, detalhar, versionar, retificar, desativar, exportar, códigos internos e inclusão em lote), **operadores estrangeiros** e vínculo de **fabricantes/produtores**.
+- **Catálogo de Produtos** — produtos (incluir, consultar, detalhar, versionar, retificar, desativar, exportar, códigos internos e inclusão em lote), **operadores estrangeiros** e vínculo de **fabricantes/produtores**, inclusive produto + fabricantes numa só chamada;
+- **Tabelas Comex** — consultas paginadas às tabelas de apoio (países, portos, órgãos...);
+- Erros normalizados com mensagens amigáveis, **simulação de escrita** para pré-validação e um **Portal Único falso** para os testes de quem usa o SDK.
 
 Inclui coleção **Postman** ([`postman/`](postman/)), exemplos ([`examples/`](examples/)) e validação local do produto contra os atributos da NCM.
 
@@ -29,7 +31,9 @@ Inclui coleção **Postman** ([`postman/`](postman/)), exemplos ([`examples/`](e
 - [Limites de acesso (rate limit)](#limites-de-acesso-rate-limit)
 - [Ambientes e códigos de atributos](#ambientes-e-códigos-de-atributos)
 - [Integração com Laravel](#integração-com-laravel)
+- [Testes de quem usa o SDK](#testes-de-quem-usa-o-sdk)
 - [Coleção Postman](#coleção-postman)
+- [Versionamento e estabilidade](#versionamento-e-estabilidade)
 - [Desenvolvimento e contribuição](#desenvolvimento-e-contribuição)
 - [Links oficiais](#links-oficiais)
 
@@ -265,6 +269,41 @@ if ($resultado->interrompido()) {
 
 Nenhum envio é repetido automaticamente. Recusas do portal ao item (400/404/422) e erros 500 ficam como `Erro` e o lote segue; rate limit, indisponibilidade e acesso negado interrompem o lote (o item fica `Pendente`). Se a rede cair durante o POST, o item fica `Incerto` — o portal pode tê-lo incluído; confira com `buscarPorCodigoInterno()` antes de reenviar.
 
+Cada item pode levar fabricantes (`ProdutoComFabricantes`): eles são vinculados logo após a inclusão. Se algum vínculo falhar, o item fica `IncluidoSemVinculo` — **não** reenvie o produto, reprocesse só os vínculos:
+
+```php
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\Fabricante;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ProdutoComFabricantes;
+
+$resultado = $produtos->incluirLote($cnpjRaiz, [
+    'linha-2' => new ProdutoComFabricantes($produtoA, [Fabricante::operadorEstrangeiro('CN', 'OPE_2')]),
+    'linha-3' => $produtoB,                                  // sem fabricantes
+]);
+$client->catalogo()->fabricantes()->vincularTodos($cnpjRaiz, $resultado->vinculosParaReprocessar());
+```
+
+#### Produto com fabricantes
+
+Como o vínculo exige o código do produto, `incluirComFabricantes()` faz a sequência inteira e devolve o estado de cada vínculo:
+
+```php
+use MarceloFecchio\Siscomex\PortalUnico\Enum\SituacaoInclusaoComFabricantes;
+
+$resultado = $produtos->incluirComFabricantes($cnpjRaiz, $novo, [
+    Fabricante::operadorEstrangeiro('CN', 'OPE_2'),
+    Fabricante::nacional('12.345.678/0001-95', 'BR'),
+    Fabricante::desconhecido('DE'),
+]);
+
+$resultado->produto->codigo;                           // o produto já existe
+if ($resultado->situacao() === SituacaoInclusaoComFabricantes::ProdutoSemVinculo) {
+    foreach ($resultado->vinculos as $v) { echo $v->status->value, ' ', $v->erro?->mensagemAmigavel(), PHP_EOL; }
+    $client->catalogo()->fabricantes()->vincularTodos($cnpjRaiz, $resultado->paraReprocessar()); // depois de corrigir/aguardar
+}
+```
+
+Erros na inclusão do **produto** são lançados como em `incluir()`. Depois que ele existe, nada é lançado: vínculo recusado → `Erro` (os demais seguem); rate limit/indisponibilidade → `Pendente` (veja `retomarApos()`); queda de rede → `Incerto` (confira com `fabricantes()->historico()` antes de reenviar; não entra em `paraReprocessar()`).
+
 ### Operadores estrangeiros
 
 ```php
@@ -333,6 +372,42 @@ Verifica obrigatórios ausentes — inclusive **condicionados** cuja condição 
 
 Quando novos atributos obrigatórios passam a valer para uma NCM, o portal pode **desativar produtos por ofício** e emitir o evento push `catp-prod-desativado` (Notícia Siscomex Sistemas nº 004/2026). O SDK não implementa o recebimento de webhooks; ao ser notificado, use `detalhar()`/`historico()` e cadastre uma nova versão com os atributos exigidos.
 
+### Tabelas Comex (países e outras tabelas de apoio)
+
+A API TABX expõe as tabelas do comércio exterior (`PAIS`, `PORTO`, `ORGAO_ANUENTE`, `TIPO_CONTEINER`...). Exige autenticação (o perfil IMPEXP consegue ler) e o SDK cobre só as consultas. Não há tabela de unidades de medida.
+
+```php
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Tabelas\Dto\FiltroTabela;
+
+$tabelas = $client->tabelas();
+
+$paises = $tabelas->paises();                  // list<Pais> vigentes, por nome — para o select do operador estrangeiro
+echo $paises[0]->codigo, ' ', $paises[0]->nome; // CodigoPais ISO 3166-1, nome em português
+
+$tabelas->listar();                            // tabelas disponíveis
+$tabelas->metadados('PORTO');                  // campos, tipos, domínios e chave de negócio
+
+$pagina = $tabelas->consultar('PAIS', new FiltroTabela()->onde('SIGLA_ISO2', 'CN', 'DE')->retornando('SIGLA_ISO2', 'NOME'));
+$pagina->registros[0]->valor('NOME');          // "China, República Popular"
+
+foreach ($tabelas->todos('PORTO') as $porto) { /* percorre todas as páginas sob demanda */ }
+```
+
+Diferente do Catálogo, a TABX **pagina**: até 500 registros por página, `offset` a partir de 1, faixa e total no header `Content-Range` (`PaginaTabela::$inicio/$fim/$total`, `temMais()`, `proximoOffset()`) e **HTTP 206 enquanto houver mais páginas**. Filtros são por igualdade; sem resultado, o portal responde 404 sem corpo e o SDK devolve uma página vazia. Guarde os países em cache: são ~250 registros que mudam raramente.
+
+### Simulação de escrita (pré-validação)
+
+```php
+$simulador = PortalUnicoClient::create(credencial: $credencial, config: new ClientConfig(simularEscrita: true));
+
+$resultado = $simulador->catalogo()->produtos()->incluirLote($cnpjRaiz, $requestsDaPlanilha);
+foreach ($simulador->escritasSimuladas() as $e) {
+    echo $e->metodo, ' ', $e->url, ' ', json_encode($e->corpo), PHP_EOL;  // o que seria enviado
+}
+```
+
+Com `simularEscrita`, POST/PUT/DELETE **não saem da máquina** (nem autenticam): a requisição é registrada e a resposta é o próprio corpo enviado — portanto sem os códigos que o portal geraria (`Produto::$codigo` fica `null`, e os vínculos de fabricante ficam `Pendente`). Consultas continuam indo ao portal. Combine com o `ValidadorProduto` para validar uma planilha inteira antes do envio real. A simulação tem prioridade sobre o bloqueio de escrita em produção.
+
 ### Endpoints ainda não cobertos
 
 `$client->transport()->json('GET', '/cadatributos/api/ext/atributo/historico-versoes', [...])` executa qualquer chamada autenticada com as mesmas regras de sessão, CSRF, erros e retry.
@@ -368,6 +443,19 @@ try {
 }
 ```
 
+Toda exceção também expõe o erro em formato estável — `ErroApi`, igual para qualquer tipo de exceção, pronto para a UI ou para JSON (sem o corpo bruto, que pode conter o CPF do usuário):
+
+```php
+$erro = $e->erro();
+$erro->codigo; $erro->tag; $erro->severidade; $erro->campo; $erro->detalhes; // list<ErroDetalhe>
+$erro->mensagemAmigavel();   // ex.: PLAT-ER8007 → "Chaves de acesso inválidas ou geradas em outro ambiente (...)"
+$erro->porCampo();           // ['ATT_5426' => ['O Atributo ATT_5426 ... é obrigatório.']]
+$erro->codigos();            // código principal + códigos dos detalhes
+json_encode($erro->toArray());
+```
+
+As mensagens amigáveis (`CodigosErro::DESCRICOES`) cobrem apenas códigos documentados nas specs ou observados no portal; para os demais, `mensagemAmigavel()` devolve a mensagem do portal.
+
 ## Sessão, regra dos 60 s e CSRF
 
 - O JWT (`Set-Token`) e o `X-CSRF-Token` ficam no `TokenStore` e são **reaproveitados** até o CSRF expirar (60 min, com 60 s de folga). O SDK nunca autentica por requisição.
@@ -388,6 +476,14 @@ O portal limita execuções por funcionalidade em janelas de 1 hora; ao exceder,
 |---|---|---|
 | `Producao` | `https://portalunico.siscomex.gov.br` | Operação real |
 | `Validacao` | `https://val.portalunico.siscomex.gov.br` | Desenvolvimento e testes — operações não têm efeito em produção. Pode ficar indisponível seg–sex 18h–7h e nos fins de semana |
+
+Para a UI avisar o usuário (sem bloquear chamadas — a Validação muitas vezes responde dentro dessas janelas):
+
+```php
+Ambiente::Validacao->janelaDeIndisponibilidade(new DateTimeImmutable());
+// "Janela de manutenção do ambiente de Validação (dias úteis das 18h às 7h e fins de semana)." ou null
+Ambiente::Producao->provavelmenteIndisponivel(new DateTimeImmutable('02:00')); // true — parada programada diária 01h–03h
+```
 
 **Os códigos de atributos são diferentes entre os ambientes.** Exemplo real (15/10/2026): "Categoria de produto - Catálogo Anvisa" é `ATT_14545` em Produção e `ATT_18551` em Validação. Nunca fixe códigos no código: obtenha-os de `porNcm()` ou do download público do ambiente em uso.
 
@@ -413,9 +509,36 @@ $this->app->singleton(PortalUnicoClient::class, fn () => PortalUnicoClient::crea
 ));
 ```
 
+## Testes de quem usa o SDK
+
+`Testing\PortalUnicoFake` é um Portal Único falso (cliente PSR-18) com respostas nos formatos observados no portal real, autenticação automática e registro das requisições — sem rede e sem esperas:
+
+```php
+use MarceloFecchio\Siscomex\PortalUnico\Testing\PortalUnicoFake;
+
+$fake = new PortalUnicoFake()
+    ->codigoInternoLivre()                       // também: codigoInternoAtivo/Desativado/Duplicado
+    ->produtoIncluido(codigo: 123)
+    ->erroValidacao(['ATT_5426' => 'O Atributo ATT_5426 para o NCM 84733049 é obrigatório.'])
+    ->rateLimit(liberadoAs: '15:00')             // também: indisponivel(), falhaDeRede(), operadorIncluido(), fabricanteVinculado()
+    ->responder(200, $qualquerJson);             // resposta livre; erro($status, $codigo, $mensagem, $detalhes)
+
+$client = $fake->cliente();                      // PortalUnicoClient ligado ao fake (injete no seu código)
+// ... exercite o seu código ...
+$fake->chamadas();                               // ['GET /catp/api/ext/produto', 'POST /catp/api/ext/produto/12345678', ...]
+$fake->corpoDaUltima();                          // JSON enviado na última requisição
+$fake->respostasPendentes();                     // respostas enfileiradas e não usadas
+```
+
 ## Coleção Postman
 
-Em [`postman/`](postman/): coleção v2.1 com autenticação automática (respeitando os 60 s), captura de CSRF, testes, bloqueio de escrita em produção, pastas de operadores estrangeiros e fabricantes e a pasta **Fluxo completo**. Instruções (certificado, Newman) em [`postman/README.md`](postman/README.md).
+Em [`postman/`](postman/): coleção v2.1 com autenticação automática (respeitando os 60 s), captura de CSRF, testes, bloqueio de escrita em produção, pastas de operadores estrangeiros, fabricantes e Tabelas Comex e os fluxos **completo** e **operador e fabricante**. Instruções (certificado, Postman CLI/Newman) em [`postman/README.md`](postman/README.md).
+
+## Versionamento e estabilidade
+
+O projeto segue [SemVer](https://semver.org/lang/pt-BR/) e registra cada mudança no [CHANGELOG](CHANGELOG.md). Enquanto estiver em `0.x`, uma versão **minor** (`0.2` → `0.3`) pode trazer mudanças incompatíveis, sempre descritas na seção "Alterado" do CHANGELOG; versões **patch** (`0.3.0` → `0.3.1`) só corrigem. Use `^0.3` para receber apenas correções.
+
+APIs marcadas como `@experimental` nos docblocks ainda podem mudar de forma, mesmo após a 1.0, até serem estabilizadas: `incluirLote()`, `incluirComFabricantes()`, `fabricantes()->vincularTodos()`, `ClientConfig::$simularEscrita`, `tabelas()` e `Testing\PortalUnicoFake`. Critérios para a 1.0: as APIs experimentais validadas em uso real pelo painel e uma bateria de escrita controlada em Produção feita e documentada pelo responsável (a regra nº 1 do projeto proíbe escrita em Produção em desenvolvimento e testes automatizados).
 
 ## Desenvolvimento e contribuição
 
@@ -438,7 +561,7 @@ SISCOMEX_RUN_INTEGRATION=1 SISCOMEX_AMBIENTE=validacao composer test:integration
 
 - Documentação da API: <https://docs.portalunico.siscomex.gov.br/> (próxima release: <https://docs-proxima.portalunico.siscomex.gov.br/>)
 - Autenticação: <https://docs.portalunico.siscomex.gov.br/api/plat/> · Chaves de acesso: <https://docs.portalunico.siscomex.gov.br/pages/chaves-acesso/>
-- Catálogo de Produtos: <https://docs.portalunico.siscomex.gov.br/api/catp/> · Cadastro de Atributos: <https://docs.portalunico.siscomex.gov.br/api/cada/>
+- Catálogo de Produtos: <https://docs.portalunico.siscomex.gov.br/api/catp/> · Cadastro de Atributos: <https://docs.portalunico.siscomex.gov.br/api/cada/> · Tabelas Comex: <https://docs.portalunico.siscomex.gov.br/api/tabx/>
 - Ambientes: <https://docs.portalunico.siscomex.gov.br/ambientes/> · Limites de acesso: <https://docs.portalunico.siscomex.gov.br/pages/limites-acesso/>
 - Integre seu sistema: <https://www.gov.br/siscomex/pt-br/sistemas-de-comercio-exterior/integre-seu-sistema>
 - Suporte técnico: Central Serpro de Atendimento, serviço "PORTAL ÚNICO SISCOMEX – PUCOMEX" (informe a `tag` do erro)

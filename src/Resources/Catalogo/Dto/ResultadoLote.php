@@ -35,10 +35,30 @@ final readonly class ResultadoLote implements \Countable, \IteratorAggregate
         return array_values(array_filter($this->itens, static fn(ItemLote $i): bool => $i->status === $status));
     }
 
-    /** @return list<ItemLote> */
+    /**
+     * Itens cujo produto foi incluído (Incluido e IncluidoSemVinculo).
+     *
+     * @return list<ItemLote>
+     */
     public function incluidos(): array
     {
-        return $this->porStatus(StatusItemLote::Incluido);
+        return array_values(array_filter($this->itens, static fn(ItemLote $i): bool => $i->produtoIncluido()));
+    }
+
+    /**
+     * Vínculos de fabricante que falharam ou ficaram pendentes em produtos já incluídos, prontos
+     * para `fabricantes()->vincularTodos()` (os Incertos ficam de fora: confira antes).
+     *
+     * @return list<FabricanteRequest>
+     */
+    public function vinculosParaReprocessar(): array
+    {
+        $requests = [];
+        foreach ($this->itens as $item) {
+            array_push($requests, ...ResultadoInclusaoComFabricantes::reprocessaveis($item->vinculos));
+        }
+
+        return $requests;
     }
 
     /** @return list<ItemLote> */
@@ -50,12 +70,12 @@ final readonly class ResultadoLote implements \Countable, \IteratorAggregate
     /**
      * Itens não enviados, com as chaves originais, prontos para um novo incluirLote().
      *
-     * @return \Generator<int|string, ProdutoRequest>
+     * @return \Generator<int|string, ProdutoRequest|ProdutoComFabricantes>
      */
     public function pendentes(): \Generator
     {
         foreach ($this->porStatus(StatusItemLote::Pendente) as $item) {
-            yield $item->chave => $item->request;
+            yield $item->chave => $item->entrada();
         }
     }
 

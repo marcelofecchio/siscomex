@@ -19,6 +19,9 @@ final readonly class ClientConfig
      * @param int  $margemExpiracao      segundos de folga antes da expiração do CSRF para considerar a sessão vencida
      * @param bool $bloquearEscritaEmProducao recusa POST/PUT/DELETE em produção; se null, ativa automaticamente
      *                                        quando SISCOMEX_RUN_INTEGRATION=1
+     * @param bool $simularEscrita            (experimental) não envia POST/PUT/DELETE: registra a requisição em
+     *                                        Transport::escritasSimuladas() e devolve o próprio corpo como resposta
+     *                                        (sem códigos gerados pelo portal); consultas continuam indo ao portal
      */
     public function __construct(
         public Ambiente $ambiente = Ambiente::Validacao,
@@ -30,6 +33,7 @@ final readonly class ClientConfig
         public int $margemExpiracao = 60,
         public ?bool $bloquearEscritaEmProducao = null,
         public string $userAgent = 'marcelofecchio-siscomex-sdk/0.2',
+        public bool $simularEscrita = false,
     ) {
         if ($tentativas503 < 0 || $backoffInicialMs < 0 || $margemExpiracao < 0 || $timeout < 1) {
             throw new \InvalidArgumentException('Parâmetros numéricos de ClientConfig devem ser positivos.');

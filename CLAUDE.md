@@ -4,8 +4,8 @@
 
 Pacote Composer `marcelofecchio/siscomex-sdk` (namespace `MarceloFecchio\Siscomex\PortalUnico`), SDK agnóstico de framework para a API pública do Portal Único Siscomex, perfil **IMPEXP**.
 
-- **Escopo**: autenticação (Chaves de Acesso e certificado A1), Cadastro de Atributos (inclusive condicionados), Catálogo de Produtos (produtos, código interno, inclusão em lote, operadores estrangeiros, fabricantes-produtores), coleção Postman, exemplos.
-- **Fora do escopo**: qualquer aplicação final (telas, painel, API própria), webhooks/eventos push, Fundamento Legal/LPCO, autenticação de sistemas de órgãos públicos, geração de planilhas (fica para um pacote opcional).
+- **Escopo**: autenticação (Chaves de Acesso e certificado A1), Cadastro de Atributos (inclusive condicionados), Catálogo de Produtos (produtos, código interno, inclusão em lote, operadores estrangeiros, fabricantes-produtores), Tabelas Comex (somente leitura), erros normalizados, simulação de escrita, fake para testes de consumidores (`Testing\`), coleção Postman, exemplos.
+- **Fora do escopo**: qualquer aplicação final (telas, painel, API própria), webhooks/eventos push, Fundamento Legal/LPCO, autenticação de sistemas de órgãos públicos, escrita nas Tabelas Comex (é dos órgãos), geração de planilhas (fica para um pacote opcional).
 
 ## Stack
 
@@ -15,14 +15,16 @@ PHP ^8.4 · PSR-18/17/7 (Guzzle 7 como padrão) · PSR-16 · PSR-3 · PSR-20 (cl
 
 ```
 src/
-  PortalUnicoClient.php        fachada: atributos(), catalogo()->produtos()|operadoresEstrangeiros()|fabricantes(), atributosPublicos(), autenticar(), testarConexao()
+  PortalUnicoClient.php        fachada: atributos(), catalogo()->produtos()|operadoresEstrangeiros()|fabricantes(), tabelas(), atributosPublicos(), autenticar(), testarConexao(), escritasSimuladas()
   Config/                      Ambiente, Perfil, ClientConfig, PoliticaIntervaloAutenticacao
   Auth/                        Authenticator, Session, ResultadoConexao, Credentials/ (ChaveAcesso, CertificadoA1), TokenStore/
   Http/                        Transport (headers, CSRF, 401, retry, bloqueio de escrita), ErrorMapper, LogMasker, GuzzleClientFactory
   Resources/Atributos/         AtributosResource, AtributosPublicos, Dto/
   Resources/Catalogo/          CatalogoResource, ProdutosResource, OperadoresEstrangeirosResource, FabricantesResource, Dto/
+  Resources/Tabelas/           TabelasResource (TABX, somente leitura), Dto/
   Validation/                  ValidadorProduto
-  Enum/ ValueObject/ Support/ Exceptions/
+  Testing/                     PortalUnicoFake (para testes de quem usa o SDK)
+  Enum/ ValueObject/ Support/ Exceptions/ (inclui ErroApi, CodigosErro)
 tests/Unit · tests/Integration (desligados por padrão) · tests/Fixtures/{validacao,producao}
 examples/ · postman/ (gerado por postman/gerar-colecao.php) · docs/ (PROGRESSO.md, api/MAPA-ENDPOINTS.md, api/specs/)
 ```
@@ -38,6 +40,7 @@ composer cs:fix
 SISCOMEX_RUN_INTEGRATION=1 SISCOMEX_AMBIENTE=validacao composer test:integration
 php postman/gerar-colecao.php # regenerar coleção/ambientes Postman
 npx newman run postman/Siscomex-PortalUnico.postman_collection.json -e postman/Validacao.postman_environment.json --env-var clientId=... --env-var clientSecret=...
+postman collection run postman/Siscomex-PortalUnico.postman_collection.json -e postman/Validacao.postman_environment.json --env-var clientId=... -i "Tabelas Comex (TABX)"   # Postman CLI; 60 s entre execuções
 ```
 
 ## Convenções

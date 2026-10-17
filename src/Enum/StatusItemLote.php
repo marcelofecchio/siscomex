@@ -7,8 +7,14 @@ namespace MarceloFecchio\Siscomex\PortalUnico\Enum;
 /** Situação de um item em `produtos()->incluirLote()`. */
 enum StatusItemLote: string
 {
-    /** Produto incluído; o retorno está em ItemLote::$produto. */
+    /** Produto incluído (e fabricantes vinculados, se houver); o retorno está em ItemLote::$produto. */
     case Incluido = 'INCLUIDO';
+
+    /**
+     * Produto incluído, mas algum fabricante não foi vinculado (veja ItemLote::$vinculos). Não
+     * reenvie o produto: reprocesse os vínculos com ResultadoLote::vinculosParaReprocessar().
+     */
+    case IncluidoSemVinculo = 'INCLUIDO_SEM_VINCULO';
 
     /** O portal recusou o item (ex.: 422); os demais seguem. Detalhes em ItemLote::$erro. */
     case Erro = 'ERRO';

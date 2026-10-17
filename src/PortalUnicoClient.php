@@ -16,11 +16,13 @@ use MarceloFecchio\Siscomex\PortalUnico\Config\Ambiente;
 use MarceloFecchio\Siscomex\PortalUnico\Config\ClientConfig;
 use MarceloFecchio\Siscomex\PortalUnico\Config\Perfil;
 use MarceloFecchio\Siscomex\PortalUnico\Exceptions\SiscomexException;
+use MarceloFecchio\Siscomex\PortalUnico\Http\EscritaSimulada;
 use MarceloFecchio\Siscomex\PortalUnico\Http\GuzzleClientFactory;
 use MarceloFecchio\Siscomex\PortalUnico\Http\Transport;
 use MarceloFecchio\Siscomex\PortalUnico\Resources\Atributos\AtributosPublicos;
 use MarceloFecchio\Siscomex\PortalUnico\Resources\Atributos\AtributosResource;
 use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\CatalogoResource;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Tabelas\TabelasResource;
 use MarceloFecchio\Siscomex\PortalUnico\Support\Sleeper;
 use MarceloFecchio\Siscomex\PortalUnico\Support\SystemClock;
 use MarceloFecchio\Siscomex\PortalUnico\Support\SystemSleeper;
@@ -51,6 +53,8 @@ final class PortalUnicoClient
     private ?CatalogoResource $catalogo = null;
 
     private ?AtributosPublicos $atributosPublicos = null;
+
+    private ?TabelasResource $tabelas = null;
 
     public function __construct(
         public readonly ClientConfig $config,
@@ -123,6 +127,12 @@ final class PortalUnicoClient
         return $this->catalogo ??= new CatalogoResource($this->transport);
     }
 
+    /** Tabelas Comex — TABX (requer credencial; somente consultas). */
+    public function tabelas(): TabelasResource
+    {
+        return $this->tabelas ??= new TabelasResource($this->transport);
+    }
+
     /** Download público da relação de atributos por NCM (não requer credencial). */
     public function atributosPublicos(): AtributosPublicos
     {
@@ -161,6 +171,16 @@ final class PortalUnicoClient
     public function encerrarSessao(): void
     {
         $this->authenticator()->invalidate();
+    }
+
+    /**
+     * Escritas registradas e não enviadas quando ClientConfig::$simularEscrita está ativo.
+     *
+     * @return list<EscritaSimulada>
+     */
+    public function escritasSimuladas(): array
+    {
+        return $this->transport->escritasSimuladas();
     }
 
     /** Acesso de baixo nível para endpoints ainda não cobertos pelo SDK. */
