@@ -5,6 +5,25 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 
 ## [Não lançado]
 
+Previsto para **0.2.0**. Validado no ambiente de Validação em 17/10/2026 (testes de integração e Postman CLI).
+
+### Adicionado
+- **Operadores estrangeiros** — `catalogo()->operadoresEstrangeiros()`: consultar (com resultado parcial 206), detalhar, histórico, incluir (inclusive retroativo), nova versão (inclusive retroativa), retificar, desativar e exportar; DTOs `OperadorEstrangeiroRequest` (imutável, com validação dos tamanhos da spec, e-mail e subdivisão ISO 3166-2), `OperadorEstrangeiro`, `IdentificacaoAdicional`, `FiltroOperadoresEstrangeiros`; enum `SituacaoOperadorEstrangeiro`; value object `CodigoPais`.
+- **Fabricantes/produtores** — `catalogo()->fabricantes()`: vincular, desvincular, histórico e exportar; `FabricanteRequest::operadorEstrangeiro()`, `::fabricanteNacional()` e `::desconhecido()` garantem a combinação coerente dos campos.
+- `produtos()->buscarPorCodigoInterno()` com `ConsultaCodigoInterno` (igualdade exata, `situacao()` → `SituacaoCodigoInterno::Livre|Ativo|Desativado`, `duplicado()`, `maisRecente()`).
+- `produtos()->incluirLote()` com resultado por item (`Incluido`, `Erro`, `Incerto`, `Pendente`), callback de progresso, interrupção em rate limit/indisponibilidade/acesso negado e retomada por `ResultadoLote::pendentes()`; nenhum envio é repetido automaticamente.
+- Atributos condicionados: `CondicaoAtributo::avaliar()`, `AtributosDaNcm::aplicaveisPara()`, `obrigatoriosPara()`, `condicionadosParaProduto()` e `condicionadoPorCodigo()` (em cascata); `AtributoCondicionado::$codigoCondicionante`; `ProdutoRequest::valoresDoAtributo()`.
+- Cache PSR-16 opcional de `atributos()->porNcm()` (`PortalUnicoClient::create(cacheAtributos: ...)`), com expiração à meia-noite de Brasília.
+- `PortalUnicoClient::testarConexao()` → `ResultadoConexao` com mensagem amigável e sem tokens.
+- `CertificadoA1::fromString()` para certificados guardados pela aplicação (arquivo temporário 0600 apagado com a credencial; sessão identificada pelo conteúdo).
+- `SiscomexException::possuiCodigo()` e `ValidationException::mensagensPorCampo()`.
+- `Ambiente::nome()`, `Transport::config()` e `Transport::decodeArquivo()` (JSON ou ZIP).
+- Coleção Postman: pastas Operadores Estrangeiros e Fabricantes-Produtores; exemplo `examples/operador-e-fabricante.php`.
+
+### Alterado
+- `ValidadorProduto` passa a avaliar atributos condicionados: cobra os obrigatórios cuja condição o produto satisfaz e não acusa mais um condicionado informado como "não vinculado à NCM" (aponta quando a condição não se cumpre).
+- `AtributoCondicionado::$descricaoCondicao` vem sem os espaços das pontas que o portal envia.
+
 ## [0.1.1] - 2026-10-17
 
 ### Alterado

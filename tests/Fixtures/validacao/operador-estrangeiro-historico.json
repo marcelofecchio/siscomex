@@ -1,0 +1,44 @@
+[
+    {
+        "data": "2026-10-17T14:45:45",
+        "versao": "2.1",
+        "situacao": "Desativado",
+        "usuario": "111.111.111-11",
+        "observacao": "Retificação da versão do Operador Estrangeiro em 17/10/2026 14:44"
+    },
+    {
+        "data": "2026-10-17T14:44:23",
+        "versao": "2.1",
+        "situacao": "Ativado",
+        "usuario": "111.111.111-11",
+        "observacao": "Ativação da versão 2.1"
+    },
+    {
+        "data": "2026-10-17T14:44:24",
+        "versao": "2",
+        "situacao": "Desativado",
+        "usuario": "111.111.111-11",
+        "observacao": "Desativação da versão 2"
+    },
+    {
+        "data": "2026-10-17T14:44:23",
+        "versao": "2",
+        "situacao": "Ativado",
+        "usuario": "111.111.111-11",
+        "observacao": "Ativação da versão 2"
+    },
+    {
+        "data": "2026-10-17T14:44:23",
+        "versao": "1",
+        "situacao": "Desativado",
+        "usuario": "111.111.111-11",
+        "observacao": "Desativação da versão 1"
+    },
+    {
+        "data": "2026-10-17T14:44:22",
+        "versao": "1",
+        "situacao": "Ativado",
+        "usuario": "111.111.111-11",
+        "observacao": "Ativação da versão 1"
+    }
+]

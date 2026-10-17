@@ -1,0 +1,22 @@
+[
+    {
+        "seq": 1,
+        "cpfCnpjRaiz": "12345678",
+        "codigo": "OPE_2",
+        "versao": "2.1",
+        "tin": "TIN174422",
+        "nome": "SDK Teste Operador 174422",
+        "situacao": "Desativado",
+        "logradouro": "No. 1 Keji Road",
+        "nomeCidade": "Shenzhen",
+        "codigoSubdivisaoPais": "CN-GD",
+        "codigoPais": "CN",
+        "cep": "518000",
+        "codigoInterno": "FORN-SDK-1",
+        "email": "v2r@example.com",
+        "dataReferencia": null,
+        "identificacoesAdicionais": [],
+        "inicioVigencia": "2026-10-17T14:44:23",
+        "fimVigencia": "2026-10-17T14:45:45"
+    }
+]

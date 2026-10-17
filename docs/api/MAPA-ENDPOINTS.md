@@ -4,7 +4,7 @@ Fonte: specs OpenAPI em [`specs/`](specs/) (baixadas em 15/10/2026) + documenta�
 Todos os serviços autenticados exigem os headers `Authorization` (valor de `Set-Token`) e `X-CSRF-Token`.
 Perfil: todos os endpoints abaixo são usados com `Role-Type: IMPEXP` (a spec não restringe perfil por endpoint — TODO(confirmar) se algum exige outro perfil).
 
-Legenda da coluna **SDK**: ✅ implementado na v0.1 · 🕒 planejado (v1.1) · — fora do escopo.
+Legenda da coluna **SDK**: ✅ implementado · 🕒 planejado · — fora do escopo.
 
 ## Autenticação (`plat-auth.json`, base `{ambiente}/portal`)
 
@@ -58,15 +58,38 @@ Respostas: 200, 204, 400, 401, 403, 404, 422, 500.
 
 Erro 422 observado (Validação): `{message, code: "PUCX-ER0123", tag, detail: [{error: {message, code: "CADA-ER5008", field: "ATT_x"}}]}`. Outro código observado: `CATP-ER2021` (retificação idêntica à versão existente).
 
-### Fabricantes-Produtores e Operadores Estrangeiros (🕒 v1.1)
+Observado na Validação (17/10/2026) em `GET /ext/produto`: sem `situacao` a consulta **inclui desativados** (`situacao` vem como "Desativado", capitalizado) e devolve só a **versão vigente** de cada produto; o filtro `codigoInterno` é **parcial e não diferencia maiúsculas**. O portal aceita o mesmo código interno em dois produtos ativos; o código de um produto desativado pode ser reutilizado; `PUT /ext/produto/{cpfCnpjRaiz}/{codigo}` (nova versão) **reativa** um produto desativado. A exportação de um produto incluído minutos antes ainda não o trazia.
 
-| Método | Path |
-|---|---|
-| POST / PUT | `/ext/fabricante/{cpfCnpjRaiz}` (vincular / desvincular) |
-| GET | `/ext/fabricante/exportar/{cpfCnpjRaiz}`, `/ext/fabricante/historico/{cpfCnpjRaiz}/{codigo}` |
-| GET | `/ext/operador-estrangeiro` |
-| POST | `/ext/operador-estrangeiro/{cpfCnpjRaiz}/{codigoPais}` (+ `/{dataReferencia}`) |
-| PUT | `/ext/operador-estrangeiro/{cpfCnpjRaiz}/{codigoPais}/{codigo}` (nova versão), `/{versao}` (retificação), `/desativar/...` |
-| GET | `/ext/operador-estrangeiro/{cpfCnpjRaiz}/{codigoPais}/{codigo}/{versao}`, `/exportar/...`, `/historico/...` |
+### Operadores Estrangeiros (✅ `catalogo()->operadoresEstrangeiros()`)
+
+| Método | Path | Entrada | Resposta | SDK |
+|---|---|---|---|---|
+| GET | `/ext/operador-estrangeiro` | query obrigatória `cpfCnpjRaiz`; opcionais `tin`, `codigo`, `codigoInterno`, `nome` (≤70), `paisOrigem`, `exibirDesativados` | 200 `OperadorEstrangeiroIntegracaoDTO[]`, 204, **206 parcial** | ✅ `consultar(FiltroOperadoresEstrangeiros)` |
+| POST | `/ext/operador-estrangeiro/{cpfCnpjRaiz}/{codigoPais}` | body `OperadorEstrangeiroRequestIntegracaoDTO` | `OperadorEstrangeiroIntegracaoDTO` | ✅ `incluir()` |
+| POST | `/ext/operador-estrangeiro/{cpfCnpjRaiz}/{codigoPais}/{dataReferencia}` | idem (retroativo) | idem | ✅ `incluir(..., dataReferencia:)` |
+| PUT | `/ext/operador-estrangeiro/{cpfCnpjRaiz}/{codigoPais}/{codigo}` | idem (nova versão) | idem | ✅ `novaVersao()` |
+| POST | `/ext/operador-estrangeiro/{cpfCnpjRaiz}/{codigoPais}/{codigo}/{dataReferencia}` | idem (nova versão retroativa) | idem | ✅ `novaVersao(..., dataReferencia:)` |
+| PUT | `/ext/operador-estrangeiro/{cpfCnpjRaiz}/{codigoPais}/{codigo}/{versao}` | idem (retificação) | idem | ✅ `retificar()` |
+| GET | `/ext/operador-estrangeiro/{cpfCnpjRaiz}/{codigoPais}/{codigo}/{versao}` | — | idem | ✅ `detalhar()` |
+| PUT | `/ext/operador-estrangeiro/desativar/{cpfCnpjRaiz}/{codigoPais}/{codigo}/{versao}` | — | idem | ✅ `desativar()` |
+| GET | `/ext/operador-estrangeiro/historico/{cpfCnpjRaiz}/{codigoPais}/{codigo}` | — | `OperadorEstrangeiroHistoricoResponseDTO[]` | ✅ `historico()` |
+| GET | `/ext/operador-estrangeiro/exportar/{cpfCnpjRaiz}/{exibirDesativados}` | query `codigosOperador[]`, `inicioVigenciaDe/Ate` | spec: lista JSON | ✅ `exportar()` (aceita JSON e ZIP) |
+
+`OperadorEstrangeiroRequestIntegracaoDTO`: obrigatórios `nome` (1–150), `logradouro` (1–70), `nomeCidade` (1–35); opcionais `tin` (≤35), `codigoSubdivisaoPais` (ISO 3166-2, ≤6), `cep` (≤9), `codigoInterno` (≤35), `email` (≤70), `identificacoesAdicionais[] {numero (≤35), codigo (agência UN/EDIFACT 3055, 3)}`. O país vai no path (ISO 3166-1 alfa-2).
+
+Observado na Validação (17/10/2026): `codigo` é texto (`OPE_2`); retificação gera `2.1` e a versão anterior fica desativada; retificação idêntica → 422 `CATP-ER5013`; a consulta traz também `seq` e `dataReferencia` e, **sem `exibirDesativados=true`, omite desativados**; a exportação devolveu **204** logo após a inclusão, enquanto a consulta já encontrava o operador (TODO(confirmar) se é gerada D+1).
+
+### Fabricantes-Produtores (✅ `catalogo()->fabricantes()`)
+
+| Método | Path | Entrada | Resposta | SDK |
+|---|---|---|---|---|
+| POST | `/ext/fabricante/{cpfCnpjRaiz}` | body `FabricanteIntegracaoRequestDTO {codigoProduto, codigoPais*, conhecido*, codigoOperadorEstrangeiro, cpfCnpjFabricante}` | `FabricanteIntegracaoResponseDTO` | ✅ `vincular()` |
+| PUT | `/ext/fabricante/{cpfCnpjRaiz}` | idem | idem | ✅ `desvincular()` |
+| GET | `/ext/fabricante/historico/{cpfCnpjRaiz}/{codigo}` | `codigo` = código do produto | `FabricanteHistoricoResponseDTO` (lista) | ✅ `historico()` |
+| GET | `/ext/fabricante/exportar/{cpfCnpjRaiz}` | query `codigosProduto[]`, `paisesOrigem[]` | spec: `FabricanteIntegracaoDTO` (objeto) | ✅ `exportar()` (aceita objeto, lista e ZIP) |
+
+O vínculo é separado do produto: `ProdutoIntegracaoRequestDTO` não tem campo de fabricante.
+
+Observado na Validação (17/10/2026): `conhecido=true` = fabricante **conhecido** (a descrição da spec diz o contrário) — sem operador, a API responde 422 com `detail` `PUCX-ER0101` "Campo Fabricante/produtor estrangeiro é obrigatório" e `PUCX-ER0102` (sem `code` no nível superior); `conhecido=false` só com o país é aceito. No histórico, `conhecido` vem como **"Sim"/"Não"** (spec: "true"/"false"), `cpfCnpjTin` traz o TIN do operador e os eventos vêm do mais recente para o mais antigo. A exportação devolveu **204** logo após o vínculo.
 
 Evento push `catp-prod-desativado` (produto desativado por ofício): documentado no README; webhooks fora do escopo.

@@ -30,6 +30,15 @@ enum Ambiente: string
         return (string) parse_url($this->baseUrl(), PHP_URL_HOST);
     }
 
+    /** Nome para exibição ("Produção", "Validação"). */
+    public function nome(): string
+    {
+        return match ($this) {
+            self::Producao => 'Produção',
+            self::Validacao => 'Validação',
+        };
+    }
+
     public function isProducao(): bool
     {
         return $this === self::Producao;

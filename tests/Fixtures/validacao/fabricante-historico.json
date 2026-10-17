@@ -1,0 +1,36 @@
+[
+    {
+        "data": "2026-10-17T14:45:17",
+        "usuario": "111.111.111-11",
+        "operacao": "Exclusão",
+        "conhecido": "Não",
+        "codigoPais": "DE"
+    },
+    {
+        "data": "2026-10-17T14:45:17",
+        "usuario": "111.111.111-11",
+        "operacao": "Exclusão",
+        "conhecido": "Sim",
+        "codigoPais": "CN",
+        "cpfCnpjTin": "TIN174422",
+        "codigo": "OPE_2",
+        "nome": "SDK Teste Operador 174422"
+    },
+    {
+        "data": "2026-10-17T14:45:14",
+        "usuario": "111.111.111-11",
+        "operacao": "Inclusão",
+        "conhecido": "Não",
+        "codigoPais": "DE"
+    },
+    {
+        "data": "2026-10-17T14:45:13",
+        "usuario": "111.111.111-11",
+        "operacao": "Inclusão",
+        "conhecido": "Sim",
+        "codigoPais": "CN",
+        "cpfCnpjTin": "TIN174422",
+        "codigo": "OPE_2",
+        "nome": "SDK Teste Operador 174422"
+    }
+]

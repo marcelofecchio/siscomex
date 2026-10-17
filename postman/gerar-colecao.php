@@ -273,6 +273,22 @@ JS;
 
 $P = ['catp', 'api', 'ext', 'produto'];
 $C = ['cadatributos', 'api', 'ext'];
+$O = ['catp', 'api', 'ext', 'operador-estrangeiro'];
+$F = ['catp', 'api', 'ext', 'fabricante'];
+
+$bodyOperador = json_encode([
+    'nome' => 'Fornecedor Teste',
+    'logradouro' => 'No. 1 Keji Road',
+    'nomeCidade' => 'Shenzhen',
+    'codigoSubdivisaoPais' => 'CN-GD',
+    'cep' => '518000',
+    'codigoInterno' => 'FORN-TESTE-1',
+    'email' => 'fornecedor@example.com',
+    'tin' => '',
+    'identificacoesAdicionais' => [],
+], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+$bodyFabricante = "{\n  \"codigoProduto\": {{codigoProduto}},\n  \"codigoPais\": \"{{codigoPais}}\",\n  \"conhecido\": true,\n  \"codigoOperadorEstrangeiro\": \"{{codigoOperador}}\"\n}";
+$testeOperador = status(200)."\npm.test('Operador retornado com código e versão', function () {\n    const j = pm.response.json();\n    pm.expect(j.codigo).to.be.a('string');\n    pm.environment.set('codigoOperador', j.codigo);\n    pm.environment.set('versaoOperador', j.versao);\n});";
 
 $autenticacao = [
     'name' => 'Autenticação',
@@ -313,6 +329,32 @@ $catalogo = [
     ],
 ];
 
+$operadores = [
+    'name' => 'Operadores Estrangeiros',
+    'description' => 'Fornecedores, fabricantes e produtores no exterior. O operador é identificado por (cnpjRaiz, codigoPais, codigo) e versionado como o produto. [ESCRITA] só em Validação.',
+    'item' => [
+        req('Consultar operadores', 'GET', $O, ['cpfCnpjRaiz' => '{{cnpjRaiz}}', 'exibirDesativados' => 'true'], testes: status(200, 204, 206), descricao: 'Sem exibirDesativados=true os desativados são omitidos. Outros filtros: codigo, tin, codigoInterno, nome (até 70), paisOrigem.'),
+        req('Detalhar versão do operador', 'GET', [...$O, '{{cnpjRaiz}}', '{{codigoPais}}', '{{codigoOperador}}', '{{versaoOperador}}'], testes: status(200, 204)),
+        req('Histórico do operador', 'GET', [...$O, 'historico', '{{cnpjRaiz}}', '{{codigoPais}}', '{{codigoOperador}}'], testes: status(200, 204)),
+        req('Exportar operadores', 'GET', [...$O, 'exportar', '{{cnpjRaiz}}', 'true'], testes: status(200, 204), headers: [['Accept', 'application/json, application/zip']], descricao: 'Na Validação voltou 204 logo após a inclusão (a consulta já encontrava o operador).'),
+        req('[ESCRITA] Incluir operador', 'POST', [...$O, '{{cnpjRaiz}}', '{{codigoPais}}'], body: $bodyOperador, testes: $testeOperador, descricao: 'codigoPais ISO 3166 (2 letras) no path; a subdivisão (ISO 3166-2) deve ser do mesmo país.'),
+        req('[ESCRITA] Nova versão do operador', 'PUT', [...$O, '{{cnpjRaiz}}', '{{codigoPais}}', '{{codigoOperador}}'], body: $bodyOperador, testes: $testeOperador),
+        req('[ESCRITA] Retificar versão do operador', 'PUT', [...$O, '{{cnpjRaiz}}', '{{codigoPais}}', '{{codigoOperador}}', '{{versaoOperador}}'], body: $bodyOperador, testes: $testeOperador, descricao: 'Corpo idêntico à versão → 422 CATP-ER5013.'),
+        req('[ESCRITA] Desativar versão do operador', 'PUT', [...$O, 'desativar', '{{cnpjRaiz}}', '{{codigoPais}}', '{{codigoOperador}}', '{{versaoOperador}}'], testes: status(200, 204)),
+    ],
+];
+
+$fabricantes = [
+    'name' => 'Fabricantes-Produtores',
+    'description' => 'Vínculo de fabricante/produtor a produto (operação separada do produto). conhecido=true exige o operador estrangeiro ou o CPF/CNPJ do fabricante nacional; conhecido=false (desconhecido) leva só o país. [ESCRITA] só em Validação.',
+    'item' => [
+        req('Histórico de fabricantes do produto', 'GET', [...$F, 'historico', '{{cnpjRaiz}}', '{{codigoProduto}}'], testes: status(200, 204), descricao: 'O campo conhecido vem como "Sim"/"Não".'),
+        req('Exportar vínculos', 'GET', [...$F, 'exportar', '{{cnpjRaiz}}'], ['codigosProduto' => '{{codigoProduto}}'], testes: status(200, 204), headers: [['Accept', 'application/json, application/zip']]),
+        req('[ESCRITA] Vincular fabricante', 'POST', [...$F, '{{cnpjRaiz}}'], body: $bodyFabricante, testes: status(200, 204)),
+        req('[ESCRITA] Desvincular fabricante', 'PUT', [...$F, '{{cnpjRaiz}}'], body: $bodyFabricante, testes: status(200, 204)),
+    ],
+];
+
 $fluxo = [
     'name' => 'Fluxo completo (Validação)',
     'description' => 'Execute em sequência no Runner, apenas no ambiente de Validação: atributos da NCM → incluir → detalhar → nova versão → desativar.',
@@ -334,7 +376,7 @@ $colecao = [
         'schema' => 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json',
     ],
     'event' => [script('prerequest', $preRequestColecao), script('test', $testesColecao)],
-    'item' => [$autenticacao, $atributos, $catalogo, $fluxo],
+    'item' => [$autenticacao, $atributos, $catalogo, $operadores, $fabricantes, $fluxo],
 ];
 
 /** @return array<string, mixed> */
@@ -353,6 +395,9 @@ function ambiente(string $id, string $nome, string $baseUrl, bool $permitirEscri
         ['versao', '1', 'default'],
         ['codigoAtributo', '', 'default'],
         ['codigoInterno', 'SKU-TESTE-1', 'default'],
+        ['codigoPais', 'CN', 'default'],
+        ['codigoOperador', '', 'default'],
+        ['versaoOperador', '1', 'default'],
         ['dataReferencia', date('Y-m-d'), 'default'],
         ['produtoBody', '', 'default'],
         ['permitirEscrita', $permitirEscrita ? 'true' : 'false', 'default'],

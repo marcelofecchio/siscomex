@@ -10,6 +10,7 @@ use MarceloFecchio\Siscomex\PortalUnico\Exceptions\ProductionWriteBlockedExcepti
 use MarceloFecchio\Siscomex\PortalUnico\Exceptions\SiscomexException;
 use MarceloFecchio\Siscomex\PortalUnico\Exceptions\TransportException;
 use MarceloFecchio\Siscomex\PortalUnico\Support\Sleeper;
+use MarceloFecchio\Siscomex\PortalUnico\Support\Zip;
 use Psr\Clock\ClockInterface;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
@@ -44,6 +45,11 @@ final class Transport
         private readonly Sleeper $sleeper,
         private readonly LoggerInterface $logger,
     ) {}
+
+    public function config(): ClientConfig
+    {
+        return $this->config;
+    }
 
     /**
      * @param array<string, scalar|list<scalar>|null> $query    arrays viram chaves repetidas (collectionFormat=multi)
@@ -172,6 +178,23 @@ final class Transport
             return json_decode($raw, true, 512, JSON_THROW_ON_ERROR | JSON_BIGINT_AS_STRING);
         } catch (\JsonException $e) {
             throw new SiscomexException('Resposta do portal não é um JSON válido: '.$e->getMessage(), $response->getStatusCode(), previous: $e);
+        }
+    }
+
+    /**
+     * Decodifica exportações/downloads: JSON puro ou ZIP com um JSON dentro (null para 204/corpo vazio).
+     */
+    public static function decodeArquivo(ResponseInterface $response): mixed
+    {
+        $bytes = (string) $response->getBody();
+        if ($response->getStatusCode() === 204 || trim($bytes) === '') {
+            return null;
+        }
+
+        try {
+            return json_decode(Zip::primeiroArquivo($bytes), true, 512, JSON_THROW_ON_ERROR | JSON_BIGINT_AS_STRING);
+        } catch (\JsonException $e) {
+            throw new SiscomexException('Arquivo devolvido pelo portal não contém um JSON válido: '.$e->getMessage(), $response->getStatusCode(), previous: $e);
         }
     }
 

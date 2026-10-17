@@ -6,6 +6,7 @@ namespace MarceloFecchio\Siscomex\PortalUnico\Resources\Atributos\Dto;
 
 use MarceloFecchio\Siscomex\PortalUnico\Enum\Modalidade;
 use MarceloFecchio\Siscomex\PortalUnico\Enum\ObjetivoAtributo;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ProdutoRequest;
 use MarceloFecchio\Siscomex\PortalUnico\Support\Data;
 use MarceloFecchio\Siscomex\PortalUnico\ValueObject\Ncm;
 
@@ -78,10 +79,105 @@ final readonly class AtributosDaNcm implements \Countable, \IteratorAggregate
         return new self($this->ncm, $filtrados, $this->versao);
     }
 
-    /** Atributos obrigatórios para cadastro de produto na modalidade informada. */
+    /**
+     * Atributos obrigatórios **incondicionais** para cadastro de produto na modalidade informada.
+     * Para incluir os condicionados cuja condição o produto satisfaz, use obrigatoriosPara().
+     */
     public function obrigatoriosParaProduto(Modalidade $modalidade, ?\DateTimeInterface $em = null): self
     {
         return $this->filtrar($modalidade, ObjetivoAtributo::Produto, $em, true);
+    }
+
+    /**
+     * Atributos aplicáveis ao produto: os vinculados à NCM (modalidade do produto, objetivo
+     * Produto, vigentes) mais os condicionados cuja condição é satisfeita pelos valores já
+     * informados — em cascata, pois um condicionado pode condicionar outros.
+     *
+     * Os condicionados entram com a obrigatoriedade e o multivalorado do vínculo condicional.
+     */
+    public function aplicaveisPara(ProdutoRequest $produto, ?\DateTimeInterface $em = null): self
+    {
+        $em ??= new \DateTimeImmutable('now', new \DateTimeZone(Data::TIMEZONE));
+        $aplicaveis = $this->filtrar($produto->modalidade, ObjetivoAtributo::Produto, $em)->atributos;
+        $codigos = array_fill_keys(array_map(static fn(Atributo $a): string => $a->codigo, $aplicaveis), true);
+
+        for ($i = 0; $i < \count($aplicaveis); ++$i) {
+            $condicionante = $aplicaveis[$i];
+            foreach (self::condicionadosParaProdutoDe($condicionante, $em) as $condicionado) {
+                if (isset($codigos[$condicionado->atributo->codigo])
+                    || $condicionado->satisfeitaPor($produto->valoresDoAtributo($condicionante->codigo)) !== true) {
+                    continue;
+                }
+                $aplicaveis[] = $condicionado->comoAtributo($condicionante->modalidade);
+                $codigos[$condicionado->atributo->codigo] = true;
+            }
+        }
+
+        return new self($this->ncm, $aplicaveis, $this->versao);
+    }
+
+    /** Obrigatórios para o produto, incluindo os condicionados cuja condição ele satisfaz. */
+    public function obrigatoriosPara(ProdutoRequest $produto, ?\DateTimeInterface $em = null): self
+    {
+        $aplicaveis = $this->aplicaveisPara($produto, $em);
+
+        return new self(
+            $this->ncm,
+            array_values(array_filter($aplicaveis->atributos, static fn(Atributo $a): bool => $a->obrigatorio === true)),
+            $this->versao,
+        );
+    }
+
+    /**
+     * Todos os atributos condicionados possíveis para cadastro de produto na modalidade
+     * (vigentes e com objetivo Produto), em qualquer nível, cada um com o código do
+     * condicionante e a condição. Útil para montar formulários e planilhas-modelo.
+     *
+     * @return list<AtributoCondicionado>
+     */
+    public function condicionadosParaProduto(Modalidade $modalidade, ?\DateTimeInterface $em = null): array
+    {
+        $em ??= new \DateTimeImmutable('now', new \DateTimeZone(Data::TIMEZONE));
+        $fila = $this->filtrar($modalidade, ObjetivoAtributo::Produto, $em)->atributos;
+        $resultado = [];
+        $vistos = [];
+
+        while ($fila !== []) {
+            $atributo = array_shift($fila);
+            foreach (self::condicionadosParaProdutoDe($atributo, $em) as $condicionado) {
+                $chave = $condicionado->codigoCondicionante.'>'.$condicionado->atributo->codigo;
+                if (isset($vistos[$chave])) {
+                    continue;
+                }
+                $vistos[$chave] = true;
+                $resultado[] = $condicionado;
+                $fila[] = $condicionado->atributo;
+            }
+        }
+
+        return $resultado;
+    }
+
+    /** Definição condicional de um atributo (em qualquer nível), se ele for condicionado. */
+    public function condicionadoPorCodigo(string $codigo, ?Modalidade $modalidade = null): ?AtributoCondicionado
+    {
+        foreach ($this->condicionadosParaProduto($modalidade ?? Modalidade::Ambos) as $condicionado) {
+            if ($condicionado->atributo->codigo === $codigo) {
+                return $condicionado;
+            }
+        }
+
+        return null;
+    }
+
+    /** @return list<AtributoCondicionado> */
+    private static function condicionadosParaProdutoDe(Atributo $atributo, \DateTimeInterface $em): array
+    {
+        return array_values(array_filter(
+            $atributo->condicionados,
+            static fn(AtributoCondicionado $c): bool => $c->vigenteEm($em)
+                && ($c->atributo->objetivos === [] || $c->atributo->temObjetivo(ObjetivoAtributo::Produto)),
+        ));
     }
 
     public function porCodigo(string $codigo): ?Atributo

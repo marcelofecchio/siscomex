@@ -4,15 +4,24 @@ declare(strict_types=1);
 
 namespace MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo;
 
+use MarceloFecchio\Siscomex\PortalUnico\Enum\StatusItemLote;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\AuthenticationException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\ProductionWriteBlockedException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\RateLimitException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\ServiceUnavailableException;
 use MarceloFecchio\Siscomex\PortalUnico\Exceptions\SiscomexException;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\TransportException;
 use MarceloFecchio\Siscomex\PortalUnico\Http\Transport;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ConsultaCodigoInterno;
 use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\EventoHistoricoProduto;
 use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\FiltroProdutos;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ItemLote;
 use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\Produto;
 use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ProdutoRequest;
 use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ResultadoConsultaProdutos;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ResultadoLote;
 use MarceloFecchio\Siscomex\PortalUnico\Support\Data;
-use MarceloFecchio\Siscomex\PortalUnico\Support\Zip;
+use MarceloFecchio\Siscomex\PortalUnico\Support\Versao;
 use MarceloFecchio\Siscomex\PortalUnico\ValueObject\CpfCnpjRaiz;
 
 /**
@@ -41,12 +50,34 @@ final readonly class ProdutosResource
     }
 
     /**
+     * Produtos que usam exatamente o código interno informado, em qualquer situação.
+     *
+     * O filtro `codigoInterno` do portal é parcial e não diferencia maiúsculas ("SKU" encontra
+     * "sku-1"); aqui o resultado é restrito à igualdade exata. A consulta sem `situacao` já
+     * inclui os desativados. Veja SituacaoCodigoInterno para as regras de reutilização.
+     */
+    public function buscarPorCodigoInterno(CpfCnpjRaiz|string $cpfCnpjRaiz, string $codigoInterno): ConsultaCodigoInterno
+    {
+        $codigoInterno = trim($codigoInterno);
+        if ($codigoInterno === '') {
+            throw new \InvalidArgumentException('Informe o código interno a buscar.');
+        }
+        $resultado = $this->consultar(new FiltroProdutos($cpfCnpjRaiz, codigoInterno: $codigoInterno));
+
+        return new ConsultaCodigoInterno(
+            $codigoInterno,
+            array_values(array_filter($resultado->produtos, static fn(Produto $p): bool => \in_array($codigoInterno, $p->codigosInterno, true))),
+            $resultado->parcial,
+        );
+    }
+
+    /**
      * GET /ext/produto/{cpfCnpjRaiz}/{codigo}/{versao} — detalha uma versão
      * ("1") ou uma retificação ("1.1") do produto.
      */
     public function detalhar(CpfCnpjRaiz|string $cpfCnpjRaiz, int $codigo, string $versao): ?Produto
     {
-        $dados = $this->transport->json('GET', \sprintf('%s/%s/%d/%s', self::PREFIXO, CpfCnpjRaiz::of($cpfCnpjRaiz), $codigo, rawurlencode(self::versao($versao))));
+        $dados = $this->transport->json('GET', \sprintf('%s/%s/%d/%s', self::PREFIXO, CpfCnpjRaiz::of($cpfCnpjRaiz), $codigo, Versao::path($versao)));
 
         return $dados === null ? null : Produto::fromArray(Data::object($dados));
     }
@@ -80,7 +111,62 @@ final readonly class ProdutosResource
         return $this->produtoDaResposta($this->transport->json('POST', $path, json: $produto->toArray()), 'incluir');
     }
 
-    /** PUT /ext/produto/{cpfCnpjRaiz}/{codigo} — inclui nova versão do produto. */
+    /**
+     * Inclui vários produtos em sequência, sem repetir automaticamente nenhum envio.
+     *
+     * - Recusa do portal ao item (HTTP 400/404/422): registra Erro e segue para o próximo.
+     * - PUCX-ER1001 (rate limit), 503 após os retries do Transport, 401/403: interrompe; o item
+     *   atual e os seguintes ficam Pendente (veja ResultadoLote::retomarApos()).
+     * - Falha de rede durante o POST: o item fica Incerto (pode ter sido incluído) e o lote para.
+     * - Demais erros HTTP (ex.: 500): registra Erro e segue.
+     *
+     * O callback recebe cada item processado; devolver false interrompe o lote (qualquer outro
+     * retorno, inclusive void, continua).
+     *
+     * @param iterable<int|string, ProdutoRequest> $produtos    a chave identifica o item (ex.: linha da planilha)
+     * @param (\Closure(ItemLote): mixed)|null      $aoProgredir
+     */
+    public function incluirLote(CpfCnpjRaiz|string $cpfCnpjRaiz, iterable $produtos, ?\Closure $aoProgredir = null): ResultadoLote
+    {
+        $cpfCnpjRaiz = CpfCnpjRaiz::of($cpfCnpjRaiz);
+        $itens = [];
+        $interrupcao = null;
+
+        foreach ($produtos as $chave => $request) {
+            if ($interrupcao !== null) {
+                $itens[] = new ItemLote($chave, $request, StatusItemLote::Pendente);
+                continue;
+            }
+
+            try {
+                $item = new ItemLote($chave, $request, StatusItemLote::Incluido, produto: $this->incluir($cpfCnpjRaiz, $request));
+            } catch (TransportException $e) {
+                $item = new ItemLote($chave, $request, StatusItemLote::Incerto, erro: $e);
+                $interrupcao = $e;
+            } catch (SiscomexException $e) {
+                if (self::interrompeLote($e)) {
+                    $itens[] = new ItemLote($chave, $request, StatusItemLote::Pendente, erro: $e);
+                    $interrupcao = $e;
+                    continue;
+                }
+                $item = new ItemLote($chave, $request, StatusItemLote::Erro, erro: $e);
+            }
+
+            $itens[] = $item;
+            if ($aoProgredir !== null && $aoProgredir($item) === false && $interrupcao === null) {
+                $interrupcao = new SiscomexException('Lote interrompido pelo callback de progresso.');
+            }
+        }
+
+        return new ResultadoLote($itens, $interrupcao);
+    }
+
+    /**
+     * PUT /ext/produto/{cpfCnpjRaiz}/{codigo} — inclui nova versão do produto.
+     *
+     * Também serve para reativar um produto desativado: a nova versão nasce ativa (Validação,
+     * 17/10/2026). A versão substitui a anterior por inteiro, inclusive `codigosInterno`.
+     */
     public function novaVersao(CpfCnpjRaiz|string $cpfCnpjRaiz, int $codigo, ProdutoRequest $produto): Produto
     {
         $path = \sprintf('%s/%s/%d', self::PREFIXO, CpfCnpjRaiz::of($cpfCnpjRaiz), $codigo);
@@ -91,7 +177,7 @@ final readonly class ProdutosResource
     /** PUT /ext/produto/{cpfCnpjRaiz}/{codigo}/{versao} — retifica uma versão do produto. */
     public function retificar(CpfCnpjRaiz|string $cpfCnpjRaiz, int $codigo, string $versao, ProdutoRequest $produto): Produto
     {
-        $path = \sprintf('%s/%s/%d/%s', self::PREFIXO, CpfCnpjRaiz::of($cpfCnpjRaiz), $codigo, rawurlencode(self::versao($versao)));
+        $path = \sprintf('%s/%s/%d/%s', self::PREFIXO, CpfCnpjRaiz::of($cpfCnpjRaiz), $codigo, Versao::path($versao));
 
         return $this->produtoDaResposta($this->transport->json('PUT', $path, json: $produto->toArray()), 'retificar');
     }
@@ -140,19 +226,23 @@ final readonly class ProdutosResource
             'inicioVigenciaAte' => Data::formatDate($inicioVigenciaAte),
         ], headers: ['Accept' => 'application/zip, application/json']);
 
-        if ($response->getStatusCode() === 204) {
-            return [];
-        }
-        $json = Zip::primeiroArquivo((string) $response->getBody());
-        $dados = json_decode($json, true, 512, JSON_THROW_ON_ERROR | JSON_BIGINT_AS_STRING);
-
-        return array_map(Produto::fromArray(...), Data::listFromResponse($dados));
+        return array_map(Produto::fromArray(...), Data::listFromResponse(Transport::decodeArquivo($response)));
     }
 
     private function codigoInterno(string $method, CpfCnpjRaiz|string $cpfCnpjRaiz, int $codigo, string $versao, string $codigoInterno): void
     {
-        $path = \sprintf('%s/codigo-interno/%s/%d/%s', self::PREFIXO, CpfCnpjRaiz::of($cpfCnpjRaiz), $codigo, rawurlencode(self::versao($versao)));
+        $path = \sprintf('%s/codigo-interno/%s/%d/%s', self::PREFIXO, CpfCnpjRaiz::of($cpfCnpjRaiz), $codigo, Versao::path($versao));
         $this->transport->request($method, $path, json: ['codigoInterno' => $codigoInterno]);
+    }
+
+    /** Erros que afetam todo o lote (e não só o item): rate limit, indisponibilidade e acesso. */
+    private static function interrompeLote(SiscomexException $e): bool
+    {
+        if ($e instanceof RateLimitException || $e instanceof ServiceUnavailableException || $e instanceof ProductionWriteBlockedException) {
+            return true;
+        }
+
+        return \in_array($e->httpStatus, [401, 403], true) || ($e instanceof AuthenticationException && !\in_array($e->httpStatus, [400, 404, 422], true));
     }
 
     private function produtoDaResposta(mixed $dados, string $operacao): Produto
@@ -162,15 +252,5 @@ final readonly class ProdutosResource
         }
 
         return Produto::fromArray($dados);
-    }
-
-    private static function versao(string $versao): string
-    {
-        $versao = trim($versao);
-        if (preg_match('/^\d+(\.\d+)?$/', $versao) !== 1 || \strlen($versao) > 8) {
-            throw new \InvalidArgumentException(\sprintf('Versão inválida: "%s". Use "1" ou uma retificação "1.1".', $versao));
-        }
-
-        return $versao;
     }
 }

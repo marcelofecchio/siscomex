@@ -1105,6 +1105,601 @@
             ]
         },
         {
+            "name": "Operadores Estrangeiros",
+            "description": "Fornecedores, fabricantes e produtores no exterior. O operador é identificado por (cnpjRaiz, codigoPais, codigo) e versionado como o produto. [ESCRITA] só em Validação.",
+            "item": [
+                {
+                    "name": "Consultar operadores",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 204, 206)', () => pm.expect(pm.response.code).to.be.oneOf([200, 204, 206]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/operador-estrangeiro?cpfCnpjRaiz={{cnpjRaiz}}&exibirDesativados=true",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "operador-estrangeiro"
+                            ],
+                            "query": [
+                                {
+                                    "key": "cpfCnpjRaiz",
+                                    "value": "{{cnpjRaiz}}"
+                                },
+                                {
+                                    "key": "exibirDesativados",
+                                    "value": "true"
+                                }
+                            ]
+                        },
+                        "description": "Sem exibirDesativados=true os desativados são omitidos. Outros filtros: codigo, tin, codigoInterno, nome (até 70), paisOrigem."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Detalhar versão do operador",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 204)', () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/operador-estrangeiro/{{cnpjRaiz}}/{{codigoPais}}/{{codigoOperador}}/{{versaoOperador}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "operador-estrangeiro",
+                                "{{cnpjRaiz}}",
+                                "{{codigoPais}}",
+                                "{{codigoOperador}}",
+                                "{{versaoOperador}}"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Histórico do operador",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 204)', () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/operador-estrangeiro/historico/{{cnpjRaiz}}/{{codigoPais}}/{{codigoOperador}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "operador-estrangeiro",
+                                "historico",
+                                "{{cnpjRaiz}}",
+                                "{{codigoPais}}",
+                                "{{codigoOperador}}"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Exportar operadores",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 204)', () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json, application/zip"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/operador-estrangeiro/exportar/{{cnpjRaiz}}/true",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "operador-estrangeiro",
+                                "exportar",
+                                "{{cnpjRaiz}}",
+                                "true"
+                            ]
+                        },
+                        "description": "Na Validação voltou 204 logo após a inclusão (a consulta já encontrava o operador)."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[ESCRITA] Incluir operador",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200)', () => pm.expect(pm.response.code).to.be.oneOf([200]));",
+                                    "pm.test('Operador retornado com código e versão', function () {",
+                                    "    const j = pm.response.json();",
+                                    "    pm.expect(j.codigo).to.be.a('string');",
+                                    "    pm.environment.set('codigoOperador', j.codigo);",
+                                    "    pm.environment.set('versaoOperador', j.versao);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/operador-estrangeiro/{{cnpjRaiz}}/{{codigoPais}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "operador-estrangeiro",
+                                "{{cnpjRaiz}}",
+                                "{{codigoPais}}"
+                            ]
+                        },
+                        "description": "codigoPais ISO 3166 (2 letras) no path; a subdivisão (ISO 3166-2) deve ser do mesmo país.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nome\": \"Fornecedor Teste\",\n    \"logradouro\": \"No. 1 Keji Road\",\n    \"nomeCidade\": \"Shenzhen\",\n    \"codigoSubdivisaoPais\": \"CN-GD\",\n    \"cep\": \"518000\",\n    \"codigoInterno\": \"FORN-TESTE-1\",\n    \"email\": \"fornecedor@example.com\",\n    \"tin\": \"\",\n    \"identificacoesAdicionais\": []\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[ESCRITA] Nova versão do operador",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200)', () => pm.expect(pm.response.code).to.be.oneOf([200]));",
+                                    "pm.test('Operador retornado com código e versão', function () {",
+                                    "    const j = pm.response.json();",
+                                    "    pm.expect(j.codigo).to.be.a('string');",
+                                    "    pm.environment.set('codigoOperador', j.codigo);",
+                                    "    pm.environment.set('versaoOperador', j.versao);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/operador-estrangeiro/{{cnpjRaiz}}/{{codigoPais}}/{{codigoOperador}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "operador-estrangeiro",
+                                "{{cnpjRaiz}}",
+                                "{{codigoPais}}",
+                                "{{codigoOperador}}"
+                            ]
+                        },
+                        "description": "",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nome\": \"Fornecedor Teste\",\n    \"logradouro\": \"No. 1 Keji Road\",\n    \"nomeCidade\": \"Shenzhen\",\n    \"codigoSubdivisaoPais\": \"CN-GD\",\n    \"cep\": \"518000\",\n    \"codigoInterno\": \"FORN-TESTE-1\",\n    \"email\": \"fornecedor@example.com\",\n    \"tin\": \"\",\n    \"identificacoesAdicionais\": []\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[ESCRITA] Retificar versão do operador",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200)', () => pm.expect(pm.response.code).to.be.oneOf([200]));",
+                                    "pm.test('Operador retornado com código e versão', function () {",
+                                    "    const j = pm.response.json();",
+                                    "    pm.expect(j.codigo).to.be.a('string');",
+                                    "    pm.environment.set('codigoOperador', j.codigo);",
+                                    "    pm.environment.set('versaoOperador', j.versao);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/operador-estrangeiro/{{cnpjRaiz}}/{{codigoPais}}/{{codigoOperador}}/{{versaoOperador}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "operador-estrangeiro",
+                                "{{cnpjRaiz}}",
+                                "{{codigoPais}}",
+                                "{{codigoOperador}}",
+                                "{{versaoOperador}}"
+                            ]
+                        },
+                        "description": "Corpo idêntico à versão → 422 CATP-ER5013.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nome\": \"Fornecedor Teste\",\n    \"logradouro\": \"No. 1 Keji Road\",\n    \"nomeCidade\": \"Shenzhen\",\n    \"codigoSubdivisaoPais\": \"CN-GD\",\n    \"cep\": \"518000\",\n    \"codigoInterno\": \"FORN-TESTE-1\",\n    \"email\": \"fornecedor@example.com\",\n    \"tin\": \"\",\n    \"identificacoesAdicionais\": []\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[ESCRITA] Desativar versão do operador",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 204)', () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/operador-estrangeiro/desativar/{{cnpjRaiz}}/{{codigoPais}}/{{codigoOperador}}/{{versaoOperador}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "operador-estrangeiro",
+                                "desativar",
+                                "{{cnpjRaiz}}",
+                                "{{codigoPais}}",
+                                "{{codigoOperador}}",
+                                "{{versaoOperador}}"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Fabricantes-Produtores",
+            "description": "Vínculo de fabricante/produtor a produto (operação separada do produto). conhecido=true exige o operador estrangeiro ou o CPF/CNPJ do fabricante nacional; conhecido=false (desconhecido) leva só o país. [ESCRITA] só em Validação.",
+            "item": [
+                {
+                    "name": "Histórico de fabricantes do produto",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 204)', () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/fabricante/historico/{{cnpjRaiz}}/{{codigoProduto}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "fabricante",
+                                "historico",
+                                "{{cnpjRaiz}}",
+                                "{{codigoProduto}}"
+                            ]
+                        },
+                        "description": "O campo conhecido vem como \"Sim\"/\"Não\"."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Exportar vínculos",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 204)', () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json, application/zip"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/fabricante/exportar/{{cnpjRaiz}}?codigosProduto={{codigoProduto}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "fabricante",
+                                "exportar",
+                                "{{cnpjRaiz}}"
+                            ],
+                            "query": [
+                                {
+                                    "key": "codigosProduto",
+                                    "value": "{{codigoProduto}}"
+                                }
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[ESCRITA] Vincular fabricante",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 204)', () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/fabricante/{{cnpjRaiz}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "fabricante",
+                                "{{cnpjRaiz}}"
+                            ]
+                        },
+                        "description": "",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"codigoProduto\": {{codigoProduto}},\n  \"codigoPais\": \"{{codigoPais}}\",\n  \"conhecido\": true,\n  \"codigoOperadorEstrangeiro\": \"{{codigoOperador}}\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[ESCRITA] Desvincular fabricante",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status esperado (200, 204)', () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/catp/api/ext/fabricante/{{cnpjRaiz}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "catp",
+                                "api",
+                                "ext",
+                                "fabricante",
+                                "{{cnpjRaiz}}"
+                            ]
+                        },
+                        "description": "",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"codigoProduto\": {{codigoProduto}},\n  \"codigoPais\": \"{{codigoPais}}\",\n  \"conhecido\": true,\n  \"codigoOperadorEstrangeiro\": \"{{codigoOperador}}\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
             "name": "Fluxo completo (Validação)",
             "description": "Execute em sequência no Runner, apenas no ambiente de Validação: atributos da NCM → incluir → detalhar → nova versão → desativar.",
             "item": [

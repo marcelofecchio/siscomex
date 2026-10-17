@@ -126,6 +126,43 @@ final class ProdutoRequest
     }
 
     /**
+     * Valores informados para um atributo: o valor simples, os valores do multivalorado ou o
+     * valor de um subatributo de composto (usado para avaliar atributos condicionados).
+     *
+     * @return list<string>
+     */
+    public function valoresDoAtributo(string $codigo): array
+    {
+        $valores = [];
+        foreach ($this->atributos as $a) {
+            if ($a->atributo === $codigo) {
+                $valores[] = $a->valor;
+            }
+        }
+        foreach ($this->atributosMultivalorados as $a) {
+            if ($a->atributo === $codigo) {
+                array_push($valores, ...$a->valores);
+            }
+        }
+        $subatributos = [];
+        foreach ($this->atributosCompostos as $a) {
+            array_push($subatributos, ...$a->valores);
+        }
+        foreach ($this->atributosCompostosMultivalorados as $a) {
+            foreach ($a->valores as $ocorrencia) {
+                array_push($subatributos, ...$ocorrencia);
+            }
+        }
+        foreach ($subatributos as $sub) {
+            if ($sub->atributo === $codigo) {
+                $valores[] = $sub->valor;
+            }
+        }
+
+        return $valores;
+    }
+
+    /**
      * Corpo JSON enviado à API.
      *
      * @return array<string, mixed>

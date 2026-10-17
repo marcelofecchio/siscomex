@@ -9,7 +9,7 @@ SDK PHP 8.4, agnóstico de framework, para a **API pública do Portal Único Sis
 
 - **Autenticação** por **Chaves de Acesso** ou **certificado digital A1** (mTLS), com reaproveitamento de sessão, regra dos 60 s e renovação automática do `X-CSRF-Token`;
 - **Cadastro de Atributos** — atributos por NCM, consulta por código/nome, downloads e histórico de versões, inclusive o download **público** sem autenticação;
-- **Catálogo de Produtos** — incluir, consultar, detalhar, versionar, retificar, desativar, exportar e gerir códigos internos.
+- **Catálogo de Produtos** — produtos (incluir, consultar, detalhar, versionar, retificar, desativar, exportar, códigos internos e inclusão em lote), **operadores estrangeiros** e vínculo de **fabricantes/produtores**.
 
 Inclui coleção **Postman** ([`postman/`](postman/)), exemplos ([`examples/`](examples/)) e validação local do produto contra os atributos da NCM.
 
@@ -44,7 +44,7 @@ Inclui coleção **Postman** ([`postman/`](postman/)), exemplos ([`examples/`](e
 composer require marcelofecchio/siscomex-sdk guzzlehttp/guzzle
 ```
 
-Versão pré-1.0: até a 1.0 a API pública ainda pode mudar entre versões menores (`^0.1` aceita apenas correções `0.1.x`).
+Versão pré-1.0: até a 1.0 a API pública ainda pode mudar entre versões menores (`^0.2` aceita apenas correções `0.2.x`). As mudanças de cada versão estão no [CHANGELOG](CHANGELOG.md).
 
 ## Pré-requisitos no Siscomex
 
@@ -71,9 +71,13 @@ use MarceloFecchio\Siscomex\PortalUnico\Auth\Credentials\CertificadoA1;
 $credencial = ChaveAcesso::fromEnv();                                    // SISCOMEX_CLIENT_ID / SISCOMEX_CLIENT_SECRET
 $credencial = new ChaveAcesso($clientId, $clientSecret);
 $credencial = new CertificadoA1('/seguro/ecpf.pfx', getenv('CERT_SENHA')); // mTLS via cURL (CURLOPT_SSLCERTTYPE=P12)
+
+// Credenciais guardadas pela aplicação (ex.: banco de dados, cofre de segredos)
+$credencial = new ChaveAcesso($empresa->siscomexClientId, $empresa->siscomexClientSecret);
+$credencial = CertificadoA1::fromString($empresa->certificadoPfx, $empresa->senhaCertificado);
 ```
 
-Com certificado A1, `PortalUnicoClient::create()` configura o Guzzle automaticamente. Para outro cliente PSR-18, use `$cert->opcoesCurl()` ou `$cert->paraPem()` (gera um PEM temporário com permissão 0600, apagado quando o objeto é destruído).
+Com certificado A1, `PortalUnicoClient::create()` configura o Guzzle automaticamente. Para outro cliente PSR-18, use `$cert->opcoesCurl()` ou `$cert->paraPem()` (gera um PEM temporário com permissão 0600, apagado quando o objeto é destruído). `CertificadoA1::fromString()` grava o conteúdo (PKCS#12 ou PEM, detectado automaticamente) num arquivo temporário 0600 que é apagado junto com a credencial; a sessão em cache é identificada pelo conteúdo, então continua sendo reaproveitada entre processos.
 
 ## Uso
 
@@ -111,6 +115,14 @@ $client = PortalUnicoClient::create(
 );
 ```
 
+Para um botão "Testar conexão", `testarConexao()` nunca lança exceção de API e devolve uma mensagem pronta para o usuário (reaproveita a sessão em cache, se houver):
+
+```php
+$teste = $client->testarConexao();
+echo $teste->sucesso ? 'OK' : 'Falhou', ' — ', $teste->mensagem;
+// $teste->ambiente, ->perfil, ->autenticadoEm, ->sessaoExpiraEm, ->erro (SiscomexException|null)
+```
+
 ### Cadastro de Atributos
 
 ```php
@@ -126,8 +138,16 @@ foreach ($atributos as $atributo) {
     // $atributo->formaPreenchimento (enum), ->dominio, ->condicionados, ->subatributos, ->multivalorado...
 }
 
-// Só os obrigatórios para cadastrar produto (objetivo "Produto", vigentes hoje)
+// Só os obrigatórios incondicionais para cadastrar produto (objetivo "Produto", vigentes hoje)
 $obrigatorios = $atributos->obrigatoriosParaProduto(Modalidade::Importacao);
+
+// Condicionados: todos os possíveis (para montar formulário/planilha) e os exigidos pelos valores já informados
+foreach ($atributos->condicionadosParaProduto(Modalidade::Importacao) as $c) {
+    echo $c->atributo->codigo, ' se ', $c->descricaoCondicao, $c->obrigatorio ? ' (obrigatório)' : '', PHP_EOL;
+    // ex.: "ATT_10008 se 'ATT_5333' Igual 'true' (obrigatório)"
+}
+$exigidos = $atributos->obrigatoriosPara($produtoRequest);   // incondicionais + condicionados satisfeitos, em cascata
+$aplicaveis = $atributos->aplicaveisPara($produtoRequest);   // idem, incluindo os opcionais
 
 // Filtros da API: data de referência, objetivos e órgãos
 $client->atributos()->porNcm('84733049', new DateTimeImmutable('2026-12-01'), Modalidade::Exportacao, [ObjetivoAtributo::Produto], ['ANVISA']);
@@ -140,6 +160,14 @@ $busca = $client->atributos()->porNomes(['Material constitutivo']);
 // Relação completa por NCM (ZIP) e histórico de versões
 $relacao   = $client->atributos()->downloadPorNcm(codigosNcm: ['84733049']);
 $historico = $client->atributos()->historicoVersoesPorNcm();
+```
+
+As condições usam os operadores encontrados nas relações do portal (`==`, `!=`, `>`, `>=`, `<=`) encadeados por `||` ou `&&`; quando não é possível avaliar (operador desconhecido), o condicionado não é exigido e a decisão fica com o portal.
+
+Cache opcional (PSR-16) das respostas de `porNcm()`, separado por ambiente e parâmetros; as entradas expiram à meia-noite (horário de Brasília), quando o portal atualiza a relação:
+
+```php
+$client = PortalUnicoClient::create(credencial: $credencial, cacheAtributos: $psr16Cache);
 ```
 
 #### Download público (sem credencial)
@@ -193,6 +221,101 @@ if ($resultado->parcial) { /* refine os filtros ou use exportar() */ }
 $todos = $produtos->exportar($cnpjRaiz, exibirDesativados: false);
 ```
 
+A API não pagina: um HTTP 206 significa que o portal truncou o resultado (`$resultado->parcial`). Refine os filtros ou use a exportação.
+
+#### Código interno
+
+```php
+use MarceloFecchio\Siscomex\PortalUnico\Enum\SituacaoCodigoInterno;
+
+$busca = $produtos->buscarPorCodigoInterno($cnpjRaiz, 'SKU-123');
+match ($busca->situacao()) {
+    SituacaoCodigoInterno::Livre      => $produtos->incluir($cnpjRaiz, $novo),
+    SituacaoCodigoInterno::Ativo      => $produtos->novaVersao($cnpjRaiz, $busca->maisRecente()->codigo, $novo),
+    SituacaoCodigoInterno::Desativado => $produtos->incluir($cnpjRaiz, $novo), // ou reativar com novaVersao()
+};
+$busca->duplicado(); // mais de um produto ativo com o mesmo código
+```
+
+Regras observadas no ambiente de Validação (17/10/2026):
+
+- o filtro `codigoInterno` do portal é **parcial e não diferencia maiúsculas** (`SKU` encontra `sku-1`); `buscarPorCodigoInterno()` devolve só a igualdade exata;
+- a consulta inclui produtos **desativados** e considera apenas a **versão vigente** (um código retirado numa nova versão deixa de ser encontrado);
+- o portal **não impõe unicidade**: aceita o mesmo código interno em dois produtos ativos — evitar duplicidade é responsabilidade de quem integra;
+- o código interno de um produto desativado pode ser **reutilizado** num produto novo ou incluído em outro produto;
+- **`novaVersao()` reativa** um produto desativado; a nova versão substitui a anterior por inteiro, inclusive os códigos internos.
+
+#### Inclusão em lote
+
+```php
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\ItemLote;
+
+$resultado = $produtos->incluirLote($cnpjRaiz, $requestsPorLinha, static function (ItemLote $item): void {
+    echo $item->chave, ': ', $item->status->value, ' ', implode('; ', $item->mensagens()), PHP_EOL;
+    // devolva false para interromper
+});
+
+foreach ($resultado->erros() as $item) { /* 4xx do portal: corrija a linha $item->chave */ }
+if ($resultado->interrompido()) {
+    // PUCX-ER1001, 503, 401/403 ou falha de rede: retome depois com os pendentes
+    $quando = $resultado->retomarApos();               // horário de liberação do rate limit, se houver
+    $produtos->incluirLote($cnpjRaiz, $resultado->pendentes());
+}
+```
+
+Nenhum envio é repetido automaticamente. Recusas do portal ao item (400/404/422) e erros 500 ficam como `Erro` e o lote segue; rate limit, indisponibilidade e acesso negado interrompem o lote (o item fica `Pendente`). Se a rede cair durante o POST, o item fica `Incerto` — o portal pode tê-lo incluído; confira com `buscarPorCodigoInterno()` antes de reenviar.
+
+### Operadores estrangeiros
+
+```php
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\OperadorEstrangeiroRequest;
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\FiltroOperadoresEstrangeiros;
+
+$operadores = $client->catalogo()->operadoresEstrangeiros();
+
+$fornecedor = new OperadorEstrangeiroRequest('Shenzhen Parts Co., Ltd.', 'No. 1 Keji Road, Nanshan', 'Shenzhen')
+    ->comSubdivisao('CN-GD')                  // ISO 3166-2, do mesmo país
+    ->comTin('91440300MA5XXXXXXX')
+    ->comEmail('export@example.com')
+    ->comCodigoInterno('FORN-001')
+    ->comIdentificacaoAdicional('016', '123456789'); // agência UN/EDIFACT 3055 + número
+
+$op = $operadores->incluir($cnpjRaiz, 'CN', $fornecedor);  // país ISO 3166-1 no path
+echo $op->codigo, ' v', $op->versao;                        // ex.: "OPE_2 v1"
+
+$op = $operadores->novaVersao($cnpjRaiz, 'CN', $op->codigo, $fornecedor->comEmail('novo@example.com'));
+$op = $operadores->retificar($cnpjRaiz, 'CN', $op->codigo, $op->versao, $op->paraRequest()->comCep('518000'));
+$operadores->detalhar($cnpjRaiz, 'CN', 'OPE_2', '2.1');
+$operadores->historico($cnpjRaiz, 'CN', 'OPE_2');
+$operadores->desativar($cnpjRaiz, 'CN', 'OPE_2', '2.1');
+
+// Sem exibirDesativados: true, a consulta omite os desativados (HTTP 206 = parcial)
+$lista = $operadores->consultar(new FiltroOperadoresEstrangeiros($cnpjRaiz, nome: 'Shenzhen', paisOrigem: 'CN', exibirDesativados: true));
+$todos = $operadores->exportar($cnpjRaiz, exibirDesativados: true);
+```
+
+Retificar com dados idênticos aos da versão é recusado com `CATP-ER5013`. Na Validação, a **exportação** veio vazia logo após a inclusão, enquanto `consultar()` já encontrava o operador — para o estado imediato, use a consulta.
+
+### Fabricantes/produtores
+
+O fabricante não faz parte do `ProdutoRequest`: o vínculo é uma operação própria, feita depois de o produto (e, se estrangeiro, o operador) existir.
+
+```php
+use MarceloFecchio\Siscomex\PortalUnico\Resources\Catalogo\Dto\FabricanteRequest;
+
+$fabricantes = $client->catalogo()->fabricantes();
+
+$fabricantes->vincular($cnpjRaiz, FabricanteRequest::operadorEstrangeiro($produto->codigo, 'CN', 'OPE_2'));
+$fabricantes->vincular($cnpjRaiz, FabricanteRequest::fabricanteNacional($produto->codigo, '12.345.678/0001-95', 'BR'));
+$fabricantes->vincular($cnpjRaiz, FabricanteRequest::desconhecido($produto->codigo, 'DE')); // só o país de origem
+
+$fabricantes->desvincular($cnpjRaiz, FabricanteRequest::operadorEstrangeiro($produto->codigo, 'CN', 'OPE_2'));
+$eventos = $fabricantes->historico($cnpjRaiz, $produto->codigo);   // inclusões e exclusões, imediato
+$vinculos = $fabricantes->exportar($cnpjRaiz, codigosProduto: [$produto->codigo], paisesOrigem: ['CN']);
+```
+
+`conhecido = true` significa fabricante conhecido (a descrição da spec está invertida; confirmado na Validação: `conhecido=true` sem operador é recusado com "Campo Fabricante/produtor estrangeiro é obrigatório"). Os construtores nomeados garantem a combinação coerente dos campos. No histórico, o portal devolve `conhecido` como "Sim"/"Não", convertido para `bool`. Como na exportação de operadores, a de vínculos veio vazia logo após o vínculo.
+
 ### Validação local antes de enviar
 
 ```php
@@ -204,7 +327,7 @@ foreach ($problemas as $p) {
 }
 ```
 
-Verifica obrigatórios ausentes, atributos não vinculados à NCM/modalidade (inclusive código de **outro ambiente**), valores fora do domínio, booleanos, inteiros e tamanho máximo. Atributos condicionados não são avaliados — a validação definitiva é sempre a do portal.
+Verifica obrigatórios ausentes — inclusive **condicionados** cuja condição os valores informados satisfazem —, atributos não vinculados à NCM/modalidade (inclusive código de **outro ambiente**), condicionados informados sem que a condição se cumpra, valores fora do domínio, booleanos, inteiros e tamanho máximo. A validação definitiva é sempre a do portal.
 
 ### Evento `catp-prod-desativado`
 
@@ -212,7 +335,7 @@ Quando novos atributos obrigatórios passam a valer para uma NCM, o portal pode 
 
 ### Endpoints ainda não cobertos
 
-`$client->transport()->json('GET', '/catp/api/ext/operador-estrangeiro', [...])` executa qualquer chamada autenticada com as mesmas regras de sessão, CSRF, erros e retry.
+`$client->transport()->json('GET', '/cadatributos/api/ext/atributo/historico-versoes', [...])` executa qualquer chamada autenticada com as mesmas regras de sessão, CSRF, erros e retry.
 
 ## Tratamento de erros
 
@@ -236,6 +359,8 @@ try {
     $produtos->incluir($cnpjRaiz, $novo);
 } catch (ValidationException $e) {
     foreach ($e->mensagens() as $msg) { echo $msg, PHP_EOL; }
+    $porCampo = $e->mensagensPorCampo();          // ['ATT_5426' => ['O Atributo ATT_5426 ... é obrigatório.'], ...]
+    $e->possuiCodigo('CATP-ER2021');              // código no erro ou em algum detalhe
 } catch (RateLimitException $e) {
     echo 'Tente após ', $e->liberadoEm?->format('H:i');
 } catch (SiscomexException $e) {
@@ -290,7 +415,7 @@ $this->app->singleton(PortalUnicoClient::class, fn () => PortalUnicoClient::crea
 
 ## Coleção Postman
 
-Em [`postman/`](postman/): coleção v2.1 com autenticação automática (respeitando os 60 s), captura de CSRF, testes, bloqueio de escrita em produção e a pasta **Fluxo completo**. Instruções (certificado, Newman) em [`postman/README.md`](postman/README.md).
+Em [`postman/`](postman/): coleção v2.1 com autenticação automática (respeitando os 60 s), captura de CSRF, testes, bloqueio de escrita em produção, pastas de operadores estrangeiros e fabricantes e a pasta **Fluxo completo**. Instruções (certificado, Newman) em [`postman/README.md`](postman/README.md).
 
 ## Desenvolvimento e contribuição
 

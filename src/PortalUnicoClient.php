@@ -8,12 +8,14 @@ use Http\Discovery\Psr17FactoryDiscovery;
 use Http\Discovery\Psr18ClientDiscovery;
 use MarceloFecchio\Siscomex\PortalUnico\Auth\Authenticator;
 use MarceloFecchio\Siscomex\PortalUnico\Auth\Credentials\Credential;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\ResultadoConexao;
 use MarceloFecchio\Siscomex\PortalUnico\Auth\Session;
 use MarceloFecchio\Siscomex\PortalUnico\Auth\TokenStore\InMemoryTokenStore;
 use MarceloFecchio\Siscomex\PortalUnico\Auth\TokenStore\TokenStore;
 use MarceloFecchio\Siscomex\PortalUnico\Config\Ambiente;
 use MarceloFecchio\Siscomex\PortalUnico\Config\ClientConfig;
 use MarceloFecchio\Siscomex\PortalUnico\Config\Perfil;
+use MarceloFecchio\Siscomex\PortalUnico\Exceptions\SiscomexException;
 use MarceloFecchio\Siscomex\PortalUnico\Http\GuzzleClientFactory;
 use MarceloFecchio\Siscomex\PortalUnico\Http\Transport;
 use MarceloFecchio\Siscomex\PortalUnico\Resources\Atributos\AtributosPublicos;
@@ -28,6 +30,7 @@ use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * Fachada do SDK.
@@ -53,11 +56,14 @@ final class PortalUnicoClient
         public readonly ClientConfig $config,
         private readonly Transport $transport,
         private readonly ?Authenticator $authenticator,
+        private readonly ?CacheInterface $cacheAtributos = null,
+        private readonly ClockInterface $clock = new SystemClock(),
     ) {}
 
     /**
      * @param ClientConfig|null $config se informado, prevalece sobre $ambiente e $perfil
-     * @param ClientInterface|null $httpClient cliente PSR-18 próprio; para mTLS ele já deve apresentar o certificado
+     * @param ClientInterface|null $httpClient     cliente PSR-18 próprio; para mTLS ele já deve apresentar o certificado
+     * @param CacheInterface|null  $cacheAtributos cache PSR-16 opcional de atributos()->porNcm() (expira à meia-noite)
      */
     public static function create(
         Ambiente $ambiente = Ambiente::Validacao,
@@ -71,6 +77,7 @@ final class PortalUnicoClient
         ?StreamFactoryInterface $streamFactory = null,
         ?ClockInterface $clock = null,
         ?Sleeper $sleeper = null,
+        ?CacheInterface $cacheAtributos = null,
     ): self {
         $config ??= new ClientConfig(ambiente: $ambiente, perfil: $perfil);
         $logger ??= new NullLogger();
@@ -101,13 +108,13 @@ final class PortalUnicoClient
 
         $transport = new Transport($httpClient, $requestFactory, $streamFactory, $config, $authenticator, $clock, $sleeper, $logger);
 
-        return new self($config, $transport, $authenticator);
+        return new self($config, $transport, $authenticator, $cacheAtributos, $clock);
     }
 
     /** Cadastro de Atributos (requer credencial). */
     public function atributos(): AtributosResource
     {
-        return $this->atributos ??= new AtributosResource($this->transport);
+        return $this->atributos ??= new AtributosResource($this->transport, $this->cacheAtributos, $this->clock);
     }
 
     /** Catálogo de Produtos (requer credencial). */
@@ -128,6 +135,26 @@ final class PortalUnicoClient
     public function autenticar(): Session
     {
         return $this->authenticator()->session();
+    }
+
+    /**
+     * Verifica as credenciais sem lançar exceção (para um botão "Testar conexão").
+     *
+     * Reaproveita a sessão em cache, se houver; caso contrário autentica (respeitando os 60 s).
+     * Uma sessão em cache pode já ter sido invalidada por outra autenticação com a mesma chave:
+     * nesse caso o erro só aparece na próxima chamada à API (que reautentica uma vez).
+     *
+     * @throws \LogicException se o cliente foi criado sem credencial
+     */
+    public function testarConexao(): ResultadoConexao
+    {
+        $authenticator = $this->authenticator();
+
+        try {
+            return ResultadoConexao::sucesso($this->config->ambiente, $this->config->perfil, $authenticator->session());
+        } catch (SiscomexException $e) {
+            return ResultadoConexao::falha($this->config->ambiente, $this->config->perfil, $e);
+        }
     }
 
     /** Descarta a sessão em cache (a próxima chamada autentica novamente, respeitando os 60 s). */

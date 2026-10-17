@@ -20,15 +20,54 @@ final readonly class CertificadoA1 implements Credential
 {
     public string $caminho;
 
+    /**
+     * @param CertificadoPemTemporario|null $temporario uso interno de fromString(): arquivo apagado junto com a credencial
+     */
     public function __construct(
         string $caminho,
         #[\SensitiveParameter]
         private string $senha = '',
+        private ?CertificadoPemTemporario $temporario = null,
     ) {
         if (!is_file($caminho) || !is_readable($caminho)) {
             throw new CertificateException(\sprintf('Arquivo de certificado não encontrado ou ilegível: %s', $caminho));
         }
         $this->caminho = (string) realpath($caminho);
+    }
+
+    /**
+     * Cria a credencial a partir do conteúdo do certificado (ex.: guardado no banco de dados).
+     *
+     * O conteúdo é gravado em um arquivo temporário com permissão 0600, apagado quando a
+     * credencial é destruída. O formato é detectado (PEM começa com "-----BEGIN"; senão, PKCS#12).
+     */
+    public static function fromString(
+        #[\SensitiveParameter]
+        string $conteudo,
+        #[\SensitiveParameter]
+        string $senha = '',
+        ?string $diretorio = null,
+    ): self {
+        if ($conteudo === '') {
+            throw new CertificateException('Conteúdo do certificado vazio.');
+        }
+        $extensao = str_starts_with(ltrim($conteudo), '-----BEGIN') ? 'pem' : 'pfx';
+        $base = tempnam($diretorio ?? sys_get_temp_dir(), 'siscomex-a1-');
+        if ($base === false) {
+            throw new CertificateException('Não foi possível criar arquivo temporário para o certificado.');
+        }
+        $arquivo = $base.'.'.$extensao;
+        if (!rename($base, $arquivo)) {
+            @unlink($base);
+            throw new CertificateException('Não foi possível criar arquivo temporário para o certificado.');
+        }
+        $temporario = new CertificadoPemTemporario($arquivo, apagarAoDestruir: true);
+        chmod($arquivo, 0o600);
+        if (file_put_contents($arquivo, $conteudo) !== \strlen($conteudo)) {
+            throw new CertificateException('Não foi possível gravar o certificado no arquivo temporário.');
+        }
+
+        return new self($arquivo, $senha, $temporario);
     }
 
     public function isPkcs12(): bool
@@ -51,9 +90,15 @@ final readonly class CertificadoA1 implements Credential
         return true;
     }
 
+    /**
+     * Chave da sessão em cache. Para certificados de fromString() usa o conteúdo, pois o
+     * caminho temporário muda a cada processo e impediria o reaproveitamento da sessão.
+     */
     public function identificador(): string
     {
-        return 'cert-'.substr(hash('sha256', $this->caminho), 0, 16);
+        $base = $this->temporario === null ? $this->caminho : (string) file_get_contents($this->caminho);
+
+        return 'cert-'.substr(hash('sha256', $base), 0, 16);
     }
 
     /**

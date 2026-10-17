@@ -5,9 +5,13 @@ declare(strict_types=1);
 namespace MarceloFecchio\Siscomex\PortalUnico\Tests\Unit\Resources;
 
 use GuzzleHttp\Psr7\Response;
+use MarceloFecchio\Siscomex\PortalUnico\Auth\TokenStore\InMemoryTokenStore;
+use MarceloFecchio\Siscomex\PortalUnico\Config\Ambiente;
+use MarceloFecchio\Siscomex\PortalUnico\Config\ClientConfig;
 use MarceloFecchio\Siscomex\PortalUnico\Enum\FormaPreenchimento;
 use MarceloFecchio\Siscomex\PortalUnico\Enum\Modalidade;
 use MarceloFecchio\Siscomex\PortalUnico\Enum\ObjetivoAtributo;
+use MarceloFecchio\Siscomex\PortalUnico\Tests\Support\ArrayCache;
 use MarceloFecchio\Siscomex\PortalUnico\Tests\Support\TestCase;
 
 final class AtributosResourceTest extends TestCase
@@ -188,5 +192,36 @@ final class AtributosResourceTest extends TestCase
 
         self::assertSame([], $this->client()->atributos()->historicoVersoesAtributos());
         self::assertSame('/cadatributos/api/ext/atributo/historico-versoes', $this->http->lastRequest()->getUri()->getPath());
+    }
+
+    public function testPorNcmComCacheExpiraAMeiaNoite(): void
+    {
+        $cache = new ArrayCache();
+        $this->http->queue(self::authResponse(), self::json(200, self::fixture('validacao', 'atributos-por-ncm-amostra.json')), self::json(200, ['listaAtributos' => []]));
+        $atributos = $this->client(cacheAtributos: $cache)->atributos();
+
+        self::assertCount(13, $atributos->porNcm('84733049'));
+        self::assertCount(13, $atributos->porNcm('8473.30.49'), 'segunda chamada vem do cache');
+        self::assertCount(2, $this->http->requests, 'autenticação + uma consulta');
+
+        self::assertCount(1, $cache->ttls);
+        // FakeClock: 15/10/2026 10:00 em São Paulo → 14 h até a meia-noite.
+        self::assertSame(14 * 3600, array_values($cache->ttls)[0]);
+
+        self::assertCount(0, $atributos->porNcm('84733049', modalidade: Modalidade::Exportacao), 'parâmetros diferentes, outra entrada');
+        self::assertCount(2, $cache->data);
+    }
+
+    public function testCacheSeparaAmbientes(): void
+    {
+        $cache = new ArrayCache();
+        $resposta = self::json(200, ['listaAtributos' => []]);
+        $this->http->queue(self::authResponse(), $resposta, self::authResponse(), $resposta);
+
+        $this->client(cacheAtributos: $cache)->atributos()->porNcm('84733049');
+        $this->store = new InMemoryTokenStore();
+        $this->client(new ClientConfig(ambiente: Ambiente::Producao), cacheAtributos: $cache)->atributos()->porNcm('84733049');
+
+        self::assertCount(2, $cache->data);
     }
 }

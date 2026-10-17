@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MarceloFecchio\Siscomex\PortalUnico\Tests\Unit\ValueObject;
 
+use MarceloFecchio\Siscomex\PortalUnico\ValueObject\CodigoPais;
 use MarceloFecchio\Siscomex\PortalUnico\ValueObject\CpfCnpjRaiz;
 use MarceloFecchio\Siscomex\PortalUnico\ValueObject\Ncm;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -92,5 +93,30 @@ final class ValueObjectsTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
         CpfCnpjRaiz::deCnpj('123');
+    }
+
+    public function testCodigoPais(): void
+    {
+        $pais = CodigoPais::of(' cn ');
+
+        self::assertSame('CN', $pais->codigo);
+        self::assertSame('CN', (string) $pais);
+        self::assertTrue($pais->equals('cn'));
+        self::assertSame($pais, CodigoPais::of($pais));
+    }
+
+    #[DataProvider('paisesInvalidos')]
+    public function testCodigoPaisInvalido(string $codigo): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        new CodigoPais($codigo);
+    }
+
+    /** @return iterable<array{string}> */
+    public static function paisesInvalidos(): iterable
+    {
+        yield [''];
+        yield ['CHN'];
+        yield ['C1'];
     }
 }

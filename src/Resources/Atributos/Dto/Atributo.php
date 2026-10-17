@@ -56,9 +56,10 @@ final readonly class Atributo
     {
         $forma = Data::stringOrNull($a, 'formaPreenchimento');
         $modalidade = Data::stringOrNull($a, 'modalidade');
+        $codigo = Data::string($a, 'codigo');
 
         return new self(
-            codigo: Data::string($a, 'codigo'),
+            codigo: $codigo,
             nomeApresentacao: Data::string($a, 'nomeApresentacao'),
             nome: Data::stringOrNull($a, 'nome'),
             definicao: Data::stringOrNull($a, 'definicao'),
@@ -78,7 +79,7 @@ final readonly class Atributo
             objetivos: array_map(ObjetivoVinculado::fromArray(...), Data::listOfArrays($a, 'objetivos')),
             orgaos: Data::listOfStrings($a, 'orgaos'),
             atributoCondicionante: Data::bool($a, 'atributoCondicionante'),
-            condicionados: array_map(AtributoCondicionado::fromArray(...), Data::listOfArrays($a, 'condicionados')),
+            condicionados: array_map(static fn(array $c): AtributoCondicionado => AtributoCondicionado::fromArray($c, $codigo), Data::listOfArrays($a, 'condicionados')),
             subatributos: array_map(self::fromArray(...), Data::listOfArrays($a, 'listaSubatributos')),
             brid: Data::stringOrNull($a, 'brid'),
             wcoid: Data::stringOrNull($a, 'wcoid'),

@@ -92,4 +92,47 @@ final class ValidadorProdutoTest extends TestCase
 
         self::assertSame(['ATT_T', 'ATT_I', 'ATT_M'], array_values(array_unique(array_map(static fn(ProblemaValidacao $p): ?string => $p->atributo, $problemas))));
     }
+
+    public function testCobraCondicionadoObrigatorioQuandoACondicaoSeCumpre(): void
+    {
+        // Na fixture de Validação, ATT_5333 = "true" torna ATT_10008 e ATT_10015 obrigatórios.
+        $produto = self::completo()->comAtributo('ATT_5333', 'true');
+
+        $problemas = new ValidadorProduto()->validar($produto, $this->atributos, $this->hoje);
+
+        $porAtributo = array_map(static fn(ProblemaValidacao $p): ?string => $p->atributo, $problemas);
+        self::assertSame(['ATT_10008', 'ATT_10015'], $porAtributo);
+        self::assertStringContainsString("exigido porque 'ATT_5333' Igual 'true'", $problemas[0]->mensagem);
+    }
+
+    public function testCondicionadoInformadoComCondicaoSatisfeitaNaoEAcusadoComoNaoVinculado(): void
+    {
+        $produto = self::completo()->comAtributo('ATT_5333', 'true')->comAtributo('ATT_10008', 'false');
+        $dominio = $this->atributos->aplicaveisPara($produto, $this->hoje)->porCodigo('ATT_10015')?->dominio[0]->codigo;
+        self::assertNotNull($dominio);
+
+        self::assertSame([], new ValidadorProduto()->validar($produto->comAtributo('ATT_10015', $dominio), $this->atributos, $this->hoje));
+
+        $foraDoDominio = new ValidadorProduto()->validar($produto->comAtributo('ATT_10015', 'ZZZ'), $this->atributos, $this->hoje);
+        self::assertSame(['ATT_10015'], array_map(static fn(ProblemaValidacao $p): ?string => $p->atributo, $foraDoDominio), 'condicionado também tem o domínio validado');
+    }
+
+    public function testCondicionadoInformadoSemACondicao(): void
+    {
+        $produto = self::completo()->comAtributo('ATT_5333', 'false')->comAtributo('ATT_10008', 'true');
+
+        $problemas = new ValidadorProduto()->validar($produto, $this->atributos, $this->hoje);
+
+        self::assertCount(1, $problemas);
+        self::assertSame('ATT_10008', $problemas[0]->atributo);
+        self::assertStringContainsString("só se aplica quando 'ATT_5333' Igual 'true'", $problemas[0]->mensagem);
+    }
+
+    private static function completo(): ProdutoRequest
+    {
+        return new ProdutoRequest('Placa-mãe', Modalidade::Importacao, '84733049')
+            ->comAtributo('ATT_5426', 'false')
+            ->comAtributo('ATT_7866', 'Silício')
+            ->comAtributo('ATT_18551', '99');
+    }
 }
