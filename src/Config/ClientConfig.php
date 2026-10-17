@@ -32,7 +32,7 @@ final readonly class ClientConfig
         public int $backoffInicialMs = 1000,
         public int $margemExpiracao = 60,
         public ?bool $bloquearEscritaEmProducao = null,
-        public string $userAgent = 'marcelofecchio-siscomex-sdk/0.2',
+        public string $userAgent = 'marcelofecchio-siscomex-sdk/0.3',
         public bool $simularEscrita = false,
     ) {
         if ($tentativas503 < 0 || $backoffInicialMs < 0 || $margemExpiracao < 0 || $timeout < 1) {

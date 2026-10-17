@@ -4,7 +4,7 @@
 
 ## Status atual
 
-**v0.3 (não lançada) na branch `feat/erro-api-fabricantes-fake-tabx`**: a partir do segundo `SUGESTOES-SDK.md` (item 1, Excel, descartado pelo usuário) — `ErroApi` + `CodigosErro`, `incluirComFabricantes()` / `vincularTodos()` / lote com fabricantes, `Testing\PortalUnicoFake`, `ClientConfig::$simularEscrita`, Tabelas Comex (`tabelas()`, com paginação real), `Ambiente::janelaDeIndisponibilidade()` e seção de versionamento/APIs `@experimental`. **Validado na Validação em 17/10/2026**: integração 7/7; Postman CLI — "Fluxo operador e fabricante" 8/8 requisições e pasta TABX 9/9 asserções. `composer qa` verde (289 testes unitários).
+**v0.3.0 lançada em 17/10/2026** (PR #2 da branch `feat/erro-api-fabricantes-fake-tabx`, CI verde, tag `v0.3.0`, release no GitHub e Packagist): a partir do segundo `SUGESTOES-SDK.md` (item 1, Excel, descartado pelo usuário) — `ErroApi` + `CodigosErro`, `incluirComFabricantes()` / `vincularTodos()` / lote com fabricantes, `Testing\PortalUnicoFake`, `ClientConfig::$simularEscrita`, Tabelas Comex (`tabelas()`, com paginação real), `Ambiente::janelaDeIndisponibilidade()` e seção de versionamento/APIs `@experimental`. **Validado na Validação em 17/10/2026**: integração 7/7; Postman CLI — "Fluxo operador e fabricante" 8/8 requisições e pasta TABX 9/9 asserções. `composer qa` verde (289 testes unitários).
 
 **v0.2.0 lançada em 17/10/2026** (PR da branch `feat/operadores-fabricantes-e-painel`, CI verde, tag `v0.2.0`, release no GitHub e Packagist): operadores estrangeiros, fabricantes-produtores, busca por código interno, inclusão em lote, atributos condicionados (avaliação + `ValidadorProduto`), cache de atributos, `testarConexao()` e `CertificadoA1::fromString()` — implementados a partir de `SUGESTOES-SDK.md` (levantamento do painel) e **validados na Validação em 17/10/2026** (integração 6/6; Postman CLI nas pastas novas, só leitura, 6/6). `composer qa` verde (252 testes unitários).
 
@@ -12,7 +12,7 @@ SDK v0.1 implementado e **validado no portal real**: em Validação, autenticaç
 
 ## Próximo passo exato
 
-Revisar e mesclar o PR da branch `feat/erro-api-fabricantes-fake-tabx`; lançar **v0.3.0** (CHANGELOG "Não lançado" → `[0.3.0]`, User-Agent `/0.3`, tag + release). Depois, painel em `^0.3`: `ErroApi`/`mensagemAmigavel()` na UI de importação, `incluirComFabricantes()`/lote com fabricantes, `PortalUnicoFake` nos testes, `simularEscrita` na pré-validação, `tabelas()->paises()` no select de país.
+Painel em `marcelofecchio/siscomex-sdk:^0.3`: `ErroApi`/`mensagemAmigavel()` na UI de importação, `incluirComFabricantes()`/lote com fabricantes, `PortalUnicoFake` nos testes, `simularEscrita` na pré-validação, `tabelas()->paises()` no select de país.
 
 ## Feito
 
@@ -28,6 +28,7 @@ Revisar e mesclar o PR da branch `feat/erro-api-fabricantes-fake-tabx`; lançar 
 - [x] `docs/PROMPT-INICIAL.md` revisado com os fatos confirmados e os parâmetros definidos (16/10/2026)
 - [x] `doc/PROMPT-INICIAL.md` movido para `docs/` (pasta `doc` removida)
 - [x] 17/10/2026 — v0.2.0: PR, CI, merge em `main`, tag, release e Packagist
+- [x] 17/10/2026 — v0.3.0: PR #2, CI, merge em `main`, tag, release e Packagist
 - [x] 17/10/2026 — segundo `SUGESTOES-SDK.md`: itens 2, 3, 4, 5 e os de baixa prioridade viáveis (TABX/países, paginação na TABX, janela de indisponibilidade, política de versionamento); Postman atualizado
 - [x] 17/10/2026 — `SUGESTOES-SDK.md` verificado contra as specs e a Validação e implementado (itens 1, 2, 3, 4, 5, 7, 8, 10 e o `CertificadoA1::fromString()`); itens 6 e 9 e parte dos de baixa prioridade descartados com motivo (ver Decisões)
 

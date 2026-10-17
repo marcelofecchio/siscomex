@@ -48,7 +48,7 @@ Inclui coleção **Postman** ([`postman/`](postman/)), exemplos ([`examples/`](e
 composer require marcelofecchio/siscomex-sdk guzzlehttp/guzzle
 ```
 
-Versão pré-1.0: até a 1.0 a API pública ainda pode mudar entre versões menores (`^0.2` aceita apenas correções `0.2.x`). As mudanças de cada versão estão no [CHANGELOG](CHANGELOG.md).
+Versão pré-1.0: até a 1.0 a API pública ainda pode mudar entre versões menores (`^0.3` aceita apenas correções `0.3.x`). As mudanças de cada versão estão no [CHANGELOG](CHANGELOG.md).
 
 ## Pré-requisitos no Siscomex
 
